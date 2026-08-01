@@ -353,7 +353,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:500}
       <div class="st-meta" id="sessMeta"></div>
       <div class="sess-prog"><i id="sessProgBar" style="width:0%"></i></div>
     </div>
-    <div class="seg" id="sessSeg"></div>
     <div class="card pad" id="exList"></div>
     <div class="savebar"><button class="btn" id="saveSession">Terminer la séance</button></div>
   </div>
@@ -710,15 +709,6 @@ function renderSession(){
   $("#sessMeta").innerHTML=`<span class="meta-chip">Cible <b class="mono">${fmt(charge)} kg</b></span>
     <span class="meta-chip">Reps <b>${wk.rep[0]} à ${wk.rep[1]}</b></span>
     <span class="meta-chip">1RM <b class="mono">${fmt(S.rm[lift])} kg</b></span>`;
-
-  const ss=$("#sessSeg"); ss.innerHTML="";
-  [1,2].forEach(n=>{
-    const b=document.createElement("button");
-    b.className=n===se?"on":"";
-    b.innerHTML=`Séance ${n} · <b class="mono">${fmt(chargeFor(lift,w,n))} kg</b>${S.sessDone[sk(lift,w,n)]?" ✓":""}`;
-    b.onclick=()=>{curSess.se=n;renderSession();};
-    ss.appendChild(b);
-  });
 
   const exs=[
     {name:L.main, scheme:`4 × ${wk.rep[0]} à ${wk.rep[1]}`, sets:4, tW:charge, tR:wk.rep[1], main:true},
