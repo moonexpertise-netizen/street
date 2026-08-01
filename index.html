@@ -266,26 +266,27 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:500}
 .pr-card .p-t{font-size:17px;font-weight:650}
 .pr-card .p-s{font-size:13px;color:var(--ink-2);margin-top:4px}
 
-/* ── verrouillage ── */
+/* ── connexion ── */
 .lock{position:fixed;inset:0;z-index:100;background:var(--page);display:flex;align-items:center;justify-content:center;
-  padding:24px calc(24px + env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom))}
+  padding:24px calc(20px + env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));overflow-y:auto}
 .lock.hide{display:none}
-.lock-inner{width:100%;max-width:290px;text-align:center}
-.lock-brand{font-size:15px;font-weight:650;letter-spacing:-.01em}
-.lock-t{font-size:13.5px;color:var(--ink-2);margin-top:28px}
-.dots{display:flex;justify-content:center;gap:15px;margin:16px 0 32px}
-.dots i{width:11px;height:11px;border-radius:50%;border:1px solid var(--line-2);transition:.15s}
-.dots i.on{background:var(--ink);border-color:var(--ink)}
-.dots.err i{border-color:var(--crit)}
-@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
-.dots.err{animation:shake .5s}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.key{height:62px;border-radius:50%;background:var(--panel);border:1px solid var(--line);font-size:23px;font-weight:450;
-  display:grid;place-items:center;transition:.12s;box-shadow:var(--shadow);text-align:center;color:var(--ink)}
-.key:active{background:var(--panel-2);transform:scale(.94)}
-.key.blank{background:none;border:none;box-shadow:none;pointer-events:none}
-.key.fn{font-size:12.5px;font-weight:550;color:var(--ink-2);background:none;border:none;box-shadow:none}
-.lock-note{font-size:12px;color:var(--ink-3);margin-top:20px;min-height:15px}
+.lock-inner{width:100%;max-width:320px;text-align:center}
+.lock-brand{font-size:13.5px;font-weight:600;letter-spacing:-.01em;color:var(--ink-3)}
+.lock-h{font-size:23px;font-weight:650;letter-spacing:-.025em;margin-top:22px}
+.lock-sub{font-size:13.5px;color:var(--ink-2);margin-top:8px;line-height:1.5}
+.ms-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:50px;margin-top:26px;
+  border-radius:10px;background:var(--ink);color:var(--page);font-weight:600;font-size:14.5px;
+  box-shadow:var(--shadow-md);transition:.15s}
+.ms-btn:active{transform:scale(.98)}
+.ms-btn svg{width:17px;height:17px;flex:0 0 auto}
+.lock-note{font-size:12px;color:var(--ink-3);margin-top:20px;line-height:1.5}
+.lock-err{font-size:12.5px;color:var(--crit);margin-top:18px;line-height:1.5;min-height:16px}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid var(--line-2);border-top-color:var(--ink-2);
+  border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.cfgbox{text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:14px;margin-top:18px}
+.cfgbox code{font-size:11.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);
+  background:var(--panel-2);padding:1px 5px;border-radius:4px;display:inline-block;margin:2px 0}
 </style>
 
 <canvas id="confetti"></canvas>
@@ -293,12 +294,34 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:500}
 
 <div class="lock" id="lock">
   <div class="lock-inner">
-    <div class="lock-brand">MoonSport</div>
-    <div class="lock-t" id="lockT">Entrez votre code</div>
-    <div class="dots" id="lockDots"><i></i><i></i><i></i><i></i></div>
-    <div class="keypad" id="keypad"></div>
-    <div class="lock-note" id="lockNote"></div>
-    <button class="btn ghost sm" id="lockCancel" style="margin:14px auto 0;display:none">Annuler</button>
+    <div class="lock-brand">MOON Expertise</div>
+
+    <div id="authBoot" style="margin-top:44px"><span class="spin"></span></div>
+
+    <div id="authLogin" style="display:none">
+      <h1 class="lock-h">MoonSport</h1>
+      <div class="lock-sub">Suivi des tractions et dips lestés.<br>Accès réservé aux comptes MOON Expertise.</div>
+      <button class="ms-btn" id="msBtn">
+        <svg viewBox="0 0 21 21" aria-hidden="true">
+          <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+          <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+          <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+          <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+        </svg>
+        Se connecter avec Microsoft
+      </button>
+      <div class="lock-err" id="authErr"></div>
+      <div class="lock-note">Votre session reste ouverte 30 jours sur cet appareil.</div>
+    </div>
+
+    <div id="authConfig" style="display:none">
+      <h1 class="lock-h">Configuration requise</h1>
+      <div class="lock-sub">La connexion Microsoft n'est pas encore branchée sur ce projet.</div>
+      <div class="cfgbox">
+        <div class="tiny muted" style="margin-bottom:8px">Variables à définir dans Vercel puis redéployer :</div>
+        <code>MS_TENANT_ID</code><br><code>MS_CLIENT_ID</code><br><code>MS_CLIENT_SECRET</code><br><code>SESSION_SECRET</code>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -438,15 +461,11 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:500}
     </div>
 
     <div>
-      <div class="label">Accès</div>
+      <div class="label">Compte</div>
       <div class="card">
         <div class="settings-item">
-          <div><div class="si-t">Changer le code</div><div class="si-s">Code à 4 chiffres, propre à cet appareil</div></div>
-          <button class="btn ghost sm" id="pinChange">Modifier</button>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">Verrouiller maintenant</div><div class="si-s">Le code sera redemandé à l'ouverture</div></div>
-          <button class="btn ghost sm" id="pinLock">Verrouiller</button>
+          <div style="min-width:0"><div class="si-t" id="acctName">…</div><div class="si-s" id="acctMail" style="word-break:break-all">…</div></div>
+          <button class="btn ghost sm" id="signOutBtn">Déconnexion</button>
         </div>
       </div>
     </div>
@@ -999,6 +1018,8 @@ function applyTheme(){
   else document.documentElement.setAttribute("data-theme",S.ui.theme);
 }
 function renderSettings(){
+  $("#acctName").textContent = account ? (account.name||"Compte Microsoft") : "Non connecté";
+  $("#acctMail").textContent = account ? account.email : "";
   $("#themeSwitch").classList.toggle("on",curTheme()==="dark");
   $("#restSwitch").classList.toggle("on",S.ui.rest);
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
@@ -1094,83 +1115,62 @@ function showPR(title,sub){
 }
 $("#prFlash").onclick=()=>$("#prFlash").classList.remove("show");
 
-/* ═════ VERROUILLAGE ═════ */
-const PIN_KEY="moonsport.pin", UNLOCK_KEY="moonsport.unlocked";
-let pinMode="unlock", pinBuf="", pinFirst="";
-async function hashPin(p){
-  const txt="moonsport::"+p;
+/* ═════ CONNEXION MICROSOFT ═════ */
+let account=null;
+const AUTH_ERRORS={
+  denied:  "Ce compte Microsoft n'est pas autorisé à accéder à l'application.",
+  tenant:  "Ce compte n'appartient pas à l'organisation MOON Expertise.",
+  state:   "Session de connexion expirée. Réessayez.",
+  token:   "Microsoft a refusé l'échange du jeton. Vérifiez le secret client.",
+  nocode:  "Réponse incomplète de Microsoft. Réessayez.",
+  config:  "Connexion Microsoft non configurée sur le serveur.",
+  microsoft:"Connexion annulée ou refusée côté Microsoft.",
+  server:  "Erreur serveur pendant la connexion."
+};
+function showAuthPane(which){
+  ["authBoot","authLogin","authConfig"].forEach(p=>{ const e=$("#"+p); if(e) e.style.display = p===which?"":"none"; });
+}
+function readAuthError(){
+  const q=new URLSearchParams(location.search);
+  const err=q.get("err");
+  if(!err) return "";
+  let msg=AUTH_ERRORS[err]||"Connexion impossible.";
+  const mail=q.get("mail");
+  if(err==="denied"&&mail) msg+=" ("+mail+")";
+  history.replaceState(null,"",location.pathname);
+  return msg;
+}
+async function initAuth(){
+  const pendingErr=readAuthError();
+  let info=null;
   try{
-    const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
-    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
-  }catch(e){
-    let h=0; for(let i=0;i<txt.length;i++) h=(h*31+txt.charCodeAt(i))|0;
-    return "fb"+(h>>>0).toString(16);
+    const r=await fetch("/api/me",{credentials:"same-origin",cache:"no-store"});
+    if(r.ok) info=await r.json();
+  }catch(e){ info=null; }
+
+  if(!info){
+    showAuthPane("authLogin");
+    $("#authErr").textContent=pendingErr||"Serveur injoignable. Vérifiez votre connexion.";
+    return;
   }
-}
-function buildKeypad(){
-  const kp=$("#keypad"); kp.innerHTML="";
-  ["1","2","3","4","5","6","7","8","9","","0","del"].forEach(k=>{
-    const b=document.createElement("button");
-    if(k===""){ b.className="key blank"; b.setAttribute("aria-hidden","true"); }
-    else if(k==="del"){ b.className="key fn"; b.textContent="Effacer"; b.onclick=()=>{ pinBuf=pinBuf.slice(0,-1); paintDots(); }; }
-    else { b.className="key"; b.textContent=k; b.onclick=()=>pinPush(k); }
-    kp.appendChild(b);
-  });
-}
-function paintDots(err){
-  const d=$("#lockDots");
-  [...d.children].forEach((i,n)=>i.classList.toggle("on", n<pinBuf.length));
-  d.classList.toggle("err", !!err);
-  if(err) setTimeout(()=>d.classList.remove("err"),600);
-}
-function pinPush(k){
-  if(pinBuf.length>=4) return;
-  pinBuf+=k; paintDots(); vibrate(6);
-  if(pinBuf.length===4) setTimeout(pinSubmit,150);
-}
-async function pinSubmit(){
-  const code=pinBuf; pinBuf="";
-  if(pinMode==="unlock"){
-    if(await hashPin(code)===localStorage.getItem(PIN_KEY)) unlockApp();
-    else { paintDots(true); vibrate([40,60,40]); $("#lockNote").textContent="Code incorrect"; }
-  } else if(pinMode==="new"){
-    pinFirst=code; pinMode="confirm";
-    $("#lockT").textContent="Confirmez le code"; $("#lockNote").textContent=""; paintDots();
-  } else {
-    if(code===pinFirst){
-      localStorage.setItem(PIN_KEY, await hashPin(code));
-      pinFirst=""; unlockApp(); toast("Code enregistré");
-    } else {
-      pinFirst=""; pinMode="new";
-      $("#lockT").textContent="Choisissez un code";
-      $("#lockNote").textContent="Les deux codes ne correspondaient pas";
-      paintDots(true); vibrate([40,60,40]);
-    }
+  if(!info.configured){ showAuthPane("authConfig"); return; }
+  if(!info.authenticated){
+    showAuthPane("authLogin");
+    $("#authErr").textContent=pendingErr;
+    return;
   }
-}
-function unlockApp(){
-  localStorage.setItem(UNLOCK_KEY,"1");
+  account={email:info.email,name:info.name};
   $("#lock").classList.add("hide");
-  $("#lockNote").textContent="";
+  renderHome();
 }
-function lockApp(mode){
-  pinBuf=""; pinFirst="";
-  const hasPin=!!localStorage.getItem(PIN_KEY);
-  pinMode = mode || (hasPin?"unlock":"new");
-  $("#lockT").textContent = pinMode==="unlock" ? "Entrez votre code" : "Choisissez un code";
-  $("#lockNote").textContent = pinMode==="unlock" ? "" : "4 chiffres, à retenir";
-  $("#lockCancel").style.display = (pinMode!=="unlock" && hasPin) ? "flex" : "none";
-  paintDots();
-  $("#lock").classList.remove("hide");
-}
-$("#lockCancel").onclick=()=>{ pinBuf=""; pinFirst=""; unlockApp(); };
-$("#pinChange").onclick=()=>{ localStorage.removeItem(UNLOCK_KEY); lockApp("new"); };
-$("#pinLock").onclick=()=>{ localStorage.removeItem(UNLOCK_KEY); lockApp("unlock"); };
+$("#msBtn").onclick=()=>{
+  $("#msBtn").innerHTML='<span class="spin"></span> Redirection…';
+  location.href="/api/sso";
+};
+$("#signOutBtn").onclick=()=>{ location.href="/api/logout"; };
 
 /* ═════ INIT ═════ */
 applyTheme();
 renderHome();
-buildKeypad();
-if(localStorage.getItem(PIN_KEY) && localStorage.getItem(UNLOCK_KEY)==="1") $("#lock").classList.add("hide");
-else lockApp();
+initAuth();
 </script>
