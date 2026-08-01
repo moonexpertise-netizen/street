@@ -292,6 +292,16 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .ptable td:first-child{font-weight:600;font-size:12px;color:var(--ink-2)}
 .ptable input{width:100%;max-width:62px;height:38px;text-align:center;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);color:var(--ink);font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums}
 .ptable input:focus{outline:none;border-color:var(--gold)}
+.frow{display:flex;flex-direction:column;gap:6px;margin-top:15px}
+.frow label{font-size:11.5px;font-weight:500;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase}
+.frow input{height:48px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);color:var(--ink);
+  padding:0 14px;font-size:16px;font-weight:500;width:100%;font-variant-numeric:tabular-nums}
+.frow input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 20%,transparent)}
+.plan-prev{margin-top:16px;padding:13px 14px;border-radius:var(--r);background:var(--panel-2);border:1px solid var(--line);
+  font-size:13px;color:var(--ink-2);line-height:1.5}
+.plan-prev b{color:var(--ink);font-weight:600}
+.btn.wide{width:100%}
+.plan-row{display:flex;gap:9px}
 .cycrow td{padding:11px 4px 4px;text-align:left!important;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-bottom:none;color:var(--gold-ink)}
 
 /* ── notifications ── */
@@ -424,6 +434,12 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="sess-prog"><i id="sessProgBar" style="width:0%"></i></div>
       <div class="sess-count" id="sessCount">0 série sur 10</div>
     </div>
+    <button class="btn ghost wide" id="planBtn" style="height:42px;font-size:13.5px;font-weight:500">
+      <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" aria-hidden="true">
+        <rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
+      </svg>
+      Planifier dans Outlook
+    </button>
     <div class="card pad" id="exList"></div>
     <div class="savebar"><button class="btn" id="saveSession">Terminer la séance</button></div>
   </div>
@@ -591,6 +607,22 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div style="overflow-x:auto;margin-top:11px"><table class="ptable" id="progTable"></table></div>
     <button class="btn" id="progSave" style="margin-top:15px">Enregistrer</button>
     <button class="btn ghost" id="progDefault" style="margin-top:8px;height:42px">Rétablir les valeurs d'origine</button>
+  </div>
+</div>
+
+<!-- planification Outlook -->
+<div class="overlay" id="planSheet">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h3>Planifier dans Outlook</h3>
+    <div class="muted tiny">Un créneau d'1 h 15 contenant le détail complet de la séance.</div>
+    <div class="plan-row">
+      <div class="frow" style="flex:1.4"><label for="planDate">Date</label><input type="date" id="planDate"></div>
+      <div class="frow" style="flex:1"><label for="planTime">Début</label><input type="time" id="planTime" step="300"></div>
+    </div>
+    <div class="plan-prev" id="planPrev"></div>
+    <button class="btn" id="planGo" style="margin-top:16px">Ouvrir dans Outlook</button>
+    <button class="btn ghost" id="planCancel" style="margin-top:8px;height:44px">Annuler</button>
   </div>
 </div>
 
@@ -887,6 +919,75 @@ $("#saveSession").onclick=()=>{
   toast("Séance enregistrée");
   homeWeek=w;
   switchView("v-home");
+};
+
+/* ═════ PLANIFICATION OUTLOOK ═════ */
+const SESSION_MINUTES=75; // créneau d'1 h 15
+const pad2=n=>String(n).padStart(2,"0");
+const localIso=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:00`;
+
+function sessionPlan(){
+  const {w,se}=curSess, lift=S.ui.lift, L=LIFTS[lift], wk=weeks()[w-1], cyc=CYCLES[wk.cycle];
+  const charge=chargeFor(lift,w,se);
+  return {
+    titre:`MoonSport · ${L.name} séance ${se} · ${fmt(charge)} kg`,
+    corps:[
+      `${cyc.name} — semaine ${w} sur 12`,
+      "",
+      `1. ${L.main} : 4 séries de ${wk.rep[0]} à ${wk.rep[1]} reps à ${fmt(charge)} kg`,
+      `2. ${L.acc[0].name} : 3 séries de 10 à 12 reps`,
+      `3. ${L.acc[1].name} : 3 séries de 10 à 12 reps`,
+      "",
+      `Repos : ${fmtSec(S.ui.restMain)} sur l'exercice principal, ${fmtSec(S.ui.restAcc)} sur les accessoires.`,
+      `1RM de référence : ${fmt(S.rm[lift])} kg`,
+      "",
+      "Saisie des séries : https://street.moonexpertise.fr",
+    ].join("\n"),
+  };
+}
+function planStart(){
+  const d=$("#planDate").value, t=$("#planTime").value;
+  if(!d||!t) return null;
+  const dt=new Date(`${d}T${t}:00`);
+  return isNaN(dt) ? null : dt;
+}
+function updatePlanPrev(){
+  const start=planStart(), p=sessionPlan(), box=$("#planPrev");
+  if(!start){ box.innerHTML="Choisissez une date et une heure."; $("#planGo").disabled=true; return; }
+  $("#planGo").disabled=false;
+  const end=new Date(start.getTime()+SESSION_MINUTES*60000);
+  const jour=start.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  box.innerHTML=`<b>${p.titre}</b><br>${jour.charAt(0).toUpperCase()+jour.slice(1)}, de <b>${pad2(start.getHours())}:${pad2(start.getMinutes())}</b> à <b>${pad2(end.getHours())}:${pad2(end.getMinutes())}</b><br>Durée 1 h 15`;
+}
+function openPlan(){
+  const now=new Date();
+  const d=new Date(now.getTime()+60*60000);
+  d.setMinutes(0,0,0);
+  $("#planDate").value=`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  $("#planTime").value=`${pad2(d.getHours())}:00`;
+  updatePlanPrev();
+  $("#planSheet").classList.add("open");
+}
+$("#planBtn").onclick=openPlan;
+$("#planDate").oninput=updatePlanPrev;
+$("#planTime").oninput=updatePlanPrev;
+$("#planCancel").onclick=()=>$("#planSheet").classList.remove("open");
+$("#planSheet").onclick=e=>{ if(e.target.id==="planSheet") $("#planSheet").classList.remove("open"); };
+$("#planGo").onclick=()=>{
+  const start=planStart();
+  if(!start){ toast("Choisissez une date et une heure"); return; }
+  const end=new Date(start.getTime()+SESSION_MINUTES*60000);
+  const p=sessionPlan();
+  const q=new URLSearchParams({
+    path:"/calendar/action/compose", rru:"addevent",
+    subject:p.titre, body:p.corps,
+    startdt:localIso(start), enddt:localIso(end),
+  });
+  const url="https://outlook.office.com/calendar/0/deeplink/compose?"+q.toString();
+  $("#planSheet").classList.remove("open");
+  const win=window.open(url,"_blank","noopener");
+  if(!win) location.href=url;
+  toast("Outlook ouvert, il reste à enregistrer");
 };
 
 /* ═════ MINUTEUR ═════ */
