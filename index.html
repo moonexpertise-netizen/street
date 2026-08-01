@@ -6,7 +6,9 @@
 <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#060a18" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="/moon-icon.svg">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -621,8 +623,9 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="frow" style="flex:1"><label for="planTime">Début</label><input type="time" id="planTime" step="300"></div>
     </div>
     <div class="plan-prev" id="planPrev"></div>
-    <button class="btn" id="planGo" style="margin-top:16px">Ouvrir dans Outlook</button>
-    <button class="btn ghost" id="planCancel" style="margin-top:8px;height:44px">Annuler</button>
+    <button class="btn" id="planGo" style="margin-top:16px">Ouvrir dans l'app Outlook</button>
+    <button class="btn ghost" id="planWeb" style="margin-top:8px;height:44px">Ouvrir dans le navigateur</button>
+    <button class="btn ghost" id="planCancel" style="margin-top:8px;height:44px;border:none;box-shadow:none;color:var(--ink-2)">Annuler</button>
   </div>
 </div>
 
@@ -973,21 +976,57 @@ $("#planDate").oninput=updatePlanPrev;
 $("#planTime").oninput=updatePlanPrev;
 $("#planCancel").onclick=()=>$("#planSheet").classList.remove("open");
 $("#planSheet").onclick=e=>{ if(e.target.id==="planSheet") $("#planSheet").classList.remove("open"); };
-$("#planGo").onclick=()=>{
+function planUrls(){
   const start=planStart();
-  if(!start){ toast("Choisissez une date et une heure"); return; }
+  if(!start) return null;
   const end=new Date(start.getTime()+SESSION_MINUTES*60000);
   const p=sessionPlan();
-  const q=new URLSearchParams({
+  const web=new URLSearchParams({
     path:"/calendar/action/compose", rru:"addevent",
     subject:p.titre, body:p.corps,
     startdt:localIso(start), enddt:localIso(end),
   });
-  const url="https://outlook.office.com/calendar/0/deeplink/compose?"+q.toString();
+  /* L'app mobile accepte selon les versions title/subject et start/startdt :
+     on fournit les deux orthographes pour couvrir les deux cas. */
+  const app=new URLSearchParams({
+    title:p.titre, subject:p.titre,
+    start:localIso(start), startdt:localIso(start),
+    end:localIso(end), enddt:localIso(end),
+    description:p.corps, body:p.corps,
+  });
+  return {
+    web:"https://outlook.office.com/calendar/0/deeplink/compose?"+web.toString(),
+    app:"ms-outlook://events/new?"+app.toString(),
+  };
+}
+$("#planGo").onclick=()=>{
+  const u=planUrls();
+  if(!u){ toast("Choisissez une date et une heure"); return; }
   $("#planSheet").classList.remove("open");
-  const win=window.open(url,"_blank","noopener");
-  if(!win) location.href=url;
-  toast("Outlook ouvert, il reste à enregistrer");
+  /* Si l'app est installée, iOS bascule dessus et la page passe en arrière-plan.
+     Sinon rien ne se passe : on retombe sur la version web au bout d'1,4 s. */
+  let parti=false;
+  const marque=()=>{ parti=true; };
+  document.addEventListener("visibilitychange",marque,{once:true});
+  window.addEventListener("pagehide",marque,{once:true});
+  window.addEventListener("blur",marque,{once:true});
+  location.href=u.app;
+  setTimeout(()=>{
+    document.removeEventListener("visibilitychange",marque);
+    window.removeEventListener("pagehide",marque);
+    window.removeEventListener("blur",marque);
+    if(!parti && !document.hidden){
+      toast("App Outlook introuvable, ouverture du site");
+      location.href=u.web;
+    }
+  },1400);
+};
+$("#planWeb").onclick=()=>{
+  const u=planUrls();
+  if(!u){ toast("Choisissez une date et une heure"); return; }
+  $("#planSheet").classList.remove("open");
+  const win=window.open(u.web,"_blank","noopener");
+  if(!win) location.href=u.web;
 };
 
 /* ═════ MINUTEUR ═════ */
