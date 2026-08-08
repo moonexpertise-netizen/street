@@ -342,8 +342,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 /* ── records ── */
 .pr-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px}
 .pr-row:last-child{border-bottom:none}
-.pr-lift{font-weight:650;width:42px;flex:0 0 auto}
-.pr-det{color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-ex{font-weight:600;font-size:13px}
+.pr-det{color:var(--ink-2);font-size:11.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pr-e{margin-left:auto;font-weight:650;color:var(--gold-ink);flex:0 0 auto}
 .pr-d{color:var(--ink-3);font-size:11px;width:46px;text-align:right;flex:0 0 auto}
 .palier-chip.deload{border-color:color-mix(in srgb,var(--blue,#2563eb) 40%,var(--line-2));
@@ -614,10 +614,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
           <div><div class="si-t">Vibrations</div><div class="si-s">Retour haptique sur les actions</div></div>
           <div class="switch on" id="hapticSwitch"></div>
         </div>
-        <div class="settings-item">
-          <div><div class="si-t">Raccourci iOS du minuteur</div><div class="si-s">Nom du raccourci lancé par le bouton iOS</div></div>
-          <input id="shortcutName" class="sel" style="width:110px;text-align:center" placeholder="Repos">
-        </div>
       </div>
     </div>
 
@@ -676,7 +672,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div class="rt-bar"><i id="rtBar" style="width:100%"></i></div>
   </div>
   <div class="rt-btns">
-    <button class="rt-b" id="rtIos" title="Lancer le minuteur iOS">iOS</button>
     <button class="rt-b" id="rtPlus">+30s</button>
     <button class="rt-b" id="rtSkip">Passer</button>
   </div>
@@ -832,7 +827,7 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
   logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, shortcut:"Repos"}
+  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true}
 };
 let S = load();
 function load(){
@@ -894,7 +889,7 @@ function globalStats(){
   for(let w=1;w<=12;w++){
     if(LIFT_IDS.some(l=>[1,2].some(se=>S.sessDone[sk(l,w,se)]))) streak++; else break;
   }
-  return {done, vol, prs:S.prs.length, cycleDone, streak};
+  return {done, vol, prs:records().length, cycleDone, streak};
 }
 function nextSession(){
   for(let w=1;w<=12;w++) for(const se of [1,2]) for(const l of LIFT_IDS)
@@ -1124,7 +1119,7 @@ function renderSession(){
       b.classList.add("done","pop"); row.classList.add("isdone");
       setTimeout(()=>b.classList.remove("pop"),330);
       vibrate(18);
-      checkPR(S.ui.lift, d, ei);
+      checkPR(S.ui.lift, d, ei, k);
       updateSessProg();
       if(S.ui.rest) startRest(ei===0?S.ui.restMain:S.ui.restAcc);
     };
@@ -1150,13 +1145,38 @@ function updateSessProg(){
 }
 /* Un record ne concerne QUE l'exercice principal : un tirage horizontal
    lourd n'est pas un record de traction lestée. */
-function checkPR(lift,d,ei){
+/* Les records sont RECALCULÉS depuis les saisies, jamais stockés : une
+   liste stockée pouvait contenir de faux records issus des accessoires. */
+function records(){
+  const out=[];
+  LIFT_IDS.forEach(l=>{
+    let best=0;
+    for(let w=1;w<=12;w++) for(const se of [1,2]){
+      const t=S.sessDone[sk(l,w,se)]||null;
+      for(let st=0;st<4;st++){
+        const d=S.logs[lk(l,w,se,0,st)];          // index 0 = exercice principal
+        if(!d||d.weight==null||d.reps==null) continue;
+        if(d.weight>best){ best=d.weight; out.push({lift:l,w:d.weight,r:d.reps,date:t,sem:w}); }
+      }
+    }
+  });
+  return out;
+}
+function meilleureCharge(lift,sauf){
+  let best=0;
+  for(let w=1;w<=12;w++) for(const se of [1,2]) for(let st=0;st<4;st++){
+    const k=lk(lift,w,se,0,st);
+    if(k===sauf) continue;
+    const d=S.logs[k];
+    if(d&&d.weight!=null&&d.reps!=null&&d.weight>best) best=d.weight;
+  }
+  return best;
+}
+function checkPR(lift,d,ei,key){
   if(ei!==0 || d.weight==null || d.reps==null) return;
-  const best=Math.max(0,...S.prs.filter(p=>p.lift===lift).map(p=>p.w||0));
+  const best=meilleureCharge(lift,key);
   if(d.weight>best){
-    S.prs.push({lift, w:d.weight, r:d.reps, date:Date.now()});
-    save();
-    showPR(`${LIFTS[lift].name} · ${fmt(d.weight)} kg`,
+    showPR(`${LIFTS[lift].main} · ${fmt(d.weight)} kg`,
       best ? `${d.reps} reps, ancien record ${fmt(best)} kg` : `${d.reps} reps, premier record enregistré`);
   }
 }
@@ -1308,12 +1328,6 @@ document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&rtInt) t
 $("#rtSkip").onclick=stopRest;
 $("#rtPlus").onclick=()=>{ if(!rtInt) return; rtEnd+=30000; rtSonne=false;
   $("#restTimer").classList.remove("fini"); rtTotal=Math.max(rtTotal,restLeft()); tickRest(); };
-/* Relais vers l'app Raccourcis d'iOS, seul moyen d'atteindre une vraie
-   alarme système depuis une page web. */
-$("#rtIos").onclick=()=>{
-  const nom=(S.ui.shortcut||"Repos").trim();
-  location.href=`shortcuts://run-shortcut?name=${encodeURIComponent(nom)}&input=text&text=${restLeft()||rtTotal}`;
-};
 
 /* ═════ STATS ═════ */
 /* ═════ STATISTIQUES ═════
@@ -1379,7 +1393,7 @@ function renderBI(){
     <div class="res3">
       <div><div class="res-v mono">${faites}</div><div class="res-l">séances faites</div></div>
       <div><div class="res-v mono">${kilos>=1000?fmt(Math.round(kilos/100)/10)+" t":Math.round(kilos)+" kg"}</div><div class="res-l">soulevés au total</div></div>
-      <div><div class="res-v mono">${S.prs.length}</div><div class="res-l">records</div></div>
+      <div><div class="res-v mono">${records().length}</div><div class="res-l">records</div></div>
     </div>`;
 
   /* 2. Par mouvement : départ, actuel, écart, ressenti, conseil */
@@ -1506,13 +1520,15 @@ function drawRegular(per){
 
 /* Records : charge maximale sur l'exercice principal, accessoires exclus. */
 function drawRecords(){
-  const list=[...S.prs].filter(p=>p.w!=null).sort((a,b)=>b.date-a.date).slice(0,8);
+  const list=records().sort((a,b)=>(b.date||0)-(a.date||0)||b.sem-a.sem).slice(0,8);
   if(!list.length){ $("#prList").innerHTML=emptyState("Un record est enregistré quand vous dépassez votre charge maximale sur l'exercice principal."); return; }
   $("#prList").innerHTML=list.map(p=>{
-    const d=new Date(p.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+    const d=p.date?new Date(p.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):`S${p.sem}`;
     return `<div class="pr-row"><span class="dot2" style="background:${liftColor(p.lift)}"></span>
-      <span class="pr-lift">${LIFTS[p.lift].name}</span>
-      <span class="pr-det">${p.r} reps</span>
+      <div style="min-width:0">
+        <div class="pr-ex">${LIFTS[p.lift].main}</div>
+        <div class="pr-det">${LIFTS[p.lift].name} · ${p.r} reps</div>
+      </div>
       <span class="pr-e mono">${fmt(p.w)} kg</span>
       <span class="pr-d">${d}</span></div>`;
   }).join("");
@@ -1568,7 +1584,6 @@ function renderSettings(){
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
   $("#restMainVal").textContent=fmtSec(S.ui.restMain);
   $("#restAccVal").textContent=fmtSec(S.ui.restAcc);
-  $("#shortcutName").value=S.ui.shortcut||"Repos";
   const rs=$("#rmSettings"); rs.innerHTML="";
   LIFT_IDS.forEach(id=>{
     const L=LIFTS[id], row=document.createElement("div");
@@ -1582,7 +1597,6 @@ function renderSettings(){
 $("#themeSwitch").onclick=()=>{ S.ui.theme=curTheme()==="dark"?"light":"dark"; save(); applyTheme(); renderSettings(); };
 $("#restSwitch").onclick=()=>{ S.ui.rest=!S.ui.rest; save(); renderSettings(); if(!S.ui.rest) stopRest(); };
 $("#hapticSwitch").onclick=()=>{ S.ui.haptic=!S.ui.haptic; save(); renderSettings(); };
-$("#shortcutName").oninput=e=>{ S.ui.shortcut=e.target.value; save(); };
 $$(".mini-step button").forEach(b=>{
   b.onclick=()=>{
     const t=b.dataset.t, d=+b.dataset.d;
