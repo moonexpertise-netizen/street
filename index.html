@@ -270,6 +270,38 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .troph-row .t-lab{color:var(--ink-3)}
 .troph-row.won .t-lab{color:var(--ink);font-weight:500}
 
+/* ── résumé et lignes de mouvement ── */
+.res3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.res-v{font-family:var(--f-display);font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.res-l{font-size:11.5px;color:var(--ink-2);margin-top:5px;line-height:1.3}
+.liftrow{padding:12px 0;border-bottom:1px solid var(--line)}
+.liftrow:last-child{border-bottom:none;padding-bottom:0}
+.liftrow:first-child{padding-top:0}
+.lr-head{display:flex;align-items:center;gap:8px}
+.lr-name{font-weight:600;font-size:14px}
+.rpe-tag{margin-left:auto;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px;border:1px solid currentColor}
+.lr-nums{display:flex;align-items:baseline;gap:8px;margin-top:7px;flex-wrap:wrap}
+.lr-from{font-size:14px;color:var(--ink-3)}
+.lr-arrow{color:var(--ink-3);font-size:13px}
+.lr-to{font-family:var(--f-display);font-size:20px;font-weight:600;letter-spacing:-.02em}
+.lr-delta{font-size:12px;font-weight:600}
+.lr-delta.up{color:var(--good)} .lr-delta.down{color:var(--crit)}
+.lr-none{font-size:13px;color:var(--ink-3)}
+.lr-tip{font-size:12px;color:var(--ink-2);margin-top:6px}
+.lr-tip.hard{color:var(--crit)} .lr-tip.easy{color:var(--good)}
+
+/* ── bandeau de ressenti ── */
+.rs{display:flex;flex-direction:column;gap:7px}
+.rs-row{display:flex;align-items:center;gap:9px}
+.rs-lab{font-size:11px;font-weight:600;color:var(--ink-2);width:38px;flex:0 0 auto}
+.rs-cells{display:flex;gap:2px;flex:1;min-width:0}
+.rs-cells i{flex:1;height:16px;border-radius:2px;min-width:0}
+.rs-key{display:flex;gap:13px;margin-top:12px;font-size:11.5px;color:var(--ink-2);flex-wrap:wrap}
+.rs-key span{display:flex;align-items:center;gap:5px}
+.rs-key i{width:11px;height:11px;border-radius:2px;display:inline-block}
+.resttimer.fini{background:var(--good)}
+.resttimer.fini .rt-bar i{background:var(--page)}
+
 /* ── synthèse et tuiles de mouvement ── */
 .syn-t{font-family:var(--f-display);font-size:16px;font-weight:600;letter-spacing:-.01em}
 .syn-s{font-size:13.5px;color:var(--ink-2);margin-top:7px;line-height:1.6}
@@ -520,42 +552,37 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- ═══ STATS ═══ -->
 <section class="view" id="v-bi">
   <div class="wrap stack">
-    <div class="card pad" id="synthese"></div>
+    <div class="card pad" id="biResume"></div>
 
-    <div class="kpis3" id="kpiLifts"></div>
-
-    <figure class="card pad">
-      <div class="label" style="margin-bottom:2px">Force estimée</div>
-      <div class="tiny muted">Meilleure série de l'exercice principal, estimation d'Epley</div>
-      <div class="chart-wrap" style="margin-top:10px"><div id="chartE1rm"></div></div>
-    </figure>
+    <div class="card pad">
+      <div class="label" style="margin-bottom:2px">Où vous en êtes</div>
+      <div class="tiny muted">Charge de départ, charge actuelle, et ce que dit votre ressenti</div>
+      <div id="liftRows" style="margin-top:12px"></div>
+    </div>
 
     <figure class="card pad">
-      <div class="label" style="margin-bottom:2px">Volume par semaine</div>
-      <div class="legend" id="legVol" style="margin:8px 0 4px"></div>
-      <div class="chart-wrap"><div id="chartVol"></div></div>
-    </figure>
-
-    <figure class="card pad">
-      <div class="label" style="margin-bottom:2px">Intensité et ressenti</div>
-      <div class="tiny muted">L'intensité monte pendant que le ressenti reste stable : la forme suit. L'inverse signale la fatigue.</div>
-      <div class="chart-wrap" style="margin-top:12px"><div id="chartInt"></div></div>
-      <div class="chart-wrap" style="margin-top:4px"><div id="chartRpe"></div></div>
+      <div class="label" style="margin-bottom:2px">Progression des charges</div>
+      <div class="tiny muted">Le poids le plus lourd soulevé sur l'exercice principal, semaine par semaine</div>
+      <div class="legend" id="legLoad" style="margin:10px 0 4px"></div>
+      <div class="chart-wrap"><div id="chartLoad"></div></div>
     </figure>
 
     <div class="card pad">
-      <div class="label">Équilibre des groupes</div>
-      <div id="balance"></div>
+      <div class="label" style="margin-bottom:2px">Ressenti</div>
+      <div class="tiny muted">Une pastille par séance, de la semaine 1 à la semaine 12</div>
+      <div style="margin-top:12px" id="ressenti"></div>
     </div>
 
     <div class="card pad">
-      <div class="label">Régularité</div>
-      <div id="regGrid"></div>
+      <div class="label" style="margin-bottom:2px">Régularité</div>
+      <div class="tiny muted">Une case par séance prévue au programme</div>
+      <div style="margin-top:12px" id="regGrid"></div>
     </div>
 
     <div class="card pad">
-      <div class="label">Records</div>
-      <div id="prList"></div>
+      <div class="label" style="margin-bottom:2px">Records</div>
+      <div class="tiny muted">Charge maximale sur l'exercice principal</div>
+      <div style="margin-top:6px" id="prList"></div>
     </div>
 
     <div class="card pad">
@@ -586,6 +613,10 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
         <div class="settings-item">
           <div><div class="si-t">Vibrations</div><div class="si-s">Retour haptique sur les actions</div></div>
           <div class="switch on" id="hapticSwitch"></div>
+        </div>
+        <div class="settings-item">
+          <div><div class="si-t">Raccourci iOS du minuteur</div><div class="si-s">Nom du raccourci lancé par le bouton iOS</div></div>
+          <input id="shortcutName" class="sel" style="width:110px;text-align:center" placeholder="Repos">
         </div>
       </div>
     </div>
@@ -645,6 +676,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div class="rt-bar"><i id="rtBar" style="width:100%"></i></div>
   </div>
   <div class="rt-btns">
+    <button class="rt-b" id="rtIos" title="Lancer le minuteur iOS">iOS</button>
     <button class="rt-b" id="rtPlus">+30s</button>
     <button class="rt-b" id="rtSkip">Passer</button>
   </div>
@@ -800,7 +832,7 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
   logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true}
+  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, shortcut:"Repos"}
 };
 let S = load();
 function load(){
@@ -1092,7 +1124,7 @@ function renderSession(){
       b.classList.add("done","pop"); row.classList.add("isdone");
       setTimeout(()=>b.classList.remove("pop"),330);
       vibrate(18);
-      checkPR(S.ui.lift, d);
+      checkPR(S.ui.lift, d, ei);
       updateSessProg();
       if(S.ui.rest) startRest(ei===0?S.ui.restMain:S.ui.restAcc);
     };
@@ -1116,14 +1148,16 @@ function updateSessProg(){
   $("#sessCount").textContent = done===total ? `Séance complète · ${total} séries sur ${total}`
     : `${done} série${done>1?"s":""} sur ${total}`;
 }
-function checkPR(lift,d){
-  if(d.weight==null||d.reps==null) return;
-  const est=e1rm(d.weight,d.reps);
-  const best=Math.max(S.rm[lift],...S.prs.filter(p=>p.lift===lift).map(p=>p.e));
-  if(est>best+0.01){
-    S.prs.push({lift, e:Math.round(est*10)/10, w:d.weight, r:d.reps, date:Date.now()});
+/* Un record ne concerne QUE l'exercice principal : un tirage horizontal
+   lourd n'est pas un record de traction lestée. */
+function checkPR(lift,d,ei){
+  if(ei!==0 || d.weight==null || d.reps==null) return;
+  const best=Math.max(0,...S.prs.filter(p=>p.lift===lift).map(p=>p.w||0));
+  if(d.weight>best){
+    S.prs.push({lift, w:d.weight, r:d.reps, date:Date.now()});
     save();
-    showPR(`${LIFTS[lift].name} : e1RM ${fmt(Math.round(est*10)/10)} kg`, `${d.reps} reps @ ${fmt(d.weight)} kg, ancien max ${fmt(Math.round(best*10)/10)} kg`);
+    showPR(`${LIFTS[lift].name} · ${fmt(d.weight)} kg`,
+      best ? `${d.reps} reps, ancien record ${fmt(best)} kg` : `${d.reps} reps, premier record enregistré`);
   }
 }
 $("#backProg").onclick=()=>switchView("v-home");
@@ -1240,37 +1274,61 @@ $("#planGo").onclick=()=>{
 };
 
 /* ═════ MINUTEUR ═════ */
-let rtInt=null, rtLeft=0, rtTotal=0;
+/* On mémorise l'heure de FIN, jamais un compteur qu'on décrémente :
+   iOS gèle les minuteurs quand le navigateur passe en arrière-plan, mais
+   l'horloge, elle, continue. Au retour, le temps restant est donc juste. */
+let rtInt=null, rtEnd=0, rtTotal=0, rtSonne=false;
+function restLeft(){ return Math.max(0, Math.round((rtEnd-Date.now())/1000)); }
 function startRest(sec){
-  stopRest();
-  rtLeft=sec; rtTotal=sec;
+  clearInterval(rtInt);
+  rtTotal=sec; rtEnd=Date.now()+sec*1000; rtSonne=false;
   $("#restTimer").classList.add("show");
   tickRest();
-  rtInt=setInterval(()=>{
-    rtLeft--;
-    if(rtLeft<=0){ stopRest(); beep(); vibrate([80,60,80]); toast("Repos terminé"); return; }
-    tickRest();
-  },1000);
+  rtInt=setInterval(tickRest,250);
 }
 function tickRest(){
-  $("#rtTime").textContent=fmtSec(rtLeft);
-  $("#rtBar").style.width=(rtLeft/rtTotal*100)+"%";
+  const left=restLeft();
+  $("#rtTime").textContent=fmtSec(left);
+  $("#rtBar").style.width=(rtTotal?left/rtTotal*100:0)+"%";
+  if(left<=0&&!rtSonne){
+    rtSonne=true;
+    beep(); vibrate([80,60,80]);
+    $("#rtTime").textContent="0:00";
+    $("#restTimer").classList.add("fini");
+    toast("Repos terminé");
+    setTimeout(stopRest,4000);
+  }
 }
-function stopRest(){ clearInterval(rtInt); rtInt=null; $("#restTimer").classList.remove("show"); }
+function stopRest(){
+  clearInterval(rtInt); rtInt=null; rtSonne=false;
+  $("#restTimer").classList.remove("show","fini");
+}
+/* Au retour au premier plan, on resynchronise immédiatement. */
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&rtInt) tickRest(); });
 $("#rtSkip").onclick=stopRest;
-$("#rtPlus").onclick=()=>{ rtLeft+=30; rtTotal=Math.max(rtTotal,rtLeft); tickRest(); };
+$("#rtPlus").onclick=()=>{ if(!rtInt) return; rtEnd+=30000; rtSonne=false;
+  $("#restTimer").classList.remove("fini"); rtTotal=Math.max(rtTotal,restLeft()); tickRest(); };
+/* Relais vers l'app Raccourcis d'iOS, seul moyen d'atteindre une vraie
+   alarme système depuis une page web. */
+$("#rtIos").onclick=()=>{
+  const nom=(S.ui.shortcut||"Repos").trim();
+  location.href=`shortcuts://run-shortcut?name=${encodeURIComponent(nom)}&input=text&text=${restLeft()||rtTotal}`;
+};
 
 /* ═════ STATS ═════ */
-/* ═════ MOTEUR DE STATISTIQUES ═════ */
-/* Une séance = 1 point. On agrège ensuite par semaine.
-   Tout ce qui suit ne parle que de ce qui a réellement été saisi. */
+/* ═════ STATISTIQUES ═════
+   Trois principes : parler en kilos et en séances (jamais en indices),
+   exploiter le ressenti saisi, et n'afficher que ce qui aide à décider. */
+
+/* Une ligne par séance. maxW = la charge la plus lourde réellement
+   soulevée sur l'exercice principal, c'est le seul chiffre qui compte. */
 function statsPerLift(){
   const out={};
   LIFT_IDS.forEach(l=>{
     const pts=[];
     for(let w=1;w<=12;w++) for(const se of [1,2]){
       const exs=sessionExercises(l,w,se);
-      let maxE=0,maxW=0,vol=0,rpeS=0,rpeN=0,sets=0,any=false;
+      let maxW=0,vol=0,sets=0,any=false,rMain=[],rAll=[];
       exs.forEach((e,ei)=>{
         for(let st=0;st<e.sets;st++){
           const d=S.logs[lk(l,w,se,ei,st)];
@@ -1279,127 +1337,80 @@ function statsPerLift(){
           if(d.ok) sets++;
           if(d.weight!=null&&d.reps!=null){
             vol+=d.weight*d.reps;
-            if(ei===0){ maxE=Math.max(maxE,e1rm(d.weight,d.reps)); maxW=Math.max(maxW,d.weight); }
+            if(ei===0&&d.weight>maxW) maxW=d.weight;
           }
-          if(d.rpe&&ei===0){ rpeS+=d.rpe; rpeN++; }
+          if(d.rpe){ rAll.push(d.rpe); if(ei===0) rMain.push(d.rpe); }
         }
       });
-      pts.push({w,se,maxE,maxW,vol,sets,any,
-        rpe:rpeN?rpeS/rpeN:null,
-        target:chargeFor(l,w,se),
-        done:!!S.sessDone[sk(l,w,se)],
+      const moy=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+      pts.push({w,se,maxW,vol,sets,any,rpeMain:moy(rMain),rpeAll:moy(rAll),
+        target:chargeFor(l,w,se), done:!!S.sessDone[sk(l,w,se)],
         planned:exs.reduce((n,e)=>n+e.sets,0)});
     }
     out[l]=pts;
   });
   return out;
 }
-function statsByWeek(per){
-  const out=[];
-  for(let w=1;w<=12;w++){
-    const r={w,byLift:{},vol:0,done:0,planned:LIFT_IDS.length*2,rpeS:0,rpeN:0,intS:0,intN:0};
-    LIFT_IDS.forEach(l=>{
-      const ps=per[l].filter(p=>p.w===w);
-      const v=ps.reduce((a,p)=>a+p.vol,0);
-      r.byLift[l]=v; r.vol+=v;
-      ps.forEach(p=>{
-        if(p.rpe!=null){ r.rpeS+=p.rpe; r.rpeN++; }
-        if(p.maxW>0&&S.rm[l]>0){ r.intS+=p.maxW/S.rm[l]; r.intN++; }
-        if(p.done) r.done++;
-      });
-    });
-    r.rpe=r.rpeN?r.rpeS/r.rpeN:null;
-    r.intensity=r.intN?r.intS/r.intN:null;
-    out.push(r);
-  }
-  return out;
-}
-const liftColor = l => getComputedStyle(document.documentElement).getPropertyValue(LIFTS[l].color.slice(4,-1)).trim() || "#888";
-
-/* ═════ SYNTHÈSE EN CLAIR ═════ */
-function buildSynthese(per,wk){
-  const faites=Object.keys(S.sessDone).length;
-  if(!faites) return {t:"Aucune séance enregistrée",
-    s:"Validez vos premières séries : la lecture de votre forme apparaîtra ici dès la deuxième semaine."};
-
-  const phrases=[];
-  // 1. progression de force par mouvement
-  const gains=LIFT_IDS.map(l=>{
-    const v=per[l].filter(p=>p.maxE>0);
-    if(v.length<2) return null;
-    return {l, d:v[v.length-1].maxE - v[0].maxE};
-  }).filter(Boolean);
-  if(gains.length){
-    const best=gains.reduce((a,b)=>b.d>a.d?b:a);
-    if(best.d>=1) phrases.push(`${LIFTS[best.l].name} progresse le plus fort, <b>+${fmt(Math.round(best.d*10)/10)} kg</b> de force estimée.`);
-    const perte=gains.filter(g=>g.d<-1);
-    if(perte.length) phrases.push(`${perte.map(g=>LIFTS[g.l].name).join(" et ")} recule${perte.length>1?"nt":""} : à surveiller.`);
-  }
-
-  // 2. intensité contre ressenti sur les semaines réellement travaillées
-  const act=wk.filter(r=>r.intensity!=null&&r.rpe!=null);
-  if(act.length>=4){
-    const n=Math.min(3,Math.floor(act.length/2));
-    const rec=act.slice(-n), old=act.slice(-2*n,-n);
-    const moy=(a,k)=>a.reduce((s,r)=>s+r[k],0)/a.length;
-    const dInt=(moy(rec,"intensity")-moy(old,"intensity"))*100;
-    const dRpe=moy(rec,"rpe")-moy(old,"rpe");
-    if(dInt>=2&&dRpe<=.15) phrases.push(`Intensité <b>+${Math.round(dInt)} points</b> avec un ressenti stable : la forme suit la charge.`);
-    else if(dInt>=2&&dRpe>.4) phrases.push(`Intensité <b>+${Math.round(dInt)} points</b> mais le ressenti se durcit : surveillez la récupération.`);
-    else if(Math.abs(dInt)<2&&dRpe>.4) phrases.push(`À charge comparable, les séances sont ressenties plus dures : signe de fatigue.`);
-    else if(dInt<=-2) phrases.push(`L'intensité a baissé de <b>${Math.round(-dInt)} points</b> sur la période récente.`);
-  }
-
-  // 3. équilibre entre les groupes
-  const tot=LIFT_IDS.reduce((a,l)=>a+per[l].reduce((s,p)=>s+p.vol,0),0);
-  if(tot>0){
-    const parts=LIFT_IDS.map(l=>({l,p:per[l].reduce((s,p)=>s+p.vol,0)/tot}));
-    const faible=parts.reduce((a,b)=>b.p<a.p?b:a);
-    if(faible.p<0.22) phrases.push(`${LIFTS[faible.l].name} ne représente que <b>${Math.round(faible.p*100)} %</b> du volume : groupe en retrait.`);
-  }
-
-  // 4. régularité
-  const semActives=wk.filter(r=>r.done>0).length;
-  const tauxSets=(()=>{ let d=0,p=0;
-    LIFT_IDS.forEach(l=>per[l].forEach(x=>{ if(x.any){ d+=x.sets; p+=x.planned; } }));
-    return p?d/p:0; })();
-  if(tauxSets>0&&tauxSets<.85) phrases.push(`<b>${Math.round(tauxSets*100)} %</b> des séries prévues sont validées dans les séances entamées.`);
-
-  return {t:`${faites} séance${faites>1?"s":""} sur ${TOTAL_SESSIONS} · ${semActives} semaine${semActives>1?"s":""} active${semActives>1?"s":""}`,
-    s:phrases.length?phrases.slice(0,3).join(" "):"Continuez à saisir : les tendances se dessinent à partir de quatre semaines."};
+const liftColor = l => getComputedStyle(document.documentElement)
+  .getPropertyValue(LIFTS[l].color.slice(4,-1)).trim() || "#888";
+const RPE_TXT=["","Facile","Moyen","Dur"];
+function rpeColor(v){
+  if(v==null) return "var(--panel-3)";
+  return v<=1.5 ? "var(--good)" : v<=2.4 ? "var(--warn)" : "var(--crit)";
 }
 
-/* ═════ RENDU ═════ */
-const svgOpen=(w,h)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block" font-family="inherit">`;
-function emptyState(m){ return `<div class="emptybox"><div class="big">Pas encore de données</div><div class="tiny">${m}</div></div>`; }
+/* Conseil de palier déduit du ressenti des dernières séances faites. */
+function conseil(pts){
+  const faites=pts.filter(p=>p.done&&p.rpeMain!=null).slice(-2);
+  if(!faites.length) return {txt:"Pas encore de ressenti saisi", cls:""};
+  const m=faites.reduce((a,p)=>a+p.rpeMain,0)/faites.length;
+  if(m>=2.5) return {txt:"Séances dures : pensez à stagner", cls:"hard"};
+  if(m<=1.4) return {txt:"Ça passe bien : vous pouvez rattraper", cls:"easy"};
+  return {txt:"Rythme correct : continuez", cls:"ok"};
+}
 
 function renderBI(){
-  const per=statsPerLift(), wk=statsByWeek(per), g=globalStats();
+  const per=statsPerLift(), g=globalStats();
+  const faites=Object.keys(S.sessDone).length;
+  const kilos=LIFT_IDS.reduce((a,l)=>a+per[l].reduce((s,p)=>s+p.vol,0),0);
 
-  const syn=buildSynthese(per,wk);
-  $("#synthese").innerHTML=`<div class="syn-t">${syn.t}</div><div class="syn-s">${syn.s}</div>`;
+  /* 1. Résumé */
+  $("#biResume").innerHTML=`
+    <div class="res3">
+      <div><div class="res-v mono">${faites}</div><div class="res-l">séances faites</div></div>
+      <div><div class="res-v mono">${kilos>=1000?fmt(Math.round(kilos/100)/10)+" t":Math.round(kilos)+" kg"}</div><div class="res-l">soulevés au total</div></div>
+      <div><div class="res-v mono">${S.prs.length}</div><div class="res-l">records</div></div>
+    </div>`;
 
-  // tuiles par mouvement : e1RM courant, écart, mini-courbe
-  const kl=$("#kpiLifts"); kl.innerHTML="";
+  /* 2. Par mouvement : départ, actuel, écart, ressenti, conseil */
+  const lr=$("#liftRows"); lr.innerHTML="";
   LIFT_IDS.forEach(l=>{
-    const v=per[l].filter(p=>p.maxE>0);
-    const cur=v.length?v[v.length-1].maxE:0;
-    const d=v.length>1?cur-v[0].maxE:0;
-    const col=liftColor(l);
-    const card=document.createElement("div");
-    card.className="card liftcard";
-    card.innerHTML=`<div class="lc-top"><span class="dot2" style="background:${col}"></span><span class="lc-name">${LIFTS[l].name}</span>
-        <span class="lc-1rm mono">1RM ${fmt(S.rm[l])}</span></div>
-      <div class="lc-val mono">${cur?fmt(Math.round(cur*10)/10):"·"}<small>${cur?" kg":""}</small></div>
-      <div class="lc-sub">${v.length>1?`<span class="${d>=0?"up":"down"}">${d>=0?"▲":"▼"} ${fmt(Math.abs(Math.round(d*10)/10))} kg</span> depuis le début`:"e1RM estimé"}</div>
-      <div class="lc-spark">${spark(v.map(p=>p.maxE),col)}</div>`;
-    kl.appendChild(card);
+    const pts=per[l], av=pts.filter(p=>p.maxW>0);
+    const dep=av.length?av[0].maxW:0, act=av.length?av[av.length-1].maxW:0;
+    const d=act-dep;
+    const c=conseil(pts);
+    const der=pts.filter(p=>p.done&&p.rpeMain!=null).slice(-1)[0];
+    lr.insertAdjacentHTML("beforeend",`
+      <div class="liftrow">
+        <div class="lr-head">
+          <span class="dot2" style="background:${liftColor(l)}"></span>
+          <span class="lr-name">${LIFTS[l].name}</span>
+          ${der?`<span class="rpe-tag" style="color:${rpeColor(der.rpeMain)};border-color:${rpeColor(der.rpeMain)}">${RPE_TXT[Math.round(der.rpeMain)]}</span>`:""}
+        </div>
+        <div class="lr-nums">
+          ${av.length
+            ? `<span class="lr-from mono">${fmt(dep)} kg</span>
+               <span class="lr-arrow">→</span>
+               <span class="lr-to mono">${fmt(act)} kg</span>
+               ${d!==0?`<span class="lr-delta ${d>0?"up":"down"}">${d>0?"+":"−"}${fmt(Math.abs(d))} kg</span>`:""}`
+            : `<span class="lr-none">aucune charge saisie</span>`}
+        </div>
+        <div class="lr-tip ${c.cls}">${c.txt}</div>
+      </div>`);
   });
 
-  drawE1rm(per);
-  drawVolStack(wk);
-  drawIntRpe(wk);
-  drawBalance(per);
+  drawLoad(per);
+  drawRessenti(per);
   drawRegular(per);
   drawRecords();
 
@@ -1408,128 +1419,84 @@ function renderBI(){
     `<div class="troph-row ${b.test(g)?"won":""}"><span class="t-dot"></span><span class="t-lab">${b.lab}</span></div>`));
 }
 
-function spark(vals,col){
-  if(vals.length<2) return "";
-  const W=120,H=26,mn=Math.min(...vals),mx=Math.max(...vals),sp=mx-mn||1;
-  const pts=vals.map((v,i)=>`${(i/(vals.length-1))*W},${H-2-((v-mn)/sp)*(H-4)}`).join(" ");
-  const last=pts.split(" ").pop().split(",");
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;height:26px">
-    <polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>
-    <circle cx="${last[0]}" cy="${last[1]}" r="2.6" fill="${col}"/></svg>`;
-}
+const svgOpen=(w,h)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block" font-family="inherit">`;
+function emptyState(m){ return `<div class="emptybox"><div class="big">Rien à afficher</div><div class="tiny">${m}</div></div>`; }
 
-/* e1RM des trois mouvements, étiquettes directes en bout de courbe */
-function drawE1rm(per){
-  const any=LIFT_IDS.some(l=>per[l].some(p=>p.maxE>0));
-  if(!any){ $("#chartE1rm").innerHTML=emptyState("Validez des séries avec reps et charge pour voir votre courbe de force."); return; }
-  const W=640,H=250,pL=34,pR=64,pT=14,pB=30,n=24;
-  const xs=i=>pL+(W-pL-pR)*(i/(n-1));
-  let mx=0; LIFT_IDS.forEach(l=>per[l].forEach(p=>{ if(p.maxE>mx) mx=p.maxE; }));
-  mx*=1.12;
+/* Charge de l'exercice principal, une valeur par semaine, en kilos. */
+function drawLoad(per){
+  const parSem={};
+  LIFT_IDS.forEach(l=>{
+    parSem[l]=[];
+    for(let w=1;w<=12;w++){
+      const v=per[l].filter(p=>p.w===w&&p.maxW>0).map(p=>p.maxW);
+      parSem[l].push(v.length?Math.max(...v):null);
+    }
+  });
+  if(LIFT_IDS.every(l=>parSem[l].every(v=>v==null))){
+    $("#chartLoad").innerHTML=emptyState("Saisissez la charge de vos séries pour voir vos courbes.");
+    $("#legLoad").innerHTML=""; return;
+  }
+  const W=640,H=230,pL=38,pR=58,pT=14,pB=28;
+  const xs=i=>pL+(W-pL-pR)*(i/11);
+  let mx=0; LIFT_IDS.forEach(l=>parSem[l].forEach(v=>{ if(v>mx) mx=v; }));
+  mx=Math.ceil(mx*1.15/5)*5||10;
   const ys=v=>H-pB-(H-pT-pB)*(v/mx);
   let g="";
   for(let i=0;i<=4;i++){ const v=mx*i/4,y=ys(v);
-    g+=`<line class="grid" x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" opacity="${i===0?.9:.35}"/>`+
+    g+=`<line class="grid" x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" opacity="${i===0?.9:.32}"/>`+
        `<text class="axtx" x="${pL-6}" y="${y+3}" text-anchor="end">${Math.round(v)}</text>`; }
-  [[0,7,"Volume"],[8,15,"Puissance"],[16,23,"Force max"]].forEach(([a,b,lab])=>{
-    g+=`<line class="grid" x1="${xs(a)-6}" y1="${pT}" x2="${xs(a)-6}" y2="${H-pB}" opacity=".3"/>`;
-    g+=`<text class="axtx" x="${(xs(a)+xs(b))/2}" y="${H-9}" text-anchor="middle">${lab}</text>`; });
+  for(let i=0;i<12;i++) if(i%2===0)
+    g+=`<text class="axtx" x="${xs(i)}" y="${H-8}" text-anchor="middle">S${i+1}</text>`;
   LIFT_IDS.forEach(l=>{
     const col=liftColor(l);
-    const on=per[l].map((p,i)=>({x:xs(i),y:p.maxE>0?ys(p.maxE):null}));
+    const on=parSem[l].map((v,i)=>({x:xs(i),y:v==null?null:ys(v)}));
     let seg=[],segs=[];
     on.forEach(o=>{ if(o.y!=null) seg.push(o); else { if(seg.length)segs.push(seg); seg=[]; } });
     if(seg.length)segs.push(seg);
     segs.forEach(s=>{ if(s.length>1)
       g+=`<polyline points="${s.map(o=>o.x+","+o.y).join(" ")}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`; });
+    on.forEach(o=>{ if(o.y!=null) g+=`<circle cx="${o.x}" cy="${o.y}" r="3.4" fill="${col}" stroke="var(--panel)" stroke-width="1.4"/>`; });
     const pts=on.filter(o=>o.y!=null);
-    if(pts.length){
-      const e=pts[pts.length-1];
-      g+=`<circle cx="${e.x}" cy="${e.y}" r="4" fill="${col}" stroke="var(--panel)" stroke-width="1.6"/>`;
-      g+=`<text x="${e.x+9}" y="${e.y+4}" font-size="11" font-weight="600" fill="${col}">${LIFTS[l].name}</text>`;
+    if(pts.length){ const e=pts[pts.length-1];
+      g+=`<text x="${e.x+9}" y="${e.y+4}" font-size="11" font-weight="600" fill="${col}">${LIFTS[l].name}</text>`; }
+  });
+  $("#chartLoad").innerHTML=svgOpen(W,H)+g+"</svg>";
+  $("#legLoad").innerHTML=LIFT_IDS.map(l=>
+    `<div class="l"><span class="sw" style="background:${liftColor(l)}"></span>${LIFTS[l].name}</div>`).join("");
+}
+
+/* Ressenti : une pastille par séance, lue de gauche à droite. */
+function drawRessenti(per){
+  const tout=[]; LIFT_IDS.forEach(l=>per[l].forEach(p=>{ if(p.rpeAll!=null) tout.push(p.rpeAll); }));
+  if(!tout.length){ $("#ressenti").innerHTML=emptyState("Touchez le bouton RPE pendant vos séries pour suivre votre ressenti."); return; }
+  let h=`<div class="rs">`;
+  LIFT_IDS.forEach(l=>{
+    h+=`<div class="rs-row"><span class="rs-lab">${LIFTS[l].name}</span><div class="rs-cells">`;
+    for(let w=1;w<=12;w++) for(const se of [1,2]){
+      const p=per[l].find(x=>x.w===w&&x.se===se);
+      const v=p.rpeAll;
+      h+=`<i style="background:${rpeColor(v)}" title="Semaine ${w} séance ${se}${v!=null?" · "+RPE_TXT[Math.round(v)]:""}"></i>`;
     }
+    h+=`</div></div>`;
   });
-  $("#chartE1rm").innerHTML=svgOpen(W,H)+g+"</svg>";
+  h+=`</div>`;
+  const n=tout.length, f=tout.filter(v=>v<=1.5).length, m=tout.filter(v=>v>1.5&&v<=2.4).length, d=n-f-m;
+  h+=`<div class="rs-key">
+    <span><i style="background:var(--good)"></i>Facile ${Math.round(f/n*100)} %</span>
+    <span><i style="background:var(--warn)"></i>Moyen ${Math.round(m/n*100)} %</span>
+    <span><i style="background:var(--crit)"></i>Dur ${Math.round(d/n*100)} %</span>
+    <span><i style="background:var(--panel-3)"></i>non saisi</span></div>`;
+  $("#ressenti").innerHTML=h;
 }
 
-/* volume hebdomadaire empilé, 2 px de respiration entre segments */
-function drawVolStack(wk){
-  if(wk.every(r=>!r.vol)){ $("#chartVol").innerHTML=emptyState("Le volume se calcule à partir des reps et des charges saisies."); $("#legVol").innerHTML=""; return; }
-  const W=640,H=200,pL=42,pR=10,pT=12,pB=26;
-  const mx=Math.max(...wk.map(r=>r.vol))*1.12;
-  const bw=(W-pL-pR)/12, ys=v=>H-pB-(H-pT-pB)*(v/mx);
-  let g="";
-  for(let i=0;i<=3;i++){ const v=mx*i/3,y=ys(v);
-    g+=`<line class="grid" x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" opacity="${i===0?.9:.35}"/>`+
-       `<text class="axtx" x="${pL-6}" y="${y+3}" text-anchor="end">${Math.round(v/1000*10)/10}t</text>`; }
-  wk.forEach((r,i)=>{
-    const x=pL+i*bw+bw*.2, w=bw*.6;
-    let base=H-pB;
-    LIFT_IDS.forEach(l=>{
-      const v=r.byLift[l]; if(!v) return;
-      const h=(H-pT-pB)*(v/mx);
-      const top=base-h;
-      g+=`<rect x="${x}" y="${top}" width="${w}" height="${Math.max(1,h-2)}" rx="3" fill="${liftColor(l)}"/>`;
-      base=top;
-    });
-    g+=`<text class="axtx" x="${x+w/2}" y="${H-8}" text-anchor="middle">${r.w}</text>`;
-  });
-  $("#chartVol").innerHTML=svgOpen(W,H)+g+"</svg>";
-  $("#legVol").innerHTML=LIFT_IDS.map(l=>`<div class="l"><span class="sw" style="background:${liftColor(l)}"></span>${LIFTS[l].name}</div>`).join("");
-}
-
-/* intensité et ressenti : deux échelles distinctes, jamais superposées */
-function drawIntRpe(wk){
-  const act=wk.filter(r=>r.intensity!=null);
-  if(!act.length){ $("#chartInt").innerHTML=emptyState("Saisissez les charges pour suivre l'intensité."); $("#chartRpe").innerHTML=""; return; }
-  const mini=(id,vals,fmtY,col,dom)=>{
-    const W=640,H=124,pL=42,pR=10,pT=12,pB=24,n=12;
-    const xs=i=>pL+(W-pL-pR)*(i/(n-1));
-    const [lo,hi]=dom, ys=v=>H-pB-(H-pT-pB)*((v-lo)/(hi-lo));
-    let g="";
-    [lo,(lo+hi)/2,hi].forEach(v=>{ const y=ys(v);
-      g+=`<line class="grid" x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" opacity=".35"/>`+
-         `<text class="axtx" x="${pL-6}" y="${y+3}" text-anchor="end">${fmtY(v)}</text>`; });
-    const on=vals.map((v,i)=>({x:xs(i),y:v==null?null:ys(v),v}));
-    let seg=[],segs=[];
-    on.forEach(o=>{ if(o.y!=null) seg.push(o); else { if(seg.length)segs.push(seg); seg=[]; } });
-    if(seg.length)segs.push(seg);
-    segs.forEach(s=>{ if(s.length>1)
-      g+=`<polyline points="${s.map(o=>o.x+","+o.y).join(" ")}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`; });
-    on.forEach((o,i)=>{ if(o.y!=null) g+=`<circle cx="${o.x}" cy="${o.y}" r="3.4" fill="${col}" stroke="var(--panel)" stroke-width="1.4"/>`;
-      if(i%2===0) g+=`<text class="axtx" x="${xs(i)}" y="${H-7}" text-anchor="middle">${i+1}</text>`; });
-    $(id).innerHTML=svgOpen(W,H)+g+"</svg>";
-  };
-  const gold=getComputedStyle(document.documentElement).getPropertyValue("--gold").trim();
-  const ink3=getComputedStyle(document.documentElement).getPropertyValue("--ink-2").trim();
-  mini("#chartInt", wk.map(r=>r.intensity==null?null:r.intensity*100), v=>Math.round(v)+"%", gold, [0,100]);
-  mini("#chartRpe", wk.map(r=>r.rpe), v=>["","Facile","Moyen","Dur"][Math.round(v)]||"", ink3, [1,3]);
-}
-
-/* part de chaque groupe dans le volume total */
-function drawBalance(per){
-  const tot=LIFT_IDS.map(l=>per[l].reduce((s,p)=>s+p.vol,0));
-  const sum=tot.reduce((a,b)=>a+b,0);
-  if(!sum){ $("#balance").innerHTML=emptyState("L'équilibre s'affiche dès que du volume est enregistré."); return; }
-  let bar=`<div class="balbar">`;
-  LIFT_IDS.forEach((l,i)=>{ const p=tot[i]/sum*100; if(p>0)
-    bar+=`<span style="width:${p}%;background:${liftColor(l)}" title="${LIFTS[l].name}"></span>`; });
-  bar+=`</div><div class="ballegend">`;
-  LIFT_IDS.forEach((l,i)=>{ bar+=`<div class="bl"><span class="sw" style="background:${liftColor(l)}"></span>
-    <b>${Math.round(tot[i]/sum*100)} %</b> ${LIFTS[l].name}</div>`; });
-  bar+=`</div>`;
-  $("#balance").innerHTML=bar;
-}
-
-/* régularité : une case par séance, 12 semaines */
+/* Régularité : une case par séance prévue. */
 function drawRegular(per){
   let h=`<div class="reg">`;
   LIFT_IDS.forEach(l=>{
     h+=`<div class="reg-row"><span class="reg-lab">${LIFTS[l].name}</span><div class="reg-cells">`;
     for(let w=1;w<=12;w++) for(const se of [1,2]){
       const p=per[l].find(x=>x.w===w&&x.se===se);
-      const cls = p.done ? "full" : p.any ? "part" : "";
-      h+=`<i class="${cls}" title="Semaine ${w} séance ${se}"></i>`;
+      h+=`<i class="${p.done?"full":p.any?"part":""}" title="Semaine ${w} séance ${se}"></i>`;
     }
     h+=`</div></div>`;
   });
@@ -1537,15 +1504,16 @@ function drawRegular(per){
   $("#regGrid").innerHTML=h;
 }
 
+/* Records : charge maximale sur l'exercice principal, accessoires exclus. */
 function drawRecords(){
-  const list=[...S.prs].sort((a,b)=>b.date-a.date).slice(0,8);
-  if(!list.length){ $("#prList").innerHTML=emptyState("Un record est enregistré dès que votre e1RM dépasse le précédent."); return; }
+  const list=[...S.prs].filter(p=>p.w!=null).sort((a,b)=>b.date-a.date).slice(0,8);
+  if(!list.length){ $("#prList").innerHTML=emptyState("Un record est enregistré quand vous dépassez votre charge maximale sur l'exercice principal."); return; }
   $("#prList").innerHTML=list.map(p=>{
     const d=new Date(p.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
     return `<div class="pr-row"><span class="dot2" style="background:${liftColor(p.lift)}"></span>
       <span class="pr-lift">${LIFTS[p.lift].name}</span>
-      <span class="pr-det">${p.r} reps @ ${fmt(p.w)} kg</span>
-      <span class="pr-e mono">${fmt(p.e)} kg</span>
+      <span class="pr-det">${p.r} reps</span>
+      <span class="pr-e mono">${fmt(p.w)} kg</span>
       <span class="pr-d">${d}</span></div>`;
   }).join("");
 }
@@ -1600,6 +1568,7 @@ function renderSettings(){
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
   $("#restMainVal").textContent=fmtSec(S.ui.restMain);
   $("#restAccVal").textContent=fmtSec(S.ui.restAcc);
+  $("#shortcutName").value=S.ui.shortcut||"Repos";
   const rs=$("#rmSettings"); rs.innerHTML="";
   LIFT_IDS.forEach(id=>{
     const L=LIFTS[id], row=document.createElement("div");
@@ -1613,6 +1582,7 @@ function renderSettings(){
 $("#themeSwitch").onclick=()=>{ S.ui.theme=curTheme()==="dark"?"light":"dark"; save(); applyTheme(); renderSettings(); };
 $("#restSwitch").onclick=()=>{ S.ui.rest=!S.ui.rest; save(); renderSettings(); if(!S.ui.rest) stopRest(); };
 $("#hapticSwitch").onclick=()=>{ S.ui.haptic=!S.ui.haptic; save(); renderSettings(); };
+$("#shortcutName").oninput=e=>{ S.ui.shortcut=e.target.value; save(); };
 $$(".mini-step button").forEach(b=>{
   b.onclick=()=>{
     const t=b.dataset.t, d=+b.dataset.d;
