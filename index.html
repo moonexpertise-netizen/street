@@ -1,4 +1,4 @@
-<title>MoonSport · Tractions & Dips</title>
+<title>MoonSport · Pull / Push / Legs</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -22,7 +22,7 @@
   --ink:#01071b; --ink-2:#5a6072; --ink-3:#696f81;
   --line:#e8e8e3; --line-2:#dadad4;
   --gold:#a88962; --gold-ink:#8a6d47;
-  --lift-1:#2563eb; --lift-2:#b0701c;
+  --lift-1:#2563eb; --lift-2:#b0701c; --lift-3:#a83279;
   --good:#1f7a45; --warn:#a8701a; --crit:#c0392b;
   --btn-fg:#ffffff;
   --shadow:0 1px 2px rgba(1,7,27,.04);
@@ -39,7 +39,7 @@
     --ink:#ececeb; --ink-2:#99a0b4; --ink-3:#767d92;
     --line:#1a2038; --line-2:#262d47;
     --gold:#d3b88a; --gold-ink:#e6cda0;
-    --lift-1:#4f93e8; --lift-2:#c6821f;
+    --lift-1:#4f93e8; --lift-2:#c6821f; --lift-3:#cf6b9e;
     --good:#2f9e6f; --warn:#d3a04a; --crit:#d68a8a;
     --btn-fg:#01071b;
     --shadow:0 1px 2px rgba(0,0,0,.35);
@@ -52,7 +52,7 @@
   --ink:#ececeb; --ink-2:#99a0b4; --ink-3:#767d92;
   --line:#1a2038; --line-2:#262d47;
   --gold:#d3b88a; --gold-ink:#e6cda0;
-  --lift-1:#4f93e8; --lift-2:#c6821f;
+  --lift-1:#4f93e8; --lift-2:#c6821f; --lift-3:#cf6b9e;
   --good:#2f9e6f; --warn:#d3a04a; --crit:#d68a8a;
   --btn-fg:#01071b;
   --shadow:0 1px 2px rgba(0,0,0,.35);
@@ -64,7 +64,7 @@
   --ink:#01071b; --ink-2:#5a6072; --ink-3:#696f81;
   --line:#e8e8e3; --line-2:#dadad4;
   --gold:#a88962; --gold-ink:#8a6d47;
-  --lift-1:#2563eb; --lift-2:#b0701c;
+  --lift-1:#2563eb; --lift-2:#b0701c; --lift-3:#a83279;
   --good:#1f7a45; --warn:#a8701a; --crit:#c0392b;
   --btn-fg:#ffffff;
   --shadow:0 1px 2px rgba(1,7,27,.04);
@@ -361,7 +361,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
     <div id="authLogin" style="display:none">
       <h1 class="lock-h">MoonSport</h1>
-      <div class="lock-sub">Suivi des tractions et dips lestés.<br>Accès réservé aux comptes MOON Expertise.</div>
+      <div class="lock-sub">Suivi de vos séances Pull, Push et Legs.<br>Accès réservé aux comptes MOON Expertise.</div>
       <button class="ms-btn" id="msBtn">
         <svg viewBox="0 0 21 21" aria-hidden="true">
           <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
@@ -488,7 +488,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
           <div class="switch on" id="restSwitch"></div>
         </div>
         <div class="settings-item">
-          <div><div class="si-t">Repos · exercice principal</div><div class="si-s">Tractions et dips lestés</div></div>
+          <div><div class="si-t">Repos · exercice principal</div><div class="si-s">Tractions, dips et squats lestés</div></div>
           <div class="mini-step"><button data-t="restMain" data-d="-15">−</button><span class="mono" id="restMainVal">1:30</span><button data-t="restMain" data-d="15">+</button></div>
         </div>
         <div class="settings-item">
@@ -505,14 +505,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div>
       <div class="label">Programme</div>
       <div class="card">
-        <div class="settings-item">
-          <div><div class="si-t">1RM Tractions</div><div class="si-s">Base de calcul des charges</div></div>
-          <button class="btn ghost sm mono" id="setRmT">50 kg</button>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">1RM Dips</div><div class="si-s">Base de calcul des charges</div></div>
-          <button class="btn ghost sm mono" id="setRmD">70 kg</button>
-        </div>
+        <div id="rmSettings"></div>
         <div class="settings-item">
           <div><div class="si-t">Pourcentages du 1RM</div><div class="si-s">24 valeurs, semaine par semaine</div></div>
           <button class="btn ghost sm" id="progEditBtn">Modifier</button>
@@ -656,12 +649,33 @@ const CYCLES = [
   {name:"Puissance", range:"S5 à S8",  desc:"Devenir explosif : charge lourde, 4 séries de 4 à 6 reps."},
   {name:"Force max",  range:"S9 à S12", desc:"Repousser le max : charge quasi maximale, 4 séries de 1 à 3 reps."},
 ];
+/* Les identifiants internes (tractions, dips, legs) ne changent jamais :
+   ils servent de clé aux saisies déjà enregistrées. Seul le nom affiché varie. */
 const LIFTS = {
-  tractions:{ name:"Tractions", color:"var(--lift-1)", defaultRM:50,
-    main:"Tractions lestées", acc:[{name:"Tirage horizontal"},{name:"Curl biceps"}] },
-  dips:{ name:"Dips", color:"var(--lift-2)", defaultRM:70,
-    main:"Dips lestés", acc:[{name:"Développé militaire"},{name:"Corde triceps"}] },
+  tractions:{ name:"Pull", color:"var(--lift-1)", defaultRM:50, main:"Tractions lestées",
+    acc:[{name:"Tirage horizontal", sets:3, rmin:10, rmax:12},
+         {name:"Curl biceps",       sets:3, rmin:10, rmax:12}] },
+  dips:{ name:"Push", color:"var(--lift-2)", defaultRM:70, main:"Dips lestés",
+    acc:[{name:"Développé militaire", sets:3, rmin:10, rmax:12},
+         {name:"Corde triceps",       sets:3, rmin:10, rmax:12}] },
+  legs:{ name:"Legs", color:"var(--lift-3)", defaultRM:80, main:"Squat lesté",
+    acc:[{name:"Fentes alternées",     sets:3, rmin:12, rmax:12},
+         {name:"Soulevé de terre KB",  sets:3, rmin:12, rmax:12}] },
 };
+const LIFT_IDS = Object.keys(LIFTS);
+const SESSIONS_PER_LIFT = 24;                       // 12 semaines × 2 séances
+const TOTAL_SESSIONS = LIFT_IDS.length * SESSIONS_PER_LIFT;
+
+/* Composition d'une séance : exercice principal piloté par le %, puis accessoires. */
+function sessionExercises(lift,w,se){
+  const L=LIFTS[lift], wk=weeks()[w-1];
+  return [
+    {name:L.main, sets:4, rmin:wk.rep[0], rmax:wk.rep[1], tW:chargeFor(lift,w,se), main:true},
+    ...L.acc.map(a=>({name:a.name, sets:a.sets, rmin:a.rmin, rmax:a.rmax, tW:null, main:false})),
+  ];
+}
+const schemeText = e => e.rmin===e.rmax ? `${e.sets} × ${e.rmin}` : `${e.sets} × ${e.rmin} à ${e.rmax}`;
+const setsPerSession = lift => sessionExercises(lift,1,1).reduce((n,e)=>n+e.sets,0);
 const BADGES = [
   {id:"first",  lab:"Première séance",  test:s=>s.done>=1},
   {id:"five",   lab:"5 séances",        test:s=>s.done>=5},
@@ -674,7 +688,7 @@ const BADGES = [
   {id:"cyc1",   lab:"Cycle volume",     test:s=>s.cycleDone[0]},
   {id:"cyc2",   lab:"Cycle puissance",  test:s=>s.cycleDone[1]},
   {id:"cyc3",   lab:"Cycle force max",  test:s=>s.cycleDone[2]},
-  {id:"full",   lab:"12 semaines",      test:s=>s.done>=48},
+  {id:"full",   lab:"Programme bouclé",  test:s=>s.done>=TOTAL_SESSIONS},
 ];
 const RPE_LABELS=["","Facile","Moyen","Dur"];
 const round125 = v => Math.round(v/1.25)*1.25;
@@ -684,7 +698,7 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 
 /* ═════ ÉTAT ═════ */
 const DEF = {
-  rm:{tractions:50, dips:70},
+  rm:{tractions:50, dips:70, legs:80},
   logs:{}, sessDone:{}, prs:[], prog:null,
   ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true}
 };
@@ -721,16 +735,16 @@ function globalStats(){
   for(const k in S.logs){ const d=S.logs[k]; if(d.weight!=null&&d.reps!=null) vol+=d.weight*d.reps; }
   const cycleDone=[0,1,2].map(c=>{
     const ws=DEF_WEEKS.filter(w=>w.cycle===c).map(w=>w.w);
-    return ws.every(w=>["tractions","dips"].every(l=>[1,2].every(se=>S.sessDone[sk(l,w,se)])));
+    return ws.every(w=>LIFT_IDS.every(l=>[1,2].every(se=>S.sessDone[sk(l,w,se)])));
   });
   let streak=0;
   for(let w=1;w<=12;w++){
-    if(["tractions","dips"].some(l=>[1,2].some(se=>S.sessDone[sk(l,w,se)]))) streak++; else break;
+    if(LIFT_IDS.some(l=>[1,2].some(se=>S.sessDone[sk(l,w,se)]))) streak++; else break;
   }
   return {done, vol, prs:S.prs.length, cycleDone, streak};
 }
 function nextSession(){
-  for(let w=1;w<=12;w++) for(const se of [1,2]) for(const l of ["tractions","dips"])
+  for(let w=1;w<=12;w++) for(const se of [1,2]) for(const l of LIFT_IDS)
     if(!S.sessDone[sk(l,w,se)]) return {lift:l,w,se};
   return null;
 }
@@ -740,10 +754,10 @@ function currentWeek(){ const n=nextSession(); return n?n.w:12; }
 let homeWeek=null; // semaine affichée dans le sélecteur
 function renderHome(){
   const g=globalStats();
-  const pct=Math.round(g.done/48*100);
+  const pct=Math.round(g.done/TOTAL_SESSIONS*100);
   $("#prgPct").textContent=pct+" %";
   $("#prgBar").style.width=pct+"%";
-  const bits=[`<span><b class="mono">${g.done}</b> séance${g.done>1?"s":""} sur 48</span>`];
+  const bits=[`<span><b class="mono">${g.done}</b> séance${g.done>1?"s":""} sur ${TOTAL_SESSIONS}</span>`];
   if(g.streak>0) bits.push(`<span class="sep">·</span><span><b class="mono">${g.streak}</b> sem. d'affilée</span>`);
   if(g.prs>0) bits.push(`<span class="sep">·</span><span><b class="mono">${g.prs}</b> record${g.prs>1?"s":""}</span>`);
   $("#prgSub").innerHTML=bits.join("");
@@ -752,7 +766,7 @@ function renderHome(){
   renderWeekPicker();
 
   const rr=$("#rmRow"); rr.innerHTML="";
-  for(const l of ["tractions","dips"]){
+  for(const l of LIFT_IDS){
     const L=LIFTS[l];
     const t=document.createElement("button");
     t.className="rm-tile";
@@ -768,7 +782,7 @@ function renderWeekPicker(){
   $("#wkPrev").disabled=w<=1;
   $("#wkNext").disabled=w>=12;
   const box=$("#sessRows"); box.innerHTML="";
-  for(const l of ["tractions","dips"]) for(const se of [1,2]){
+  for(const l of LIFT_IDS) for(const se of [1,2]){
     const L=LIFTS[l];
     const done=!!S.sessDone[sk(l,w,se)];
     const isNext=nx && nx.lift===l && nx.w===w && nx.se===se;
@@ -814,11 +828,7 @@ function renderSession(){
   $("#sessCharge").textContent=fmt(charge);
   $("#sessMeta").innerHTML=`<b>4 séries</b> de <b>${wk.rep[0]} à ${wk.rep[1]} reps</b> · 1RM ${fmt(S.rm[lift])} kg`;
 
-  const exs=[
-    {name:L.main, scheme:`4 × ${wk.rep[0]} à ${wk.rep[1]}`, sets:4, tW:charge, tR:wk.rep[1], main:true},
-    {name:L.acc[0].name, scheme:"3 × 10 à 12", sets:3, tW:null, tR:12, main:false},
-    {name:L.acc[1].name, scheme:"3 × 10 à 12", sets:3, tW:null, tR:12, main:false},
-  ];
+  const exs=sessionExercises(lift,w,se).map(e=>({...e, scheme:schemeText(e), tR:e.rmax}));
   const el=$("#exList"); el.innerHTML="";
   exs.forEach((ex,ei)=>{
     const wrap=document.createElement("div"); wrap.className="ex";
@@ -912,10 +922,11 @@ function lastAccWeight(lift,ei){ const v=lastAccWeightNum(lift,ei); return v==nu
 function updateSessProg(){
   const {w,se}=curSess, lift=S.ui.lift;
   let done=0;
-  [[0,4],[1,3],[2,3]].forEach(([ei,n])=>{ for(let st=0;st<n;st++){ const d=S.logs[lk(lift,w,se,ei,st)]; if(d&&d.ok) done++; } });
-  $("#sessProgBar").style.width=(done/10*100)+"%";
-  $("#sessCount").textContent = done===10 ? "Séance complète · 10 séries sur 10"
-    : `${done} série${done>1?"s":""} sur 10`;
+  const exs=sessionExercises(lift,w,se), total=exs.reduce((n,e)=>n+e.sets,0);
+  exs.forEach((e,ei)=>{ for(let st=0;st<e.sets;st++){ const d=S.logs[lk(lift,w,se,ei,st)]; if(d&&d.ok) done++; } });
+  $("#sessProgBar").style.width=(done/total*100)+"%";
+  $("#sessCount").textContent = done===total ? `Séance complète · ${total} séries sur ${total}`
+    : `${done} série${done>1?"s":""} sur ${total}`;
 }
 function checkPR(lift,d){
   if(d.weight==null||d.reps==null) return;
@@ -954,9 +965,10 @@ function sessionPlan(){
     corps:[
       `${cyc.name} — semaine ${w} sur 12`,
       "",
-      `1. ${L.main} : 4 séries de ${wk.rep[0]} à ${wk.rep[1]} reps à ${fmt(charge)} kg`,
-      `2. ${L.acc[0].name} : 3 séries de 10 à 12 reps`,
-      `3. ${L.acc[1].name} : 3 séries de 10 à 12 reps`,
+      ...sessionExercises(lift,w,se).map((e,i)=>{
+        const reps = e.rmin===e.rmax ? `${e.rmin} reps` : `${e.rmin} à ${e.rmax} reps`;
+        return `${i+1}. ${e.name} : ${e.sets} séries de ${reps}${e.main?` à ${fmt(charge)} kg`:""}`;
+      }),
       "",
       `Repos : ${fmtSec(S.ui.restMain)} sur l'exercice principal, ${fmtSec(S.ui.restAcc)} sur les accessoires.`,
       `1RM de référence : ${fmt(S.rm[lift])} kg`,
@@ -1086,7 +1098,7 @@ function renderBI(){
   const liftVol=pts.reduce((a,p)=>a+p.vol,0);
   const liftDone=Object.keys(S.sessDone).filter(k=>k.startsWith(lift)).length;
   $("#kpis").innerHTML=`
-    <div class="card kpi"><div class="k-lab">Séances ${L.name}</div><div class="k-val mono">${liftDone}<small> / 24</small></div><div class="k-sub">complétées</div></div>
+    <div class="card kpi"><div class="k-lab">Séances ${L.name}</div><div class="k-val mono">${liftDone}<small> / ${SESSIONS_PER_LIFT}</small></div><div class="k-sub">complétées</div></div>
     <div class="card kpi"><div class="k-lab">e1RM estimé</div><div class="k-val mono">${bestE?fmt(Math.round(bestE*10)/10):"·"}<small>${bestE?" kg":""}</small></div><div class="k-sub">1RM saisi : ${fmt(S.rm[lift])} kg</div></div>
     <div class="card kpi"><div class="k-lab">Volume ${L.name}</div><div class="k-val mono">${liftVol>=1000?fmt(Math.round(liftVol/100)/10)+"<small> t</small>":Math.round(liftVol)+"<small> kg</small>"}</div><div class="k-sub">soulevé au total</div></div>
     <div class="card kpi"><div class="k-lab">Records</div><div class="k-val mono">${S.prs.filter(p=>p.lift===lift).length}</div><div class="k-sub">e1RM battus</div></div>`;
@@ -1224,8 +1236,15 @@ function renderSettings(){
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
   $("#restMainVal").textContent=fmtSec(S.ui.restMain);
   $("#restAccVal").textContent=fmtSec(S.ui.restAcc);
-  $("#setRmT").textContent=fmt(S.rm.tractions)+" kg";
-  $("#setRmD").textContent=fmt(S.rm.dips)+" kg";
+  const rs=$("#rmSettings"); rs.innerHTML="";
+  LIFT_IDS.forEach(id=>{
+    const L=LIFTS[id], row=document.createElement("div");
+    row.className="settings-item";
+    row.innerHTML=`<div><div class="si-t">1RM ${L.name}</div><div class="si-s">${L.main}</div></div>
+      <button class="btn ghost sm mono">${fmt(S.rm[id])} kg</button>`;
+    row.querySelector("button").onclick=()=>openRM(id);
+    rs.appendChild(row);
+  });
 }
 $("#themeSwitch").onclick=()=>{ S.ui.theme=curTheme()==="dark"?"light":"dark"; save(); applyTheme(); renderSettings(); };
 $("#restSwitch").onclick=()=>{ S.ui.rest=!S.ui.rest; save(); renderSettings(); if(!S.ui.rest) stopRest(); };
@@ -1237,8 +1256,6 @@ $$(".mini-step button").forEach(b=>{
     save(); renderSettings(); vibrate(8);
   };
 });
-$("#setRmT").onclick=()=>openRM("tractions");
-$("#setRmD").onclick=()=>openRM("dips");
 $("#exportBtn").onclick=async()=>{
   try{ await navigator.clipboard.writeText(JSON.stringify(S)); toast("Données copiées"); }
   catch(e){ toast("Copie impossible sur ce navigateur"); }
