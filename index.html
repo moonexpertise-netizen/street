@@ -1714,6 +1714,10 @@ const AUTO_SEANCES={
   mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
     {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu",
      blocs:AUTO_BLOCS("À vide", {pmin:2, pmax:3, vmin:4, vmax:5})},
+    /* Au poids de corps : aucun RM, on ne saisit que les répétitions. */
+    {nom:"Tractions explosives", court:"Explosif", sansRm:true, blocs:[
+      {t:"Explosif", libre:true, charge:"À vide", rmin:5, rmax:8, pcts:[0,0,0,0]},
+    ]},
   ]},
 };
 const AUTO_IDS=Object.keys(AUTO_SEANCES);
@@ -1768,7 +1772,7 @@ function autoSeries(s,w,se){
         out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
         pct:pe, kg:round125(rm*pe), rmin:b.rmin, rmax:b.rmax,
         cible: b.reps ? b.reps[pi] : b.rmax,
-        top: bi===0 && pi===b.pcts.length-1, libre:!!b.libre, charge:b.charge,
+        top: bi===0 && !b.libre && pi===b.pcts.length-1, libre:!!b.libre, charge:b.charge,
         surNouveauRM: bi>0 && !b.libre && rmA!==rmM}); });
     });
   });
@@ -1833,6 +1837,7 @@ function renderAutoHome(){
 
   const rr=$("#aRmRow"); rr.innerHTML="";
   AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
+    if(ex.sansRm) return;
     const base=S.auto.rm[ex.rm]||0, cour=autoRmCourant(id,ei);
     const t=document.createElement("button");
     t.className="rm-tile";
@@ -1855,7 +1860,8 @@ function renderAutoSess(){
   $("#asTitle").textContent=`${cfg.nom} · Séance ${se}`;
   const tete0=series.find(x=>x.top && x.ex===0);
   $("#asCharge").textContent=fmt(tete0.kg);
-  $("#asMeta").innerHTML=autoExos(s).map((ex,ei)=>{
+  $("#asMeta").innerHTML=autoExos(s).filter(ex=>!ex.sansRm).map((ex)=>{
+    const ei=autoExos(s).indexOf(ex);
     const a=autoRm(s,ei,w,se), b=autoRmApres(s,ei,w,se);
     return `${ex.court} <b>${a===b?fmt(a):fmt(a)+" → "+fmt(b)} kg</b>`;
   }).join(" · ");
@@ -1870,12 +1876,13 @@ function renderAutoSess(){
       const nb=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc).length;
       const memeBloc=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc);
       const cibles=[...new Set(memeBloc.map(y=>y.cible))];
-      const reps=x.libre?"maximum de reps"
+      const reps=x.libre&&x.rmax?`${x.rmin} à ${x.rmax} reps`
+        :x.libre?"maximum de reps"
         :cibles.length>1?`${cibles.join(" puis ")} reps`
         :x.rmin!==x.rmax?`${x.rmin} à ${x.rmax} reps`
         :x.rmin===1?"1 rep":`${x.rmin} reps`;
-      const premier=series.find(y=>y.ex===x.ex).bloc===x.bloc;
       const exo=autoExos(s)[x.ex];
+      const premier=!exo.sansRm && series.find(y=>y.ex===x.ex).bloc===x.bloc;
       wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
         <div class="ex-scheme">${nb} × ${reps}</div></div>
         <div class="target">${x.exNom}${premier
@@ -1886,10 +1893,10 @@ function renderAutoSess(){
     const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
     const row=document.createElement("div");
     row.className="arow"+(d.res?" isdone":"")+(x.top?" top":"")+(x.surNouveauRM?" maj":"");
-    row.innerHTML=`<div class="a-pct mono">${x.libre?"max":Math.round(x.pct*1000)/10+"%"}</div>
+    row.innerHTML=`<div class="a-pct mono">${x.libre?(x.rmax?"":"max"):Math.round(x.pct*1000)/10+"%"}</div>
       <div class="a-kg mono">${x.libre?`<span class="a-libre">${x.charge}</span>`
         :`${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}`}</div>
-      <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?"reps":x.cible}" value="${d.reps??""}"></div>
+      <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?(x.rmax||"reps"):x.cible}" value="${d.reps??""}"></div>
       <div class="a-res${x.libre?" une":""}">${x.libre
         ? `<button class="resb${d.res?" on":""}" data-k="${k}" data-r="fait"
              style="${d.res?"background:var(--ink);border-color:var(--ink);color:var(--page)":""}">${d.res?"Série faite":"Valider la série"}</button>`
@@ -1913,7 +1920,7 @@ function renderAutoSess(){
       const avant=S.auto.logs[k].res;
       S.auto.logs[k].res = avant===r ? undefined : r;
       const x=series.find(y=>autoKey(s,w,se,y.i)===k);
-      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && !x.libre) S.auto.logs[k].reps=x.cible;
+      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && (!x.libre||x.rmax)) S.auto.logs[k].reps=x.cible;
       save(); vibrate(14);
       if(x.top && S.auto.logs[k].res==="ok" && autoTeteQualifiante(w,se)){
         const ex=autoExos(s)[x.ex], base=autoRm(s,x.ex,w,se);
@@ -1933,7 +1940,7 @@ function renderAutoSess(){
   $("#asCount").textContent = faites===tot?`Séance complète · ${tot} séries`:`${faites} série${faites>1?"s":""} sur ${tot}`;
 
   const montees=autoExos(s).map((ex,ei)=>({ex, a:autoRm(s,ei,w,se), b:autoRmApres(s,ei,w,se)}))
-    .filter(x=>x.a!==x.b);
+    .filter(x=>!x.ex.sansRm && x.a!==x.b);
   const ban=$("#asNext");
   if(montees.length){
     ban.style.display="";
@@ -1968,6 +1975,7 @@ const liftColor2 = id => getComputedStyle(document.documentElement)
 function autoStats(){
   const exos=[], parSemaine=[];
   AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
+    if(ex.sansRm) return;
     const suite=[];
     for(let w=1;w<=52;w++) suite.push(autoRm(id,ei,w,1));
     exos.push({id, ei, ex, base:S.auto.rm[ex.rm]||0, courant:autoRmCourant(id,ei), suite});
@@ -2168,6 +2176,7 @@ function renderSettings(){
   });
   const ar=$("#autoRmSettings"); ar.innerHTML="";
   AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
+    if(ex.sansRm) return;
     const cour=autoRmCourant(id,ei), base=S.auto.rm[ex.rm]||0;
     const row=document.createElement("div");
     row.className="settings-item";
