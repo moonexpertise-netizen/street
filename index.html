@@ -1617,23 +1617,26 @@ function drawRecords(){
 }
 /* ═════ PROGRAMME AUTO-RÉGULÉ ═════
    Blocs de 5 semaines : 4 de montée, la 5e en décharge (tous les % × 0,75).
-   Les pourcentages sont fixes ; seul le RM progresse, et uniquement lorsque
-   la série de tête à 102,5 % est validée OK hors semaine de décharge. */
+   Chaque exercice possède sa propre montée en gamme terminée par une série
+   de tête à 102,5 %. Validée OK, elle devient le nouveau RM de l'exercice. */
 const AUTO_TOP=1.025, AUTO_DELOAD=0.75, AUTO_BLOC=5;
 const AUTO_RES=[
   {k:"ok",    lab:"OK",    col:"var(--good)"},
   {k:"moyen", lab:"Moyen", col:"var(--warn)"},
   {k:"echec", lab:"Échec", col:"var(--crit)"},
 ];
+/* Schéma commun à tous les exercices : montée en gamme terminée par la
+   série de tête, puis puissance, puis volume. 8 séries au total. */
+const AUTO_BLOCS=()=>[
+  {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP]},
+  {t:"Puissance",       rmin:4, rmax:6,  pcts:[.60,.60]},
+  {t:"Volume",          rmin:8, rmax:10, pcts:[.35,.35]},
+];
 const AUTO_SEANCES={
-  push:{ nom:"Push", color:"var(--lift-2)",
-    principal:{nom:"Dips lestés", rm:"push", blocs:[
-      {t:"Force max", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP]},
-      {t:"Puissance", rmin:4, rmax:6,  pcts:[.60,.60]},
-      {t:"Volume",    rmin:8, rmax:10, pcts:[.35,.35]},
-    ]},
-    second:{nom:"Squat barre assistée", rm:"pushSquat", rmin:8, rmax:8, pcts:[.5,.5,.5,.5,.5,.5]},
-  },
+  push:{ nom:"Push", color:"var(--lift-2)", exos:[
+    {nom:"Dips lestés",          court:"Dips",  rm:"push",      blocs:AUTO_BLOCS()},
+    {nom:"Squat barre assistée", court:"Squat", rm:"pushSquat", blocs:AUTO_BLOCS()},
+  ]},
 };
 const autoBloc    = w => Math.floor((w-1)/AUTO_BLOC)+1;
 const autoPos     = w => ((w-1)%AUTO_BLOC)+1;
@@ -1641,15 +1644,19 @@ const autoDecharge= w => autoPos(w)===AUTO_BLOC;
 const autoFacteur = w => autoDecharge(w) ? AUTO_DELOAD : 1;
 const autoKey=(s,w,se,i)=>`auto|${s}|${w}|${se}|${i}`;
 const autoSk =(s,w,se)=>`auto|${s}|${w}|${se}`;
+const autoExos=s=>AUTO_SEANCES[s].exos;
 
-/* Indice, dans la liste à plat, de la série de tête (102,5 %). */
-function autoIdxTop(s){ return AUTO_SEANCES[s].principal.blocs[0].pcts.length-1; }
-
-/* RM applicable à une séance donnée : base + une hausse par série de tête
-   validée OK dans les séances qui la précèdent. Recalculé, jamais stocké. */
-function autoRm(s,w,se){
-  let rm=S.auto.rm[AUTO_SEANCES[s].principal.rm]||0;
-  const top=autoIdxTop(s);
+/* Position, dans la liste à plat, de la série de tête d'un exercice. */
+function autoTopIdx(s,ei){
+  let i=0;
+  autoExos(s).forEach((ex,e)=>{ if(e<ei) ex.blocs.forEach(b=>i+=b.pcts.length); });
+  return i + autoExos(s)[ei].blocs[0].pcts.length - 1;
+}
+/* RM d'un exercice à l'entrée d'une séance : base + une hausse par série de
+   tête validée OK dans les séances précédentes. Recalculé, jamais stocké. */
+function autoRm(s,ei,w,se){
+  let rm=S.auto.rm[autoExos(s)[ei].rm]||0;
+  const top=autoTopIdx(s,ei);
   for(let ww=1;ww<=w;ww++) for(const ss of [1,2]){
     if(ww===w&&ss>=se) return rm;
     if(autoDecharge(ww)) continue;
@@ -1657,28 +1664,27 @@ function autoRm(s,w,se){
   }
   return rm;
 }
-/* RM en vigueur APRÈS la montée en gamme : dès que la série de tête est
-   validée OK, le nouveau RM s'applique au reste de la séance. */
-function autoRmApres(s,w,se){
-  const base=autoRm(s,w,se);
-  const ok=S.auto.logs[autoKey(s,w,se,autoIdxTop(s))]?.res==="ok";
+/* RM en vigueur après la montée : la série de tête validée s'applique
+   immédiatement au reste des séries du même exercice. */
+function autoRmApres(s,ei,w,se){
+  const base=autoRm(s,ei,w,se);
+  const ok=S.auto.logs[autoKey(s,w,se,autoTopIdx(s,ei))]?.res==="ok";
   return (ok && !autoDecharge(w)) ? round125(base*AUTO_TOP) : base;
 }
-/* Séries à plat : exercice principal puis exercice secondaire. */
-function autoRmCourant(s){ return autoRm(s,999,1); }
+const autoRmCourant=(s,ei)=>autoRm(s,ei,999,1);
+
 function autoSeries(s,w,se){
-  const cfg=AUTO_SEANCES[s], f=autoFacteur(w);
-  const rmMontee=autoRm(s,w,se), rmSuite=autoRmApres(s,w,se);
-  const out=[]; let i=0;
-  cfg.principal.blocs.forEach((b,bi)=>{
-    const rm = bi===0 ? rmMontee : rmSuite;          // la montée conserve le RM d'entrée
-    b.pcts.forEach((p,pi)=>out.push({i:i++, ex:0, exNom:cfg.principal.nom, bloc:b.t, premierDuBloc:pi===0,
-      pct:p*f, kg:round125(rm*p*f), rmin:b.rmin, rmax:b.rmax, top:bi===0&&pi===b.pcts.length-1,
-      surNouveauRM: bi>0 && rmSuite!==rmMontee}));
+  const f=autoFacteur(w), out=[]; let i=0;
+  autoExos(s).forEach((ex,ei)=>{
+    const rmM=autoRm(s,ei,w,se), rmA=autoRmApres(s,ei,w,se);
+    ex.blocs.forEach((b,bi)=>{
+      const rm = bi===0 ? rmM : rmA;                 // la montée garde le RM d'entrée
+      b.pcts.forEach((p,pi)=>out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
+        pct:p*f, kg:round125(rm*p*f), rmin:b.rmin, rmax:b.rmax,
+        top: bi===0 && pi===b.pcts.length-1,
+        surNouveauRM: bi>0 && rmA!==rmM}));
+    });
   });
-  const rm2=S.auto.rm[cfg.second.rm]||0;
-  cfg.second.pcts.forEach((p,pi)=>out.push({i:i++, ex:1, exNom:cfg.second.nom, bloc:cfg.second.nom, premierDuBloc:pi===0,
-    pct:p*f, kg:round125(rm2*p*f), rmin:cfg.second.rmin, rmax:cfg.second.rmax, top:false}));
   return out;
 }
 function autoFaites(s,w,se){
@@ -1690,60 +1696,59 @@ function autoProchaine(){
   return null;
 }
 
-
 /* ═════ RENDU DU PROGRAMME AUTO-RÉGULÉ ═════ */
-let autoWeek=null, autoSess={s:"push",w:1,se:1};
+let autoWeek=null, autoSess={s:"push",w:1,se:1}, autoRmKey=null;
 
 function renderAutoHome(){
   if(autoWeek==null){ const n=autoProchaine(); autoWeek=n?n.w:1; }
-  const w=autoWeek, dech=autoDecharge(w), nx=autoProchaine();
+  const w=autoWeek, dech=autoDecharge(w), nx=autoProchaine(), s="push", cfg=AUTO_SEANCES[s];
   $("#aWkTitle").textContent=`Semaine ${w}`;
   $("#aWkSub").textContent = dech
-    ? `Bloc ${autoBloc(w)} · semaine de décharge · charges à 75 %`
+    ? `Bloc ${autoBloc(w)} · décharge · toutes les charges à 75 %`
     : `Bloc ${autoBloc(w)} · montée ${autoPos(w)} sur 4`;
   $("#aWkPrev").disabled=w<=1;
 
   const box=$("#aRows"); box.innerHTML="";
-  const s="push", cfg=AUTO_SEANCES[s];
   const head=document.createElement("div");
   head.className="lifthead";
   head.innerHTML=`<span class="dot2" style="background:${cfg.color}"></span>
     <span class="lh-name">${cfg.nom}</span>
-    <span class="palier-chip${dech?" deload":""}" style="pointer-events:none">
-      RM ${fmt(autoRmCourant(s))} kg</span>`;
+    <span class="palier-chip${dech?" deload":""}" style="pointer-events:none">${dech?"Décharge":"Montée"}</span>`;
   box.appendChild(head);
 
   for(const se of [1,2]){
     const done=!!S.auto.sessDone[autoSk(s,w,se)];
-    const rm=autoRm(s,w,se), f=autoFacteur(w);
     const suivant=nx&&nx.w===w&&nx.se===se;
+    const series=autoSeries(s,w,se);
+    const tetes=series.filter(x=>x.top);
     const b=document.createElement("button");
     b.className="srow"+(done?" done":"");
     b.innerHTML=`<div style="min-width:0">
         <div class="s-name">Séance ${se}${suivant?'<span class="s-tag">à suivre</span>':""}</div>
-        <div class="s-meta">Montée jusqu'à ${fmt(round125(rm*AUTO_TOP*f))} kg · 14 séries</div>
+        <div class="s-meta">${series.length} séries · têtes ${tetes.map(t=>fmt(t.kg)+" kg").join(" et ")}</div>
       </div>
       <div class="s-right">
         ${done?'<span class="s-check">Fait</span>':""}
-        <span class="s-load mono">${fmt(round125(rm*AUTO_TOP*f))}<small> kg</small></span>
         <span class="chev">›</span>
       </div>`;
     b.onclick=()=>openAutoSess(s,w,se);
     box.appendChild(b);
   }
-
   box.insertAdjacentHTML("beforeend",
     `<div class="lifthead"><span class="dot2" style="background:var(--panel-3)"></span>
        <span class="lh-name" style="color:var(--ink-3)">Pull et Dynamique</span>
        <span class="palier-chip" style="pointer-events:none">à définir</span></div>`);
 
   const rr=$("#aRmRow"); rr.innerHTML="";
-  [["push","Dips lestés"],["pushSquat","Squat barre assistée"]].forEach(([k,nom])=>{
+  autoExos(s).forEach((ex,ei)=>{
+    const base=S.auto.rm[ex.rm]||0, cour=autoRmCourant(s,ei);
     const t=document.createElement("button");
     t.className="rm-tile";
-    t.innerHTML=`<div><div class="r-lab">${nom}</div>
-      <div class="r-val mono">${fmt(S.auto.rm[k]||0)}<small> kg</small></div></div><span class="chev">›</span>`;
-    t.onclick=()=>openAutoRm(k,nom);
+    t.innerHTML=`<div style="min-width:0"><div class="r-lab">${ex.nom}</div>
+      <div class="r-val mono">${fmt(cour)}<small> kg</small></div>
+      ${cour!==base?`<div class="tiny muted" style="margin-top:2px">départ ${fmt(base)} kg</div>`:""}</div>
+      <span class="chev">›</span>`;
+    t.onclick=()=>openAutoRm(ex.rm,ex.nom);
     rr.appendChild(t);
   });
 }
@@ -1753,26 +1758,28 @@ $("#aWkNext").onclick=()=>{ autoWeek++; renderAutoHome(); vibrate(8); };
 function openAutoSess(s,w,se){ autoSess={s,w,se}; switchView("v-asess"); renderAutoSess(); }
 function renderAutoSess(){
   const {s,w,se}=autoSess, cfg=AUTO_SEANCES[s];
-  const dech=autoDecharge(w), rm=autoRm(s,w,se), series=autoSeries(s,w,se);
+  const dech=autoDecharge(w), series=autoSeries(s,w,se);
   $("#asCycle").textContent=`Bloc ${autoBloc(w)} · semaine ${w}${dech?" · décharge":""}`;
   $("#asTitle").textContent=`${cfg.nom} · Séance ${se}`;
-  const top=series.find(x=>x.top);
-  $("#asCharge").textContent=fmt(top.kg);
-  const rmSuite=autoRmApres(s,w,se), monte=rmSuite!==rm;
-  $("#asMeta").innerHTML=`Série de tête à <b>${Math.round(top.pct*1000)/10} %</b> · RM `
-    + (monte ? `<b>${fmt(rm)} → ${fmt(rmSuite)} kg</b>` : `<b>${fmt(rm)} kg</b>`);
+  const tete0=series.find(x=>x.top && x.ex===0);
+  $("#asCharge").textContent=fmt(tete0.kg);
+  $("#asMeta").innerHTML=autoExos(s).map((ex,ei)=>{
+    const a=autoRm(s,ei,w,se), b=autoRmApres(s,ei,w,se);
+    return `${ex.court} <b>${a===b?fmt(a):fmt(a)+" → "+fmt(b)} kg</b>`;
+  }).join(" · ");
 
   const el=$("#asList"); el.innerHTML="";
-  let blocCourant=null, wrap=null;
+  let cle=null, wrap=null;
   series.forEach(x=>{
-    if(x.bloc!==blocCourant){
-      blocCourant=x.bloc;
+    const c=x.ex+"|"+x.bloc;
+    if(c!==cle){
+      cle=c;
       wrap=document.createElement("div"); wrap.className="ex";
-      const nb=series.filter(y=>y.bloc===x.bloc).length;
+      const nb=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc).length;
       const reps=x.rmin===x.rmax?`${x.rmin} reps`:`${x.rmin} à ${x.rmax} reps`;
       wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
         <div class="ex-scheme">${nb} × ${reps}</div></div>
-        <div class="target">${x.ex===0?cfg.principal.nom:cfg.second.nom}</div>`;
+        <div class="target">${x.exNom}</div>`;
       el.appendChild(wrap);
     }
     const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
@@ -1795,16 +1802,18 @@ function renderAutoSess(){
     b.onclick=()=>{
       const k=b.dataset.k, r=b.dataset.r;
       S.auto.logs[k]=S.auto.logs[k]||{};
-      S.auto.logs[k].res = S.auto.logs[k].res===r ? undefined : r;
+      const avant=S.auto.logs[k].res;
+      S.auto.logs[k].res = avant===r ? undefined : r;
       const x=series.find(y=>autoKey(s,w,se,y.i)===k);
       if(S.auto.logs[k].res && S.auto.logs[k].reps==null) S.auto.logs[k].reps=x.rmax;
       save(); vibrate(14);
-      renderAutoSess();
-      if(x.top && S.auto.logs[k].res==="ok" && !autoDecharge(w)){
-        const nouveau=round125(rm*AUTO_TOP);
-        showPR(`Nouveau RM · ${fmt(nouveau)} kg`, `${cfg.principal.nom} : ${fmt(rm)} → ${fmt(nouveau)} kg`);
+      if(x.top && S.auto.logs[k].res==="ok" && !dech){
+        const ex=autoExos(s)[x.ex], base=autoRm(s,x.ex,w,se);
+        showPR(`${ex.court} · nouveau RM ${fmt(round125(base*AUTO_TOP))} kg`,
+               `${ex.nom} : ${fmt(base)} → ${fmt(round125(base*AUTO_TOP))} kg`);
       }
-      if(S.ui.rest && S.auto.logs[k].res) startRest(x.ex===0?S.ui.restMain:S.ui.restAcc);
+      renderAutoSess();
+      if(S.ui.rest && S.auto.logs[k].res) startRest(x.bloc==="Volume"?S.ui.restAcc:S.ui.restMain);
     };
   });
 
@@ -1812,12 +1821,13 @@ function renderAutoSess(){
   $("#asProg").style.width=(faites/tot*100)+"%";
   $("#asCount").textContent = faites===tot?`Séance complète · ${tot} séries`:`${faites} série${faites>1?"s":""} sur ${tot}`;
 
-  const rmSuivant=autoRm(s,w,se===1?2:1);
-  const banniere=$("#asNext");
-  if(S.auto.logs[autoKey(s,w,se,autoIdxTop(s))]?.res==="ok" && !dech){
-    banniere.style.display="";
-    banniere.innerHTML=`Série de tête validée · nouveau RM <b>${fmt(round125(rm*AUTO_TOP))} kg</b> à la prochaine séance`;
-  } else banniere.style.display="none";
+  const montees=autoExos(s).map((ex,ei)=>({ex, a:autoRm(s,ei,w,se), b:autoRmApres(s,ei,w,se)}))
+    .filter(x=>x.a!==x.b);
+  const ban=$("#asNext");
+  if(montees.length){
+    ban.style.display="";
+    ban.innerHTML=montees.map(m=>`${m.ex.court} : nouveau RM <b>${fmt(m.b)} kg</b>`).join(" · ");
+  } else ban.style.display="none";
 }
 $("#asBack").onclick=()=>switchView("v-home");
 $("#asSave").onclick=()=>{
@@ -1830,8 +1840,6 @@ $("#asSave").onclick=()=>{
   toast("Séance enregistrée");
   autoWeek=w; switchView("v-home");
 };
-
-let autoRmKey=null;
 function openAutoRm(k,nom){
   autoRmKey=k;
   $("#rmSheetName").textContent=nom;
