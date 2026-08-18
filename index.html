@@ -489,6 +489,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <img class="top-logo" src="/moon-icon.svg" alt="" aria-hidden="true">
     <span class="brand">MoonSport</span>
     <span class="top-sub" id="topSub"></span>
+    <span class="sync" id="syncInd" style="display:none"><span class="sd"></span><span id="syncTxt"></span></span>
   </div>
 </div>
 
@@ -829,15 +830,20 @@ const DEF = {
   logs:{}, sessDone:{}, prs:[], prog:null,
   ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true}
 };
+/* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
+   pour qu'une version plus ancienne des données reste exploitable. */
+function normalize(r){
+  if(!r || typeof r!=="object") return structuredClone(DEF);
+  return {...structuredClone(DEF), ...r,
+    rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
+    logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{}};
+}
 let S = load();
 function load(){
-  try{
-    const r = JSON.parse(localStorage.getItem("moonsport"));
-    if(r) return {...structuredClone(DEF), ...r, rm:{...DEF.rm,...r.rm}, ui:{...DEF.ui,...r.ui}, logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{}};
-  }catch(e){}
+  try{ const r=JSON.parse(localStorage.getItem("moonsport")); if(r) return normalize(r); }catch(e){}
   return structuredClone(DEF);
 }
-function save(){ localStorage.setItem("moonsport", JSON.stringify(S)); }
+function save(){ S.updatedAt=Date.now(); localStorage.setItem("moonsport", JSON.stringify(S)); schedulePush(); }
 const lk = (l,w,se,ex,st)=>`${l}|${w}|${se}|${ex}|${st}`;
 const sk = (l,w,se)=>`${l}|${w}|${se}`;
 function weeks(){
@@ -1679,6 +1685,65 @@ function showPR(title,sub){
 }
 $("#prFlash").onclick=()=>$("#prFlash").classList.remove("show");
 
+
+/* ═════ SYNCHRONISATION DU COMPTE ═════ */
+/* Les données suivent le compte Microsoft. On fusionne par UNION des clés :
+   une série saisie sur un appareil n'est jamais écrasée par l'autre. */
+let syncOn=false, pushT=null;
+function setSync(etat,txt){
+  const e=$("#syncInd"); if(!e) return;
+  e.style.display=""; e.className="sync"+(etat?" "+etat:"");
+  $("#syncTxt").textContent=txt;
+}
+function mergeState(a,b){          // b l'emporte en cas de conflit sur une même clé
+  const A=normalize(a), B=normalize(b);
+  return {...A, ...B,
+    rm:{...A.rm, ...B.rm},
+    ui:{...A.ui, ...B.ui},
+    prog:B.prog!==null?B.prog:A.prog,
+    steps:(()=>{ const o={...A.steps};
+      for(const l in B.steps) o[l]={...(A.steps[l]||{}), ...B.steps[l]};
+      return o; })(),
+    logs:{...A.logs, ...B.logs},
+    sessDone:{...A.sessDone, ...B.sessDone},
+    updatedAt:Math.max(A.updatedAt||0, B.updatedAt||0)};
+}
+async function pullCloud(){
+  try{
+    const r=await fetch("/api/state",{credentials:"same-origin",cache:"no-store"});
+    if(r.status===401){ syncOn=false; return; }
+    const j=await r.json();
+    if(!j.configured){ syncOn=false; setSync("","Local seulement"); return; }
+    syncOn=true;
+    if(j.data){
+      const distant=j.data, local=S;
+      const recent=(distant.updatedAt||0)>=(local.updatedAt||0);
+      S = recent ? mergeState(local,distant) : mergeState(distant,local);
+      localStorage.setItem("moonsport", JSON.stringify(S));
+      if(!recent) await pushCloud(); else setSync("ok","Synchronisé");
+    } else {
+      await pushCloud();
+    }
+  }catch(e){ setSync("err","Hors ligne"); }
+}
+function schedulePush(){
+  if(!syncOn) return;
+  clearTimeout(pushT);
+  setSync("","Enregistrement…");
+  pushT=setTimeout(pushCloud,1200);
+}
+async function pushCloud(){
+  if(!syncOn) return;
+  try{
+    const r=await fetch("/api/state",{method:"POST",credentials:"same-origin",
+      headers:{"Content-Type":"application/json"}, body:JSON.stringify(S)});
+    if(!r.ok) throw new Error("push");
+    setSync("ok","Synchronisé");
+  }catch(e){ setSync("err","Non synchronisé"); }
+}
+/* On enregistre avant de quitter ou de passer en arrière-plan. */
+document.addEventListener("visibilitychange",()=>{ if(document.hidden&&syncOn){ clearTimeout(pushT); pushCloud(); } });
+
 /* ═════ CONNEXION MICROSOFT ═════ */
 let account=null;
 const AUTH_ERRORS={
@@ -1725,6 +1790,8 @@ async function initAuth(){
   }
   account={email:info.email,name:info.name};
   $("#lock").classList.add("hide");
+  await pullCloud();
+  homeWeek=null;
   renderHome();
 }
 $("#msBtn").onclick=()=>{
