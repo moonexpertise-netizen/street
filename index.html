@@ -365,6 +365,10 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .resb{height:38px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
   font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:center;transition:.15s}
 .resb:active{transform:scale(.94)}
+.rmchip{display:inline-flex;align-items:center;margin-left:8px;padding:3px 9px;border-radius:7px;
+  border:1px solid var(--line-2);background:var(--panel-2);font-size:11px;font-weight:600;
+  color:var(--ink-2);transition:.15s;vertical-align:1px}
+.rmchip:active{transform:scale(.94);background:var(--panel-3)}
 .arow.maj{border-color:color-mix(in srgb,var(--gold) 45%,var(--line))}
 .maj-tag{display:inline-block;margin-left:5px;font-family:var(--f-body);font-size:9px;font-weight:700;
   letter-spacing:.04em;color:var(--gold-ink);background:color-mix(in srgb,var(--gold) 20%,transparent);
@@ -1619,7 +1623,13 @@ function drawRecords(){
    Blocs de 5 semaines : 4 de montée, la 5e en décharge (tous les % × 0,75).
    Chaque exercice possède sa propre montée en gamme terminée par une série
    de tête à 102,5 %. Validée OK, elle devient le nouveau RM de l'exercice. */
-const AUTO_TOP=1.025, AUTO_DELOAD=0.75, AUTO_BLOC=5;
+const AUTO_TOP=1.025, AUTO_DELOAD=0.75, AUTO_BLOC=5, AUTO_S2=0.05;
+/* Pourcentage réellement appliqué : la séance 2 retire 5 points comme dans
+   le programme 12 semaines, puis la semaine de décharge réduit d'un quart. */
+const autoPct=(p,w,se)=>Math.max(0,(p-(se===2?AUTO_S2:0)))*autoFacteur(w);
+/* Une série de tête ne fait progresser le RM que si elle constitue un vrai
+   test de maximum, c'est-à-dire au moins 100 % du RM en vigueur. */
+const autoTeteQualifiante=(w,se)=>autoPct(AUTO_TOP,w,se)>=1;
 const AUTO_RES=[
   {k:"ok",    lab:"OK",    col:"var(--good)"},
   {k:"moyen", lab:"Moyen", col:"var(--warn)"},
@@ -1659,7 +1669,7 @@ function autoRm(s,ei,w,se){
   const top=autoTopIdx(s,ei);
   for(let ww=1;ww<=w;ww++) for(const ss of [1,2]){
     if(ww===w&&ss>=se) return rm;
-    if(autoDecharge(ww)) continue;
+    if(!autoTeteQualifiante(ww,ss)) continue;
     if(S.auto.logs[autoKey(s,ww,ss,top)]?.res==="ok") rm=round125(rm*AUTO_TOP);
   }
   return rm;
@@ -1669,20 +1679,21 @@ function autoRm(s,ei,w,se){
 function autoRmApres(s,ei,w,se){
   const base=autoRm(s,ei,w,se);
   const ok=S.auto.logs[autoKey(s,w,se,autoTopIdx(s,ei))]?.res==="ok";
-  return (ok && !autoDecharge(w)) ? round125(base*AUTO_TOP) : base;
+  return (ok && autoTeteQualifiante(w,se)) ? round125(base*AUTO_TOP) : base;
 }
 const autoRmCourant=(s,ei)=>autoRm(s,ei,999,1);
 
 function autoSeries(s,w,se){
-  const f=autoFacteur(w), out=[]; let i=0;
+  const out=[]; let i=0;
   autoExos(s).forEach((ex,ei)=>{
     const rmM=autoRm(s,ei,w,se), rmA=autoRmApres(s,ei,w,se);
     ex.blocs.forEach((b,bi)=>{
       const rm = bi===0 ? rmM : rmA;                 // la montée garde le RM d'entrée
-      b.pcts.forEach((p,pi)=>out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
-        pct:p*f, kg:round125(rm*p*f), rmin:b.rmin, rmax:b.rmax,
+      b.pcts.forEach((p,pi)=>{ const pe=autoPct(p,w,se);
+        out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
+        pct:pe, kg:round125(rm*pe), rmin:b.rmin, rmax:b.rmax,
         top: bi===0 && pi===b.pcts.length-1,
-        surNouveauRM: bi>0 && rmA!==rmM}));
+        surNouveauRM: bi>0 && rmA!==rmM}); });
     });
   });
   return out;
@@ -1777,9 +1788,13 @@ function renderAutoSess(){
       wrap=document.createElement("div"); wrap.className="ex";
       const nb=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc).length;
       const reps=x.rmin===x.rmax?`${x.rmin} reps`:`${x.rmin} à ${x.rmax} reps`;
+      const premier=series.find(y=>y.ex===x.ex).bloc===x.bloc;
+      const exo=autoExos(s)[x.ex];
       wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
         <div class="ex-scheme">${nb} × ${reps}</div></div>
-        <div class="target">${x.exNom}</div>`;
+        <div class="target">${x.exNom}${premier
+          ? ` <button class="rmchip" data-rm="${exo.rm}" data-nom="${exo.nom}">RM ${fmt(autoRm(s,x.ex,w,se))} kg · modifier</button>`
+          : ""}</div>`;
       el.appendChild(wrap);
     }
     const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
@@ -1794,6 +1809,9 @@ function renderAutoSess(){
     wrap.appendChild(row);
   });
 
+  el.querySelectorAll(".rmchip").forEach(c=>{
+    c.onclick=()=>openAutoRm(c.dataset.rm,c.dataset.nom);
+  });
   el.querySelectorAll("input").forEach(inp=>{
     inp.oninput=()=>{ const k=inp.dataset.k; S.auto.logs[k]=S.auto.logs[k]||{};
       S.auto.logs[k].reps=inp.value===""?undefined:parseInt(inp.value,10); save(); };
@@ -1807,7 +1825,7 @@ function renderAutoSess(){
       const x=series.find(y=>autoKey(s,w,se,y.i)===k);
       if(S.auto.logs[k].res && S.auto.logs[k].reps==null) S.auto.logs[k].reps=x.rmax;
       save(); vibrate(14);
-      if(x.top && S.auto.logs[k].res==="ok" && !dech){
+      if(x.top && S.auto.logs[k].res==="ok" && autoTeteQualifiante(w,se)){
         const ex=autoExos(s)[x.ex], base=autoRm(s,x.ex,w,se);
         showPR(`${ex.court} · nouveau RM ${fmt(round125(base*AUTO_TOP))} kg`,
                `${ex.nom} : ${fmt(base)} → ${fmt(round125(base*AUTO_TOP))} kg`);
@@ -1855,6 +1873,7 @@ function switchView(id){
   $("#topSub").textContent=VIEW_SUBS[id]||"";
   if(id==="v-home") renderHome();
   if(id==="v-bi") renderBI();
+  if(id==="v-asess") renderAutoSess();
   if(id==="v-set") renderSettings();
   window.scrollTo({top:0});
 }
