@@ -1696,14 +1696,20 @@ const AUTO_BLOCS=(finition,r={})=>{
   if(finition) b.push({t:"Max reps", libre:true, charge:finition, pcts:[0,0]});
   return b;
 };
+/* Mouvements à la barre : montée en trois temps puis un seul bloc de volume
+   plus lourd. Six séries au lieu de huit. */
+const AUTO_BLOCS_BARRE=()=>[
+  {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.33,.67,AUTO_TOP], reps:[2,1,1]},
+  {t:"Volume",          rmin:8, rmax:10, pcts:[.70,.70,.70]},
+];
 const AUTO_SEANCES={
   push:{ nom:"Push", color:"var(--lift-2)", exos:[
     {nom:"Dips lestés",          court:"Dips",  rm:"push",      blocs:AUTO_BLOCS("À vide")},
-    {nom:"Squat barre assistée", court:"Squat", rm:"pushSquat", blocs:AUTO_BLOCS(null)},
+    {nom:"Squat barre assistée", court:"Squat", rm:"pushSquat", blocs:AUTO_BLOCS_BARRE()},
   ]},
   pull:{ nom:"Pull", color:"var(--lift-1)", exos:[
     {nom:"Tractions lestées", court:"Tractions", rm:"pull",    blocs:AUTO_BLOCS("À vide")},
-    {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS(null)},
+    {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS_BARRE()},
   ]},
   mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
     {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu",
