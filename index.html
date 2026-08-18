@@ -349,6 +349,31 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .palier-chip.deload{border-color:color-mix(in srgb,var(--blue,#2563eb) 40%,var(--line-2));
   color:var(--ink-2);background:var(--panel-2)}
 
+
+/* ── séance auto-régulée ── */
+.arow{display:grid;grid-template-columns:46px 66px 1fr;gap:8px;align-items:center;margin-top:9px;
+  padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:var(--panel-2)}
+.arow.top{border-color:color-mix(in srgb,var(--gold) 60%,var(--line));
+  background:color-mix(in srgb,var(--gold) 9%,var(--panel-2))}
+.arow.isdone{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
+.a-pct{font-size:11.5px;color:var(--ink-3);font-weight:600}
+.a-kg{font-family:var(--f-display);font-size:17px;font-weight:600;letter-spacing:-.01em}
+.a-kg small{font-size:10.5px;font-weight:400;color:var(--ink-3);font-family:var(--f-body)}
+.arow .field{grid-column:3;grid-row:1}
+.arow .field input{height:38px;font-size:15px}
+.a-res{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.resb{height:38px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
+  font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:center;transition:.15s}
+.resb:active{transform:scale(.94)}
+.arow.maj{border-color:color-mix(in srgb,var(--gold) 45%,var(--line))}
+.maj-tag{display:inline-block;margin-left:5px;font-family:var(--f-body);font-size:9px;font-weight:700;
+  letter-spacing:.04em;color:var(--gold-ink);background:color-mix(in srgb,var(--gold) 20%,transparent);
+  padding:1px 4px;border-radius:4px;vertical-align:2px}
+.asnext{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:12.5px;
+  background:color-mix(in srgb,var(--gold) 14%,var(--panel));color:var(--gold-ink);
+  border:1px solid color-mix(in srgb,var(--gold) 40%,var(--line))}
+.asnext b{font-weight:700}
+
 /* ── réglages ── */
 .settings-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
 .settings-item:last-child{border-bottom:none}
@@ -496,7 +521,29 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- ═══ ACCUEIL ═══ -->
 <section class="view active" id="v-home">
   <div class="wrap stack">
-    <div>
+    <div class="seg" id="modeSeg">
+      <button data-mode="classic">12 semaines</button>
+      <button data-mode="auto">Auto-régulé</button>
+    </div>
+
+    <div id="homeAuto" style="display:none">
+      <div class="label">Programme auto-régulé</div>
+      <div class="card">
+        <div class="wknav">
+          <button class="wkbtn" id="aWkPrev">‹</button>
+          <div style="text-align:center">
+            <div class="wknav-t" id="aWkTitle">Semaine 1</div>
+            <div class="wknav-s" id="aWkSub">Bloc 1</div>
+          </div>
+          <button class="wkbtn" id="aWkNext">›</button>
+        </div>
+        <div id="aRows"></div>
+      </div>
+      <div class="label" style="margin-top:18px">RM de référence</div>
+      <div class="rm-row" id="aRmRow"></div>
+    </div>
+
+    <div id="homeClassic">
       <div class="label">Choisissez votre séance</div>
       <div class="card">
         <div class="wknav">
@@ -524,6 +571,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="label">1RM lesté</div>
       <div class="rm-row" id="rmRow"></div>
     </div>
+    </div>
   </div>
 </section>
 
@@ -547,6 +595,25 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     </button>
     <div class="card pad" id="exList"></div>
     <div class="savebar"><button class="btn" id="saveSession">Terminer la séance</button></div>
+  </div>
+</section>
+
+
+<!-- ═══ SÉANCE AUTO-RÉGULÉE ═══ -->
+<section class="view" id="v-asess">
+  <div class="wrap stack">
+    <button class="btn ghost sm" id="asBack">‹ Choisir une autre séance</button>
+    <div class="card sess-top">
+      <div class="st-eyebrow" id="asCycle">…</div>
+      <h2 id="asTitle">…</h2>
+      <div class="charge"><span class="cv" id="asCharge">0</span><span class="cu">kg</span></div>
+      <div class="charge-sub" id="asMeta"></div>
+      <div class="sess-prog"><i id="asProg" style="width:0%"></i></div>
+      <div class="sess-count" id="asCount"></div>
+      <div class="asnext" id="asNext" style="display:none"></div>
+    </div>
+    <div class="card pad" id="asList"></div>
+    <div class="savebar"><button class="btn" id="asSave">Terminer la séance</button></div>
   </div>
 </section>
 
@@ -827,8 +894,9 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 /* ═════ ÉTAT ═════ */
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
+  auto:{rm:{push:70, pushSquat:60}, logs:{}, sessDone:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true}
+  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"classic"}
 };
 /* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
    pour qu'une version plus ancienne des données reste exploitable. */
@@ -836,7 +904,9 @@ function normalize(r){
   if(!r || typeof r!=="object") return structuredClone(DEF);
   return {...structuredClone(DEF), ...r,
     rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
-    logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{}};
+    logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{},
+    auto:{rm:{...DEF.auto.rm, ...((r.auto&&r.auto.rm)||{})},
+          logs:(r.auto&&r.auto.logs)||{}, sessDone:(r.auto&&r.auto.sessDone)||{}}};
 }
 let S = load();
 function load(){
@@ -907,6 +977,11 @@ function currentWeek(){ const n=nextSession(); return n?n.w:12; }
 /* ═════ ACCUEIL ═════ */
 let homeWeek=null; // semaine affichée dans le sélecteur
 function renderHome(){
+  const auto=S.ui.mode==="auto";
+  $$("#modeSeg button").forEach(b=>b.classList.toggle("on",(b.dataset.mode==="auto")===auto));
+  $("#homeAuto").style.display=auto?"":"none";
+  $("#homeClassic").style.display=auto?"none":"";
+  if(auto){ renderAutoHome(); return; }
   const g=globalStats();
   const pct=Math.round(g.done/TOTAL_SESSIONS*100);
   $("#prgPct").textContent=pct+" %";
@@ -1023,6 +1098,7 @@ function openStep(lift,w){
 }
 $("#stepSheet").onclick=e=>{ if(e.target.id==="stepSheet") $("#stepSheet").classList.remove("open"); };
 $("#stepCancel").onclick=()=>$("#stepSheet").classList.remove("open");
+$$("#modeSeg button").forEach(b=>b.onclick=()=>{ S.ui.mode=b.dataset.mode; save(); autoWeek=null; homeWeek=null; renderHome(); vibrate(8); });
 $("#wkPrev").onclick=()=>{ if(homeWeek>1){ homeWeek--; renderWeekPicker(); vibrate(8); } };
 $("#wkNext").onclick=()=>{ if(homeWeek<12){ homeWeek++; renderWeekPicker(); vibrate(8); } };
 
@@ -1539,8 +1615,232 @@ function drawRecords(){
       <span class="pr-d">${d}</span></div>`;
   }).join("");
 }
+/* ═════ PROGRAMME AUTO-RÉGULÉ ═════
+   Blocs de 5 semaines : 4 de montée, la 5e en décharge (tous les % × 0,75).
+   Les pourcentages sont fixes ; seul le RM progresse, et uniquement lorsque
+   la série de tête à 102,5 % est validée OK hors semaine de décharge. */
+const AUTO_TOP=1.025, AUTO_DELOAD=0.75, AUTO_BLOC=5;
+const AUTO_RES=[
+  {k:"ok",    lab:"OK",    col:"var(--good)"},
+  {k:"moyen", lab:"Moyen", col:"var(--warn)"},
+  {k:"echec", lab:"Échec", col:"var(--crit)"},
+];
+const AUTO_SEANCES={
+  push:{ nom:"Push", color:"var(--lift-2)",
+    principal:{nom:"Dips lestés", rm:"push", blocs:[
+      {t:"Force max", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP]},
+      {t:"Puissance", rmin:4, rmax:6,  pcts:[.60,.60]},
+      {t:"Volume",    rmin:8, rmax:10, pcts:[.35,.35]},
+    ]},
+    second:{nom:"Squat barre assistée", rm:"pushSquat", rmin:8, rmax:8, pcts:[.5,.5,.5,.5,.5,.5]},
+  },
+};
+const autoBloc    = w => Math.floor((w-1)/AUTO_BLOC)+1;
+const autoPos     = w => ((w-1)%AUTO_BLOC)+1;
+const autoDecharge= w => autoPos(w)===AUTO_BLOC;
+const autoFacteur = w => autoDecharge(w) ? AUTO_DELOAD : 1;
+const autoKey=(s,w,se,i)=>`auto|${s}|${w}|${se}|${i}`;
+const autoSk =(s,w,se)=>`auto|${s}|${w}|${se}`;
+
+/* Indice, dans la liste à plat, de la série de tête (102,5 %). */
+function autoIdxTop(s){ return AUTO_SEANCES[s].principal.blocs[0].pcts.length-1; }
+
+/* RM applicable à une séance donnée : base + une hausse par série de tête
+   validée OK dans les séances qui la précèdent. Recalculé, jamais stocké. */
+function autoRm(s,w,se){
+  let rm=S.auto.rm[AUTO_SEANCES[s].principal.rm]||0;
+  const top=autoIdxTop(s);
+  for(let ww=1;ww<=w;ww++) for(const ss of [1,2]){
+    if(ww===w&&ss>=se) return rm;
+    if(autoDecharge(ww)) continue;
+    if(S.auto.logs[autoKey(s,ww,ss,top)]?.res==="ok") rm=round125(rm*AUTO_TOP);
+  }
+  return rm;
+}
+/* RM en vigueur APRÈS la montée en gamme : dès que la série de tête est
+   validée OK, le nouveau RM s'applique au reste de la séance. */
+function autoRmApres(s,w,se){
+  const base=autoRm(s,w,se);
+  const ok=S.auto.logs[autoKey(s,w,se,autoIdxTop(s))]?.res==="ok";
+  return (ok && !autoDecharge(w)) ? round125(base*AUTO_TOP) : base;
+}
+/* Séries à plat : exercice principal puis exercice secondaire. */
+function autoRmCourant(s){ return autoRm(s,999,1); }
+function autoSeries(s,w,se){
+  const cfg=AUTO_SEANCES[s], f=autoFacteur(w);
+  const rmMontee=autoRm(s,w,se), rmSuite=autoRmApres(s,w,se);
+  const out=[]; let i=0;
+  cfg.principal.blocs.forEach((b,bi)=>{
+    const rm = bi===0 ? rmMontee : rmSuite;          // la montée conserve le RM d'entrée
+    b.pcts.forEach((p,pi)=>out.push({i:i++, ex:0, exNom:cfg.principal.nom, bloc:b.t, premierDuBloc:pi===0,
+      pct:p*f, kg:round125(rm*p*f), rmin:b.rmin, rmax:b.rmax, top:bi===0&&pi===b.pcts.length-1,
+      surNouveauRM: bi>0 && rmSuite!==rmMontee}));
+  });
+  const rm2=S.auto.rm[cfg.second.rm]||0;
+  cfg.second.pcts.forEach((p,pi)=>out.push({i:i++, ex:1, exNom:cfg.second.nom, bloc:cfg.second.nom, premierDuBloc:pi===0,
+    pct:p*f, kg:round125(rm2*p*f), rmin:cfg.second.rmin, rmax:cfg.second.rmax, top:false}));
+  return out;
+}
+function autoFaites(s,w,se){
+  return autoSeries(s,w,se).filter(x=>S.auto.logs[autoKey(s,w,se,x.i)]?.res).length;
+}
+function autoProchaine(){
+  for(let w=1;w<=104;w++) for(const se of [1,2])
+    if(!S.auto.sessDone[autoSk("push",w,se)]) return {s:"push",w,se};
+  return null;
+}
+
+
+/* ═════ RENDU DU PROGRAMME AUTO-RÉGULÉ ═════ */
+let autoWeek=null, autoSess={s:"push",w:1,se:1};
+
+function renderAutoHome(){
+  if(autoWeek==null){ const n=autoProchaine(); autoWeek=n?n.w:1; }
+  const w=autoWeek, dech=autoDecharge(w), nx=autoProchaine();
+  $("#aWkTitle").textContent=`Semaine ${w}`;
+  $("#aWkSub").textContent = dech
+    ? `Bloc ${autoBloc(w)} · semaine de décharge · charges à 75 %`
+    : `Bloc ${autoBloc(w)} · montée ${autoPos(w)} sur 4`;
+  $("#aWkPrev").disabled=w<=1;
+
+  const box=$("#aRows"); box.innerHTML="";
+  const s="push", cfg=AUTO_SEANCES[s];
+  const head=document.createElement("div");
+  head.className="lifthead";
+  head.innerHTML=`<span class="dot2" style="background:${cfg.color}"></span>
+    <span class="lh-name">${cfg.nom}</span>
+    <span class="palier-chip${dech?" deload":""}" style="pointer-events:none">
+      RM ${fmt(autoRmCourant(s))} kg</span>`;
+  box.appendChild(head);
+
+  for(const se of [1,2]){
+    const done=!!S.auto.sessDone[autoSk(s,w,se)];
+    const rm=autoRm(s,w,se), f=autoFacteur(w);
+    const suivant=nx&&nx.w===w&&nx.se===se;
+    const b=document.createElement("button");
+    b.className="srow"+(done?" done":"");
+    b.innerHTML=`<div style="min-width:0">
+        <div class="s-name">Séance ${se}${suivant?'<span class="s-tag">à suivre</span>':""}</div>
+        <div class="s-meta">Montée jusqu'à ${fmt(round125(rm*AUTO_TOP*f))} kg · 14 séries</div>
+      </div>
+      <div class="s-right">
+        ${done?'<span class="s-check">Fait</span>':""}
+        <span class="s-load mono">${fmt(round125(rm*AUTO_TOP*f))}<small> kg</small></span>
+        <span class="chev">›</span>
+      </div>`;
+    b.onclick=()=>openAutoSess(s,w,se);
+    box.appendChild(b);
+  }
+
+  box.insertAdjacentHTML("beforeend",
+    `<div class="lifthead"><span class="dot2" style="background:var(--panel-3)"></span>
+       <span class="lh-name" style="color:var(--ink-3)">Pull et Dynamique</span>
+       <span class="palier-chip" style="pointer-events:none">à définir</span></div>`);
+
+  const rr=$("#aRmRow"); rr.innerHTML="";
+  [["push","Dips lestés"],["pushSquat","Squat barre assistée"]].forEach(([k,nom])=>{
+    const t=document.createElement("button");
+    t.className="rm-tile";
+    t.innerHTML=`<div><div class="r-lab">${nom}</div>
+      <div class="r-val mono">${fmt(S.auto.rm[k]||0)}<small> kg</small></div></div><span class="chev">›</span>`;
+    t.onclick=()=>openAutoRm(k,nom);
+    rr.appendChild(t);
+  });
+}
+$("#aWkPrev").onclick=()=>{ if(autoWeek>1){ autoWeek--; renderAutoHome(); vibrate(8); } };
+$("#aWkNext").onclick=()=>{ autoWeek++; renderAutoHome(); vibrate(8); };
+
+function openAutoSess(s,w,se){ autoSess={s,w,se}; switchView("v-asess"); renderAutoSess(); }
+function renderAutoSess(){
+  const {s,w,se}=autoSess, cfg=AUTO_SEANCES[s];
+  const dech=autoDecharge(w), rm=autoRm(s,w,se), series=autoSeries(s,w,se);
+  $("#asCycle").textContent=`Bloc ${autoBloc(w)} · semaine ${w}${dech?" · décharge":""}`;
+  $("#asTitle").textContent=`${cfg.nom} · Séance ${se}`;
+  const top=series.find(x=>x.top);
+  $("#asCharge").textContent=fmt(top.kg);
+  const rmSuite=autoRmApres(s,w,se), monte=rmSuite!==rm;
+  $("#asMeta").innerHTML=`Série de tête à <b>${Math.round(top.pct*1000)/10} %</b> · RM `
+    + (monte ? `<b>${fmt(rm)} → ${fmt(rmSuite)} kg</b>` : `<b>${fmt(rm)} kg</b>`);
+
+  const el=$("#asList"); el.innerHTML="";
+  let blocCourant=null, wrap=null;
+  series.forEach(x=>{
+    if(x.bloc!==blocCourant){
+      blocCourant=x.bloc;
+      wrap=document.createElement("div"); wrap.className="ex";
+      const nb=series.filter(y=>y.bloc===x.bloc).length;
+      const reps=x.rmin===x.rmax?`${x.rmin} reps`:`${x.rmin} à ${x.rmax} reps`;
+      wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
+        <div class="ex-scheme">${nb} × ${reps}</div></div>
+        <div class="target">${x.ex===0?cfg.principal.nom:cfg.second.nom}</div>`;
+      el.appendChild(wrap);
+    }
+    const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
+    const row=document.createElement("div");
+    row.className="arow"+(d.res?" isdone":"")+(x.top?" top":"")+(x.surNouveauRM?" maj":"");
+    row.innerHTML=`<div class="a-pct mono">${Math.round(x.pct*1000)/10}%</div>
+      <div class="a-kg mono">${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}</div>
+      <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.rmax}" value="${d.reps??""}"></div>
+      <div class="a-res">${AUTO_RES.map(r=>
+        `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}"
+           style="${d.res===r.k?`background:${r.col};border-color:${r.col};color:var(--panel)`:""}">${r.lab}</button>`).join("")}</div>`;
+    wrap.appendChild(row);
+  });
+
+  el.querySelectorAll("input").forEach(inp=>{
+    inp.oninput=()=>{ const k=inp.dataset.k; S.auto.logs[k]=S.auto.logs[k]||{};
+      S.auto.logs[k].reps=inp.value===""?undefined:parseInt(inp.value,10); save(); };
+  });
+  el.querySelectorAll(".resb").forEach(b=>{
+    b.onclick=()=>{
+      const k=b.dataset.k, r=b.dataset.r;
+      S.auto.logs[k]=S.auto.logs[k]||{};
+      S.auto.logs[k].res = S.auto.logs[k].res===r ? undefined : r;
+      const x=series.find(y=>autoKey(s,w,se,y.i)===k);
+      if(S.auto.logs[k].res && S.auto.logs[k].reps==null) S.auto.logs[k].reps=x.rmax;
+      save(); vibrate(14);
+      renderAutoSess();
+      if(x.top && S.auto.logs[k].res==="ok" && !autoDecharge(w)){
+        const nouveau=round125(rm*AUTO_TOP);
+        showPR(`Nouveau RM · ${fmt(nouveau)} kg`, `${cfg.principal.nom} : ${fmt(rm)} → ${fmt(nouveau)} kg`);
+      }
+      if(S.ui.rest && S.auto.logs[k].res) startRest(x.ex===0?S.ui.restMain:S.ui.restAcc);
+    };
+  });
+
+  const faites=autoFaites(s,w,se), tot=series.length;
+  $("#asProg").style.width=(faites/tot*100)+"%";
+  $("#asCount").textContent = faites===tot?`Séance complète · ${tot} séries`:`${faites} série${faites>1?"s":""} sur ${tot}`;
+
+  const rmSuivant=autoRm(s,w,se===1?2:1);
+  const banniere=$("#asNext");
+  if(S.auto.logs[autoKey(s,w,se,autoIdxTop(s))]?.res==="ok" && !dech){
+    banniere.style.display="";
+    banniere.innerHTML=`Série de tête validée · nouveau RM <b>${fmt(round125(rm*AUTO_TOP))} kg</b> à la prochaine séance`;
+  } else banniere.style.display="none";
+}
+$("#asBack").onclick=()=>switchView("v-home");
+$("#asSave").onclick=()=>{
+  const {s,w,se}=autoSess;
+  if(!autoFaites(s,w,se)){ toast("Renseignez au moins une série"); return; }
+  const neuf=!S.auto.sessDone[autoSk(s,w,se)];
+  S.auto.sessDone[autoSk(s,w,se)]=Date.now(); save();
+  stopRest();
+  if(neuf){ confettiBurst(); vibrate([30,50,30]); }
+  toast("Séance enregistrée");
+  autoWeek=w; switchView("v-home");
+};
+
+let autoRmKey=null;
+function openAutoRm(k,nom){
+  autoRmKey=k;
+  $("#rmSheetName").textContent=nom;
+  $("#rmInput").value=S.auto.rm[k]||0;
+  $("#rmSheet").classList.add("open");
+}
+
 /* ═════ NAV ═════ */
-const VIEW_SUBS={ "v-home":"", "v-sess":"Séance", "v-bi":"Statistiques", "v-set":"Réglages" };
+const VIEW_SUBS={ "v-home":"", "v-sess":"Séance", "v-asess":"Séance", "v-bi":"Statistiques", "v-set":"Réglages" };
 function switchView(id){
   $$(".view").forEach(v=>v.classList.toggle("active",v.id===id));
   $$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===id));
@@ -1552,14 +1852,17 @@ function switchView(id){
 }
 $$(".tab").forEach(t=>t.onclick=()=>{
   vibrate(8);
-  if(t.dataset.view==="v-sess"){ openSession(curSess.w,curSess.se); }
+  if(t.dataset.view==="v-sess"){
+    if(S.ui.mode==="auto") openAutoSess(autoSess.s,autoSess.w,autoSess.se);
+    else openSession(curSess.w,curSess.se);
+  }
   else switchView(t.dataset.view);
 });
 
 /* ═════ 1RM SHEET ═════ */
 let rmLift="tractions";
 function openRM(lift){
-  rmLift=lift;
+  rmLift=lift; autoRmKey=null;
   $("#rmSheetName").textContent=LIFTS[lift].name;
   $("#rmInput").value=S.rm[lift];
   $("#rmSheet").classList.add("open");
@@ -1568,7 +1871,11 @@ $("#rmMinus").onclick=()=>{ $("#rmInput").value=Math.max(0,(parseFloat($("#rmInp
 $("#rmPlus").onclick=()=>{ $("#rmInput").value=(parseFloat($("#rmInput").value)||0)+S.ui.inc; };
 $("#rmSave").onclick=()=>{
   const v=parseFloat(String($("#rmInput").value).replace(",","."));
-  if(v>0){ S.rm[rmLift]=v; save(); toast("1RM mis à jour, charges recalculées"); }
+  if(v>0){
+    if(autoRmKey){ S.auto.rm[autoRmKey]=v; autoRmKey=null; }
+    else S.rm[rmLift]=v;
+    save(); toast("RM mis à jour, charges recalculées");
+  }
   $("#rmSheet").classList.remove("open");
   const active=$$(".view").find(x=>x.classList.contains("active"));
   if(active) switchView(active.id);
