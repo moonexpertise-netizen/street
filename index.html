@@ -1,4 +1,4 @@
-<title>MoonSport · Pull / Push / Legs</title>
+<title>MoonSport · Push / Pull / Muscle-up</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -506,7 +506,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
     <div id="authLogin" style="display:none">
       <h1 class="lock-h">MoonSport</h1>
-      <div class="lock-sub">Suivi de vos séances Pull, Push et Legs.<br>Accès réservé aux comptes MOON Expertise.</div>
+      <div class="lock-sub">Suivi de vos séances Push, Pull et Muscle-up.<br>Accès réservé aux comptes MOON Expertise.</div>
       <button class="ms-btn" id="msBtn">
         <svg viewBox="0 0 21 21" aria-hidden="true">
           <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
@@ -1697,7 +1697,7 @@ const AUTO_SEANCES={
     {nom:"Tractions lestées", court:"Tractions", rm:"pull",    blocs:AUTO_BLOCS("À vide")},
     {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS("Kettlebell léger")},
   ]},
-  mu:{ nom:"Muscle-up", color:"var(--lift-3)", exos:[
+  mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
     {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu", blocs:AUTO_BLOCS("À vide")},
   ]},
 };
@@ -1709,6 +1709,9 @@ const autoFacteur = w => autoDecharge(w) ? AUTO_DELOAD : 1;
 const autoKey=(s,w,se,i)=>`auto|${s}|${w}|${se}|${i}`;
 const autoSk =(s,w,se)=>`auto|${s}|${w}|${se}`;
 const autoExos=s=>AUTO_SEANCES[s].exos;
+/* Nombre de séances hebdomadaires du groupe : 2 par défaut, 1 pour le muscle-up. */
+const autoNb=s=>AUTO_SEANCES[s].seances||2;
+const autoList=s=>autoNb(s)===1?[1]:[1,2];
 /* Repos associé à chaque bloc, paramétrable dans les réglages. */
 const AUTO_REPOS={"Montée en gamme":"restForce","Puissance":"restPuiss","Volume":"restVol","Max reps":"restMax"};
 const autoRepos=bloc=>S.ui[AUTO_REPOS[bloc]] ?? 120;
@@ -1724,7 +1727,7 @@ function autoTopIdx(s,ei){
 function autoRm(s,ei,w,se){
   let rm=S.auto.rm[autoExos(s)[ei].rm]||0;
   const top=autoTopIdx(s,ei);
-  for(let ww=1;ww<=w;ww++) for(const ss of [1,2]){
+  for(let ww=1;ww<=w;ww++) for(const ss of autoList(s)){
     if(ww===w&&ss>=se) return rm;
     if(!autoTeteQualifiante(ww,ss)) continue;
     if(S.auto.logs[autoKey(s,ww,ss,top)]?.res==="ok") rm=round125(rm*AUTO_TOP);
@@ -1760,8 +1763,10 @@ function autoFaites(s,w,se){
   return autoSeries(s,w,se).filter(x=>S.auto.logs[autoKey(s,w,se,x.i)]?.res).length;
 }
 function autoProchaine(){
-  for(let w=1;w<=104;w++) for(const se of [1,2]) for(const id of AUTO_IDS)
+  for(let w=1;w<=104;w++) for(const se of [1,2]) for(const id of AUTO_IDS){
+    if(se>autoNb(id)) continue;
     if(!S.auto.sessDone[autoSk(id,w,se)]) return {s:id,w,se};
+  }
   return null;
 }
 
@@ -1794,7 +1799,7 @@ function renderAutoHome(){
       <span class="lh-name">${cfg.nom}</span>
       <span class="palier-chip${dech?" deload":""}" style="pointer-events:none">${dech?"Décharge":"Montée"}</span>`;
     box.appendChild(head);
-    for(const se of [1,2]){
+    for(const se of autoList(id)){
       const done=!!S.auto.sessDone[autoSk(id,w,se)];
       const suivant=nx&&nx.s===id&&nx.w===w&&nx.se===se;
       const series=autoSeries(id,w,se);
@@ -1954,7 +1959,7 @@ function autoStats(){
   let faites=0, valid=0; const res={ok:0,moyen:0,echec:0};
   for(let w=1;w<=52;w++){
     const r={w, faites:0};
-    AUTO_IDS.forEach(id=>{ for(const se of [1,2]){
+    AUTO_IDS.forEach(id=>{ for(const se of autoList(id)){
       if(S.auto.sessDone[autoSk(id,w,se)]){ r.faites++; faites++; }
       autoSeries(id,w,se).forEach(x=>{
         const v=S.auto.logs[autoKey(id,w,se,x.i)]?.res;
@@ -1981,7 +1986,7 @@ function renderAutoBI(){
   st.exos.forEach(e=>{
     const d=e.courant-e.base, top=autoTopIdx(e.id,e.ei);
     let dernier=null;
-    for(let w=52;w>=1&&!dernier;w--) for(const se of [2,1]){
+    for(let w=52;w>=1&&!dernier;w--) for(const se of autoList(e.id).slice().reverse()){
       const v=S.auto.logs[autoKey(e.id,w,se,top)]?.res;
       if(v){ dernier=v; break; }
     }
@@ -2073,7 +2078,7 @@ function drawAutoRegular(){
   let h='<div class="reg">';
   AUTO_IDS.forEach(id=>{
     h+='<div class="reg-row"><span class="reg-lab">'+AUTO_SEANCES[id].nom+'</span><div class="reg-cells">';
-    for(let w=1;w<=n;w++) for(const se of [1,2]){
+    for(let w=1;w<=n;w++) for(const se of autoList(id)){
       const done=!!S.auto.sessDone[autoSk(id,w,se)];
       const entamee=autoSeries(id,w,se).some(x=>S.auto.logs[autoKey(id,w,se,x.i)]?.res);
       h+='<i class="'+(done?"full":entamee?"part":"")+(autoDecharge(w)?" dech":"")+'" title="Semaine '+w+' séance '+se+'"></i>';
