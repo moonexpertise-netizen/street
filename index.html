@@ -1715,15 +1715,15 @@ async function pullCloud(){
     const j=await r.json();
     if(!j.configured){ syncOn=false; setSync("","Local seulement"); return; }
     syncOn=true;
-    if(j.data){
-      const distant=j.data, local=S;
-      const recent=(distant.updatedAt||0)>=(local.updatedAt||0);
-      S = recent ? mergeState(local,distant) : mergeState(distant,local);
+    const distant=j.data, local=S;
+    if(distant){
+      const distantPlusRecent=(distant.updatedAt||0)>=(local.updatedAt||0);
+      S = distantPlusRecent ? mergeState(local,distant) : mergeState(distant,local);
       localStorage.setItem("moonsport", JSON.stringify(S));
-      if(!recent) await pushCloud(); else setSync("ok","Synchronisé");
-    } else {
-      await pushCloud();
     }
+    /* On renvoie TOUJOURS le résultat de la fusion : sinon un appareil
+       qui découvre un serveur vide garderait ses séances pour lui seul. */
+    await pushCloud();
   }catch(e){ setSync("err","Hors ligne"); }
 }
 function schedulePush(){
@@ -1742,7 +1742,16 @@ async function pushCloud(){
   }catch(e){ setSync("err","Non synchronisé"); }
 }
 /* On enregistre avant de quitter ou de passer en arrière-plan. */
-document.addEventListener("visibilitychange",()=>{ if(document.hidden&&syncOn){ clearTimeout(pushT); pushCloud(); } });
+let dernierPull=Date.now();
+document.addEventListener("visibilitychange",()=>{
+  if(!syncOn) return;
+  if(document.hidden){ clearTimeout(pushT); pushCloud(); return; }
+  /* De retour au premier plan : on récupère ce qui a pu être saisi ailleurs. */
+  if(Date.now()-dernierPull>15000){
+    dernierPull=Date.now();
+    pullCloud().then(()=>{ const v=$$(".view").find(x=>x.classList.contains("active")); if(v) switchView(v.id); });
+  }
+});
 
 /* ═════ CONNEXION MICROSOFT ═════ */
 let account=null;
