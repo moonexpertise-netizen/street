@@ -929,7 +929,7 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 /* ═════ ÉTAT ═════ */
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
-  auto:{rm:{push:70, pushSquat:60, pull:50, pullSdt:100}, logs:{}, sessDone:{}},
+  auto:{rm:{push:70, pushSquat:60, pull:50, pullSdt:100, mu:20}, logs:{}, sessDone:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
   ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"auto",
       restForce:240, restPuiss:180, restVol:120, restMax:120}
@@ -1697,6 +1697,9 @@ const AUTO_SEANCES={
     {nom:"Tractions lestées", court:"Tractions", rm:"pull",    blocs:AUTO_BLOCS("À vide")},
     {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS("Kettlebell léger")},
   ]},
+  mu:{ nom:"Muscle-up", color:"var(--lift-3)", exos:[
+    {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu", blocs:AUTO_BLOCS("À vide")},
+  ]},
 };
 const AUTO_IDS=Object.keys(AUTO_SEANCES);
 const autoBloc    = w => Math.floor((w-1)/AUTO_BLOC)+1;
@@ -1800,17 +1803,13 @@ function renderAutoHome(){
       b.className="srow"+(done?" done":"");
       b.innerHTML=`<div style="min-width:0">
           <div class="s-name">Séance ${se}${suivant?'<span class="s-tag">à suivre</span>':""}</div>
-          <div class="s-meta">${series.length} séries · têtes ${tetes.map(t=>fmt(t.kg)+" kg").join(" et ")}</div>
+          <div class="s-meta">${series.length} séries · tête${tetes.length>1?"s":""} ${tetes.map(t=>fmt(t.kg)+" kg").join(" et ")}</div>
         </div>
         <div class="s-right">${done?'<span class="s-check">Fait</span>':""}<span class="chev">›</span></div>`;
       b.onclick=()=>openAutoSess(id,w,se);
       box.appendChild(b);
     }
   });
-  box.insertAdjacentHTML("beforeend",
-    `<div class="lifthead"><span class="dot2" style="background:var(--panel-3)"></span>
-       <span class="lh-name" style="color:var(--ink-3)">Dynamique</span>
-       <span class="palier-chip" style="pointer-events:none">à définir</span></div>`);
 
   const rr=$("#aRmRow"); rr.innerHTML="";
   AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
