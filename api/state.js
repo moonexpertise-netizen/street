@@ -8,10 +8,32 @@ const { sessionFrom } = require("./_session");
 
 const MAX = 1024 * 1024;               // 1 Mo, très au-delà d'un usage normal
 
+/* Vercel nomme les variables selon le préfixe choisi à la connexion de la
+   base. Plutôt que d'imposer un nom précis, on reconnaît d'abord les noms
+   usuels, puis à défaut on repère l'URL Upstash et son jeton associé. */
 function store() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const tok = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-  return url && tok ? { url: url.replace(/\/$/, ""), tok } : null;
+  const env = process.env;
+  const connus = [
+    ["KV_REST_API_URL", "KV_REST_API_TOKEN"],
+    ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
+    ["STORAGE_REST_API_URL", "STORAGE_REST_API_TOKEN"],
+    ["STORAGE_URL", "STORAGE_TOKEN"],
+  ];
+  for (const [u, t] of connus) if (env[u] && env[t]) return { url: env[u].replace(/\/$/, ""), tok: env[t] };
+
+  const cleUrl = Object.keys(env).find(k =>
+    /URL$/.test(k) && /^https:\/\/[^\s]*upstash\.io/i.test(env[k] || ""));
+  if (cleUrl) {
+    const base = cleUrl.replace(/URL$/, "");
+    const cleTok = [base + "TOKEN", base + "REST_TOKEN"].find(k => env[k])
+      || Object.keys(env).find(k => k.startsWith(base) && /TOKEN$/.test(k));
+    if (cleTok && env[cleTok]) return { url: env[cleUrl].replace(/\/$/, ""), tok: env[cleTok] };
+  }
+  return null;
+}
+/* Noms des variables repérées, sans aucune valeur : sert au diagnostic. */
+function varsVues() {
+  return Object.keys(process.env).filter(k => /KV|UPSTASH|REDIS|STORAGE/i.test(k)).sort();
 }
 
 async function readBody(req) {
@@ -34,7 +56,7 @@ module.exports = async (req, res) => {
   if (!s) { res.status(401).json({ error: "auth" }); return; }
 
   const c = store();
-  if (!c) { res.status(200).json({ configured: false }); return; }
+  if (!c) { res.status(200).json({ configured: false, vars: varsVues() }); return; }
 
   const key = "moonsport:" + (s.oid || s.email);
   const auth = { Authorization: `Bearer ${c.tok}` };
