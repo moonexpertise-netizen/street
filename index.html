@@ -363,6 +363,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .arow .field{grid-column:3;grid-row:1}
 .arow .field input{height:38px;font-size:15px}
 .a-res{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.a-res.une{grid-template-columns:1fr}
 .resb{height:38px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
   font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:center;transition:.15s}
 .resb:active{transform:scale(.94)}
@@ -446,6 +447,15 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .cycrow td{padding:11px 4px 4px;text-align:left!important;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-bottom:none;color:var(--gold-ink)}
 
 /* ── notifications ── */
+.flash{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;
+  text-align:center;padding:28px;background:var(--good);color:#fff}
+.flash.show{display:flex;animation:flashpulse .5s ease-in-out 0s 6}
+@keyframes flashpulse{0%,100%{opacity:1}50%{opacity:.45}}
+.flash .fl-k{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.flash .fl-t{font-family:var(--f-display);font-size:42px;font-weight:600;letter-spacing:-.03em;margin-top:8px}
+.flash .fl-s{font-size:15px;margin-top:10px;opacity:.9;font-weight:500}
+.arch-link{text-align:center;margin-top:4px}
+.arch-link button{font-size:12px;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px}
 .toast{position:fixed;left:50%;bottom:calc(94px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);
   background:var(--ink);color:var(--page);padding:11px 17px;border-radius:11px;font-weight:600;font-size:13.5px;
   opacity:0;pointer-events:none;transition:.3s cubic-bezier(.3,.8,.3,1);z-index:80;box-shadow:var(--shadow-lg);max-width:88vw;text-align:center}
@@ -534,6 +544,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <section class="view active" id="v-home">
   <div class="wrap stack">
     <div id="homeAuto" style="display:none">
+      <div class="card pad" id="aCompteur" style="margin-bottom:18px"></div>
       <div class="label">Programme auto-régulé</div>
       <div class="card">
         <div class="wknav">
@@ -680,12 +691,20 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
           <div class="switch on" id="restSwitch"></div>
         </div>
         <div class="settings-item">
-          <div><div class="si-t">Repos · exercice principal</div><div class="si-s">Tractions, dips et squats lestés</div></div>
-          <div class="mini-step"><button data-t="restMain" data-d="-15">−</button><span class="mono" id="restMainVal">1:30</span><button data-t="restMain" data-d="15">+</button></div>
+          <div><div class="si-t">Repos · montée en gamme</div><div class="si-s">Séries lourdes jusqu'à la tête</div></div>
+          <div class="mini-step"><button data-t="restForce" data-d="-15">−</button><span class="mono" id="restForceVal">4:00</span><button data-t="restForce" data-d="15">+</button></div>
         </div>
         <div class="settings-item">
-          <div><div class="si-t">Repos · accessoires</div><div class="si-s">Tirage, curl, développé, corde</div></div>
-          <div class="mini-step"><button data-t="restAcc" data-d="-15">−</button><span class="mono" id="restAccVal">1:00</span><button data-t="restAcc" data-d="15">+</button></div>
+          <div><div class="si-t">Repos · puissance</div><div class="si-s">Séries à 60 %</div></div>
+          <div class="mini-step"><button data-t="restPuiss" data-d="-15">−</button><span class="mono" id="restPuissVal">3:00</span><button data-t="restPuiss" data-d="15">+</button></div>
+        </div>
+        <div class="settings-item">
+          <div><div class="si-t">Repos · volume</div><div class="si-s">Séries à 35 %</div></div>
+          <div class="mini-step"><button data-t="restVol" data-d="-15">−</button><span class="mono" id="restVolVal">2:00</span><button data-t="restVol" data-d="15">+</button></div>
+        </div>
+        <div class="settings-item">
+          <div><div class="si-t">Repos · séries max</div><div class="si-s">Répétitions maximales de fin de bloc</div></div>
+          <div class="mini-step"><button data-t="restMax" data-d="-15">−</button><span class="mono" id="restMaxVal">2:00</span><button data-t="restMax" data-d="15">+</button></div>
         </div>
         <div class="settings-item">
           <div><div class="si-t">Vibrations</div><div class="si-s">Retour haptique sur les actions</div></div>
@@ -698,21 +717,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="label">RM de référence</div>
       <div class="card" id="autoRmSettings"></div>
       <div class="tiny muted" style="margin-top:8px">Ces valeurs évoluent seules quand une série de tête passe en OK. Les modifier ici réinitialise la base de calcul.</div>
-    </div>
-
-    <div>
-      <div class="label">Programme archivé</div>
-      <div class="card">
-        <div class="settings-item">
-          <div><div class="si-t">Programme 12 semaines</div><div class="si-s">Cycles, paliers et décharge · saisies conservées</div></div>
-          <button class="btn ghost sm" id="openArchive">Consulter</button>
-        </div>
-        <div id="rmSettings"></div>
-        <div class="settings-item">
-          <div><div class="si-t">Pourcentages du 1RM</div><div class="si-s">24 valeurs, semaine par semaine</div></div>
-          <button class="btn ghost sm" id="progEditBtn">Modifier</button>
-        </div>
-      </div>
     </div>
 
     <div>
@@ -735,6 +739,11 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       </div>
     </div>
 
+    <div style="display:none">
+      <div id="rmSettings"></div>
+      <button id="progEditBtn">Modifier</button>
+    </div>
+    <div class="arch-link"><button id="openArchive">Consulter l'ancien programme 12 semaines</button></div>
     <div>
       <div class="label">Données</div>
       <div class="card">
@@ -839,6 +848,14 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   </div>
 </div>
 
+<div class="flash" id="restFlash">
+  <div>
+    <div class="fl-k">Repos terminé</div>
+    <div class="fl-t">C'est parti</div>
+    <div class="fl-s" id="flashNext"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -915,7 +932,8 @@ const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
   auto:{rm:{push:70, pushSquat:60, pull:50, pullSdt:100}, logs:{}, sessDone:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"auto"}
+  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"auto",
+      restForce:240, restPuiss:180, restVol:120, restMax:120}
 };
 /* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
    pour qu'une version plus ancienne des données reste exploitable. */
@@ -1397,11 +1415,11 @@ $("#planGo").onclick=()=>{
 /* On mémorise l'heure de FIN, jamais un compteur qu'on décrémente :
    iOS gèle les minuteurs quand le navigateur passe en arrière-plan, mais
    l'horloge, elle, continue. Au retour, le temps restant est donc juste. */
-let rtInt=null, rtEnd=0, rtTotal=0, rtSonne=false;
+let rtInt=null, rtEnd=0, rtTotal=0, rtSonne=false, rtSuite="";
 function restLeft(){ return Math.max(0, Math.round((rtEnd-Date.now())/1000)); }
-function startRest(sec){
+function startRest(sec,suite){
   clearInterval(rtInt);
-  rtTotal=sec; rtEnd=Date.now()+sec*1000; rtSonne=false;
+  rtTotal=sec; rtEnd=Date.now()+sec*1000; rtSonne=false; rtSuite=suite||"";
   $("#restTimer").classList.add("show");
   tickRest();
   rtInt=setInterval(tickRest,250);
@@ -1412,13 +1430,24 @@ function tickRest(){
   $("#rtBar").style.width=(rtTotal?left/rtTotal*100:0)+"%";
   if(left<=0&&!rtSonne){
     rtSonne=true;
-    beep(); vibrate([80,60,80]);
+    beep(); beep2();
+    /* Vibration longue et rythmée : perceptible poche fermée. */
+    vibrate([300,120,300,120,500]);
     $("#rtTime").textContent="0:00";
     $("#restTimer").classList.add("fini");
-    toast("Repos terminé");
-    setTimeout(stopRest,4000);
+    flashFin();
+    setTimeout(stopRest,4500);
   }
 }
+let flashT=null;
+function flashFin(){
+  $("#flashNext").textContent=rtSuite||"";
+  const f=$("#restFlash");
+  f.classList.add("show");
+  clearTimeout(flashT);
+  flashT=setTimeout(()=>f.classList.remove("show"),3800);
+}
+function beep2(){ setTimeout(beep,260); setTimeout(beep,520); }
 function stopRest(){
   clearInterval(rtInt); rtInt=null; rtSonne=false;
   $("#restTimer").classList.remove("show","fini");
@@ -1678,6 +1707,9 @@ const autoFacteur = w => autoDecharge(w) ? AUTO_DELOAD : 1;
 const autoKey=(s,w,se,i)=>`auto|${s}|${w}|${se}|${i}`;
 const autoSk =(s,w,se)=>`auto|${s}|${w}|${se}`;
 const autoExos=s=>AUTO_SEANCES[s].exos;
+/* Repos associé à chaque bloc, paramétrable dans les réglages. */
+const AUTO_REPOS={"Montée en gamme":"restForce","Puissance":"restPuiss","Volume":"restVol","Max reps":"restMax"};
+const autoRepos=bloc=>S.ui[AUTO_REPOS[bloc]] ?? 120;
 
 /* Position, dans la liste à plat, de la série de tête d'un exercice. */
 function autoTopIdx(s,ei){
@@ -1741,6 +1773,14 @@ function renderAutoHome(){
     ? `Bloc ${autoBloc(w)} · décharge · toutes les charges à 75 %`
     : `Bloc ${autoBloc(w)} · montée ${autoPos(w)} sur 4`;
   $("#aWkPrev").disabled=w<=1;
+
+  const comptes=AUTO_IDS.map(id=>({id, n:Object.keys(S.auto.sessDone)
+    .filter(k=>k.startsWith("auto|"+id+"|")).length}));
+  $("#aCompteur").innerHTML='<div class="res3" style="grid-template-columns:repeat('
+    + comptes.length + ',1fr)">'
+    + comptes.map(c=>'<div><div class="res-v mono" style="color:'+liftColor2(c.id)+'">'+c.n+'</div>'
+        + '<div class="res-l">séance'+(c.n>1?"s":"")+' '+AUTO_SEANCES[c.id].nom+'</div></div>').join("")
+    + '</div>';
 
   const box=$("#aRows"); box.innerHTML="";
   AUTO_IDS.forEach(id=>{
@@ -1826,7 +1866,10 @@ function renderAutoSess(){
       <div class="a-kg mono">${x.libre?`<span class="a-libre">${x.charge}</span>`
         :`${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}`}</div>
       <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?"reps":x.rmax}" value="${d.reps??""}"></div>
-      <div class="a-res">${AUTO_RES.map(r=>
+      <div class="a-res${x.libre?" une":""}">${x.libre
+        ? `<button class="resb${d.res?" on":""}" data-k="${k}" data-r="fait"
+             style="${d.res?"background:var(--ink);border-color:var(--ink);color:var(--page)":""}">${d.res?"Série faite":"Valider la série"}</button>`
+        : AUTO_RES.map(r=>
         `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}"
            style="${d.res===r.k?`background:${r.col};border-color:${r.col};color:var(--panel)`:""}">${r.lab}</button>`).join("")}</div>`;
     wrap.appendChild(row);
@@ -1854,7 +1897,10 @@ function renderAutoSess(){
                `${ex.nom} : ${fmt(base)} → ${fmt(round125(base*AUTO_TOP))} kg`);
       }
       renderAutoSess();
-      if(S.ui.rest && S.auto.logs[k].res) startRest(x.bloc==="Volume"?S.ui.restAcc:S.ui.restMain);
+      if(S.ui.rest && S.auto.logs[k].res){
+        const suiv=series[series.indexOf(x)+1];
+        startRest(autoRepos(x.bloc), suiv ? suiv.exCourt+" · "+suiv.bloc : "Dernière série terminée");
+      }
     };
   });
 
@@ -1909,7 +1955,7 @@ function autoStats(){
       if(S.auto.sessDone[autoSk(id,w,se)]){ r.faites++; faites++; }
       autoSeries(id,w,se).forEach(x=>{
         const v=S.auto.logs[autoKey(id,w,se,x.i)]?.res;
-        if(v){ res[v]++; valid++; }
+        if(v){ valid++; if(res[v]!==undefined) res[v]++; }
       });
     }});
     parSemaine.push(r);
@@ -1921,11 +1967,12 @@ function renderAutoBI(){
   const st=autoStats();
   const hausses=st.exos.filter(e=>e.courant>e.base).length;
 
-  $("#biResume").innerHTML=
-    '<div class="res3">'
-    + '<div><div class="res-v mono">'+st.faites+'</div><div class="res-l">séances faites</div></div>'
-    + '<div><div class="res-v mono">'+st.valid+'</div><div class="res-l">séries validées</div></div>'
-    + '<div><div class="res-v mono">'+hausses+'</div><div class="res-l">RM en hausse</div></div></div>';
+  const parSeance=AUTO_IDS.map(id=>({id, n:Object.keys(S.auto.sessDone)
+    .filter(k=>k.startsWith("auto|"+id+"|")).length}));
+  $("#biResume").innerHTML='<div class="res3" style="grid-template-columns:repeat('+(parSeance.length+1)+',1fr)">'
+    + parSeance.map(c=>'<div><div class="res-v mono" style="color:'+liftColor2(c.id)+'">'+c.n+'</div>'
+        + '<div class="res-l">séance'+(c.n>1?"s":"")+' '+AUTO_SEANCES[c.id].nom+'</div></div>').join("")
+    + '<div><div class="res-v mono">'+st.valid+'</div><div class="res-l">séries validées</div></div></div>';
 
   const lr=$("#liftRows"); lr.innerHTML="";
   st.exos.forEach(e=>{
@@ -2092,8 +2139,9 @@ function renderSettings(){
   $("#themeSwitch").classList.toggle("on",curTheme()==="dark");
   $("#restSwitch").classList.toggle("on",S.ui.rest);
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
-  $("#restMainVal").textContent=fmtSec(S.ui.restMain);
-  $("#restAccVal").textContent=fmtSec(S.ui.restAcc);
+  ["restForce","restPuiss","restVol","restMax"].forEach(k=>{
+    const e=$("#"+k+"Val"); if(e) e.textContent=fmtSec(S.ui[k]);
+  });
   const ar=$("#autoRmSettings"); ar.innerHTML="";
   AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
     const cour=autoRmCourant(id,ei), base=S.auto.rm[ex.rm]||0;
@@ -2121,7 +2169,7 @@ $("#hapticSwitch").onclick=()=>{ S.ui.haptic=!S.ui.haptic; save(); renderSetting
 $$(".mini-step button").forEach(b=>{
   b.onclick=()=>{
     const t=b.dataset.t, d=+b.dataset.d;
-    S.ui[t]=Math.min(300,Math.max(15,S.ui[t]+d));
+    S.ui[t]=Math.min(600,Math.max(15,S.ui[t]+d));
     save(); renderSettings(); vibrate(8);
   };
 });
