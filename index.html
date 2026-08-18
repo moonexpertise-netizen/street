@@ -1685,20 +1685,25 @@ const AUTO_RES=[
 /* La montée en gamme ne bouge jamais. En revanche les plages de puissance
    et de volume s'adaptent au mouvement : un muscle-up dont le maximum à vide
    tourne autour de 5 reps ne peut pas viser les mêmes séries qu'un dip. */
-const AUTO_BLOCS=(finition,r={})=>[
-  {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
-  {t:"Puissance",       rmin:r.pmin??4, rmax:r.pmax??6,  pcts:[.60,.60]},
-  {t:"Volume",          rmin:r.vmin??8, rmax:r.vmax??10, pcts:[.35,.35]},
-  {t:"Max reps",        libre:true, charge:finition, pcts:[0,0]},
-];
+const AUTO_BLOCS=(finition,r={})=>{
+  const b=[
+    {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
+    {t:"Puissance",       rmin:r.pmin??4, rmax:r.pmax??6,  pcts:[.60,.60]},
+    {t:"Volume",          rmin:r.vmin??8, rmax:r.vmax??10, pcts:[.35,.35]},
+  ];
+  /* Les séries max ne concernent que les mouvements où elles ont du sens :
+     on les omet en passant une finition nulle. */
+  if(finition) b.push({t:"Max reps", libre:true, charge:finition, pcts:[0,0]});
+  return b;
+};
 const AUTO_SEANCES={
   push:{ nom:"Push", color:"var(--lift-2)", exos:[
     {nom:"Dips lestés",          court:"Dips",  rm:"push",      blocs:AUTO_BLOCS("À vide")},
-    {nom:"Squat barre assistée", court:"Squat", rm:"pushSquat", blocs:AUTO_BLOCS("À vide")},
+    {nom:"Squat barre assistée", court:"Squat", rm:"pushSquat", blocs:AUTO_BLOCS(null)},
   ]},
   pull:{ nom:"Pull", color:"var(--lift-1)", exos:[
     {nom:"Tractions lestées", court:"Tractions", rm:"pull",    blocs:AUTO_BLOCS("À vide")},
-    {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS("Kettlebell léger")},
+    {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS(null)},
   ]},
   mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
     {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu",
