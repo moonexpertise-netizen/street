@@ -1682,10 +1682,13 @@ const AUTO_RES=[
    série de tête, puis puissance, puis volume. 8 séries au total. */
 /* Schéma commun : montée en gamme terminée par la série de tête, puissance,
    volume, puis deux séries de répétitions maximales sans charge de travail. */
-const AUTO_BLOCS=finition=>[
+/* La montée en gamme ne bouge jamais. En revanche les plages de puissance
+   et de volume s'adaptent au mouvement : un muscle-up dont le maximum à vide
+   tourne autour de 5 reps ne peut pas viser les mêmes séries qu'un dip. */
+const AUTO_BLOCS=(finition,r={})=>[
   {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
-  {t:"Puissance",       rmin:4, rmax:6,  pcts:[.60,.60]},
-  {t:"Volume",          rmin:8, rmax:10, pcts:[.35,.35]},
+  {t:"Puissance",       rmin:r.pmin??4, rmax:r.pmax??6,  pcts:[.60,.60]},
+  {t:"Volume",          rmin:r.vmin??8, rmax:r.vmax??10, pcts:[.35,.35]},
   {t:"Max reps",        libre:true, charge:finition, pcts:[0,0]},
 ];
 const AUTO_SEANCES={
@@ -1698,7 +1701,8 @@ const AUTO_SEANCES={
     {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS("Kettlebell léger")},
   ]},
   mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
-    {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu", blocs:AUTO_BLOCS("À vide")},
+    {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu",
+     blocs:AUTO_BLOCS("À vide", {pmin:2, pmax:3, vmin:4, vmax:5})},
   ]},
 };
 const AUTO_IDS=Object.keys(AUTO_SEANCES);
@@ -1857,7 +1861,8 @@ function renderAutoSess(){
       const cibles=[...new Set(memeBloc.map(y=>y.cible))];
       const reps=x.libre?"maximum de reps"
         :cibles.length>1?`${cibles.join(" puis ")} reps`
-        :cibles[0]===1?"1 rep":`${cibles[0]} reps`;
+        :x.rmin!==x.rmax?`${x.rmin} à ${x.rmax} reps`
+        :x.rmin===1?"1 rep":`${x.rmin} reps`;
       const premier=series.find(y=>y.ex===x.ex).bloc===x.bloc;
       const exo=autoExos(s)[x.ex];
       wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
