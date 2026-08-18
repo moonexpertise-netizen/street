@@ -1683,7 +1683,7 @@ const AUTO_RES=[
 /* Schéma commun : montée en gamme terminée par la série de tête, puissance,
    volume, puis deux séries de répétitions maximales sans charge de travail. */
 const AUTO_BLOCS=finition=>[
-  {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP]},
+  {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
   {t:"Puissance",       rmin:4, rmax:6,  pcts:[.60,.60]},
   {t:"Volume",          rmin:8, rmax:10, pcts:[.35,.35]},
   {t:"Max reps",        libre:true, charge:finition, pcts:[0,0]},
@@ -1746,6 +1746,7 @@ function autoSeries(s,w,se){
       b.pcts.forEach((p,pi)=>{ const pe=autoPct(p,w,se);
         out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
         pct:pe, kg:round125(rm*pe), rmin:b.rmin, rmax:b.rmax,
+        cible: b.reps ? b.reps[pi] : b.rmax,
         top: bi===0 && pi===b.pcts.length-1, libre:!!b.libre, charge:b.charge,
         surNouveauRM: bi>0 && !b.libre && rmA!==rmM}); });
     });
@@ -1848,7 +1849,11 @@ function renderAutoSess(){
       cle=c;
       wrap=document.createElement("div"); wrap.className="ex";
       const nb=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc).length;
-      const reps=x.libre?"maximum de reps":x.rmin===x.rmax?`${x.rmin} reps`:`${x.rmin} à ${x.rmax} reps`;
+      const memeBloc=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc);
+      const cibles=[...new Set(memeBloc.map(y=>y.cible))];
+      const reps=x.libre?"maximum de reps"
+        :cibles.length>1?`${cibles.join(" puis ")} reps`
+        :cibles[0]===1?"1 rep":`${cibles[0]} reps`;
       const premier=series.find(y=>y.ex===x.ex).bloc===x.bloc;
       const exo=autoExos(s)[x.ex];
       wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
@@ -1864,7 +1869,7 @@ function renderAutoSess(){
     row.innerHTML=`<div class="a-pct mono">${x.libre?"max":Math.round(x.pct*1000)/10+"%"}</div>
       <div class="a-kg mono">${x.libre?`<span class="a-libre">${x.charge}</span>`
         :`${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}`}</div>
-      <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?"reps":x.rmax}" value="${d.reps??""}"></div>
+      <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?"reps":x.cible}" value="${d.reps??""}"></div>
       <div class="a-res${x.libre?" une":""}">${x.libre
         ? `<button class="resb${d.res?" on":""}" data-k="${k}" data-r="fait"
              style="${d.res?"background:var(--ink);border-color:var(--ink);color:var(--page)":""}">${d.res?"Série faite":"Valider la série"}</button>`
@@ -1888,7 +1893,7 @@ function renderAutoSess(){
       const avant=S.auto.logs[k].res;
       S.auto.logs[k].res = avant===r ? undefined : r;
       const x=series.find(y=>autoKey(s,w,se,y.i)===k);
-      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && !x.libre) S.auto.logs[k].reps=x.rmax;
+      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && !x.libre) S.auto.logs[k].reps=x.cible;
       save(); vibrate(14);
       if(x.top && S.auto.logs[k].res==="ok" && autoTeteQualifiante(w,se)){
         const ex=autoExos(s)[x.ex], base=autoRm(s,x.ex,w,se);
