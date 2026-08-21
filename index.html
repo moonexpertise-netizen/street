@@ -377,6 +377,19 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .pa-inc:focus{outline:none;border-color:var(--accent)}
 .pa-row b{min-width:74px;text-align:right}
 .deload-card{padding:18px 16px;border-top:1px solid var(--line)}
+.dl-choix{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.dl-c{text-align:left;padding:13px 14px;border-radius:11px;border:1px solid var(--line-2);
+  background:var(--panel);transition:.15s;display:block;width:100%}
+.dl-c b{display:block;font-size:13.5px;margin-bottom:4px}
+.dl-c span{font-size:12px;color:var(--ink-2);line-height:1.45}
+.dl-c:active{transform:scale(.985)}
+.dl-c.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.dl-c.on b{color:var(--accent)}
+.dl-sep{padding:16px 16px 8px;font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3);border-top:1px solid var(--line)}
+.s-tag.dl{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.plan-chip.dl{border-style:solid;opacity:1;border-color:var(--line-2);color:var(--ink-2);background:var(--panel-2)}
+.plan-chip[disabled]{pointer-events:none}
 .dl-t{font-family:var(--f-display);font-size:17px;font-weight:600}
 .dl-s{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.5}
 .dl-opt{margin-top:14px;padding:12px 13px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line)}
@@ -751,7 +764,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
     <div class="card pad">
       <div class="label" style="margin-bottom:2px">Ressenti</div>
-      <div class="tiny muted">Une pastille par séance, de la semaine 1 à la semaine 12</div>
+      <div class="tiny muted">Une pastille par séance, sur les 15 semaines du programme</div>
       <div style="margin-top:12px" id="ressenti"></div>
     </div>
 
@@ -781,28 +794,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="label">Séance</div>
       <div class="card">
         <div class="settings-item">
-          <div><div class="si-t">Minuteur de repos</div><div class="si-s">Se lance après chaque série validée</div></div>
+          <div><div class="si-t">Minuteur de repos</div><div class="si-s">Se lance après chaque série validée. Les durées viennent du programme, exercice par exercice.</div></div>
           <div class="switch on" id="restSwitch"></div>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">Repos · échauffement</div><div class="si-s">Entre les deux passages</div></div>
-          <div class="mini-step"><button data-t="restEchauf" data-d="-15">−</button><span class="mono" id="restEchaufVal">0:45</span><button data-t="restEchauf" data-d="15">+</button></div>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">Repos · montée en gamme</div><div class="si-s">Séries lourdes jusqu'à la tête</div></div>
-          <div class="mini-step"><button data-t="restForce" data-d="-15">−</button><span class="mono" id="restForceVal">4:00</span><button data-t="restForce" data-d="15">+</button></div>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">Repos · puissance</div><div class="si-s">Séries à 60 %</div></div>
-          <div class="mini-step"><button data-t="restPuiss" data-d="-15">−</button><span class="mono" id="restPuissVal">3:00</span><button data-t="restPuiss" data-d="15">+</button></div>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">Repos · volume</div><div class="si-s">Séries à 35 %</div></div>
-          <div class="mini-step"><button data-t="restVol" data-d="-15">−</button><span class="mono" id="restVolVal">2:00</span><button data-t="restVol" data-d="15">+</button></div>
-        </div>
-        <div class="settings-item">
-          <div><div class="si-t">Repos · séries max</div><div class="si-s">Répétitions maximales de fin de bloc</div></div>
-          <div class="mini-step"><button data-t="restMax" data-d="-15">−</button><span class="mono" id="restMaxVal">2:00</span><button data-t="restMax" data-d="15">+</button></div>
         </div>
         <div class="settings-item">
           <div><div class="si-t">Vibrations</div><div class="si-s">Retour haptique sur les actions</div></div>
@@ -1068,10 +1061,9 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 /* ═════ ÉTAT ═════ */
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
-  adam:{logs:{}, sessDone:{}, plan:{}},
+  adam:{logs:{}, sessDone:{}, plan:{}, deload:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"adam",
-      restForce:240, restPuiss:180, restVol:120, restMax:120, restEchauf:45}
+  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"adam"}
 };
 /* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
    pour qu'une version plus ancienne des données reste exploitable. */
@@ -1080,7 +1072,7 @@ function normalize(r){
   return {...structuredClone(DEF), ...r,
     rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
     logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{},
-    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}, plan:(r.adam&&r.adam.plan)||{}}};
+    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}, plan:(r.adam&&r.adam.plan)||{}, deload:(r.adam&&r.adam.deload)||{}}};
 }
 let S = load();
 function load(){
@@ -1993,16 +1985,36 @@ const admDeload=(cid,w)=>w>cycleById(cid).semaines;
 const admDerniereSem=cid=>{ const c=cycleById(cid); return c.semaines+c.deload; };
 /* Numérotation officielle du programme, page 3 : 15 semaines au total. */
 const semAbs=(cid,w)=>cycleById(cid).debut+w-1;
+/* Une clé de séance appartient au programme si sa semaine tombe dans le cycle. */
+function admSeancesProg(){
+  return Object.keys(S.adam.sessDone).filter(k=>{
+    const [,cid,w]=k.split("|"); const c=cycleById(cid);
+    return c && +w<=c.semaines;
+  }).length;
+}
+/* Semaine de deload : le programme ne donne pas de séances dédiées. Il demande
+   de reprendre des séances existantes en réduisant volume et intensité de 40 à
+   60 %, soit celles du cycle qu'on vient de finir, soit celles du cycle suivant
+   utilisé comme semaine 0 (page 11). */
+const DELOAD_BAISSE=0.5;
+const cycleSuivant=cid=>{ const i=ADAM.findIndex(c=>c.id===cid); return ADAM[i+1]||null; };
+const deloadMode=cid=>S.adam.deload[cid]||null;
+function deloadSrc(cid){
+  const m=deloadMode(cid);
+  if(m==="suivant"){ const n=cycleSuivant(cid); return n?n.id:cid; }
+  return cid;
+}
 /* Repères d'intensité par cycle, page 8. */
 const ZONE={c1:"8 à 12 reps · 50 à 70 % du 1RM", c2:"6 à 8 reps · 70 à 80 % du 1RM", c3:"1 à 5 reps · plus de 80 % du 1RM"};
 
 /* Toutes les lignes d'une séance, exercice par exercice. */
 function admExos(cid,t){ return cycleById(cid).trainings.find(x=>x.n===t)?.exos||[]; }
 function admFormat(ex,w){
-  return ex.parSemaine ? (ex.parSemaine[w-1]||ex.parSemaine[ex.parSemaine.length-1]) : ex.format;
+  if(!ex.parSemaine) return ex.format;
+  return ex.parSemaine[w-1] || ex.parSemaine[0];
 }
-function admFaites(cid,w,t){
-  return admExos(cid,t).filter((e,i)=>S.adam.logs[admKey(cid,w,t,i)]?.res).length;
+function admFaites(cid,w,t,logCid){
+  return admExos(cid,t).filter((e,i)=>S.adam.logs[admKey(logCid||cid,w,t,i)]?.res).length;
 }
 function admProchaine(){
   for(const c of ADAM) for(let w=1;w<=c.semaines;w++) for(const tr of c.trainings)
@@ -2022,6 +2034,14 @@ function planCalcule(objectif,incs,nSem){
   out[nSem-1]=o;
   for(let w=nSem-2;w>=0;w--) out[w]=out[w+1]-(pas[w+1]??pas[pas.length-1]??0);
   return out.map(v=>Math.round(v*100)/100);
+}
+/* En deload, on repart de la dernière charge planifiée du cycle et on la
+   coupe de moitié : le milieu de la fourchette 40-60 % du programme. */
+function planReduit(cid,t,i){
+  const pl=planDe(cid,t,i);
+  if(!pl||!pl.cibles) return null;
+  const v=pl.cibles[pl.cibles.length-1];
+  return v==null?null:fmt(Math.round(v*DELOAD_BAISSE*4)/4)+" kg";
 }
 function planCible(cid,t,i,w){
   const pl=planDe(cid,t,i);
@@ -2063,7 +2083,7 @@ function renderAdamHome(){
   $("#admObjectif").textContent=cy.objectif;
 
   /* Compteur global */
-  const faites=Object.keys(S.adam.sessDone).length;
+  const faites=admSeancesProg();
   $("#admCompteur").innerHTML=
     '<div class="res3"><div><div class="res-v mono">'+faites+'</div><div class="res-l">séances faites</div></div>'
     +'<div><div class="res-v mono">'+admTotalSeances+'</div><div class="res-l">au programme</div></div>'
@@ -2082,22 +2102,51 @@ function renderAdamHome(){
   const box=$("#admRows"); box.innerHTML="";
   majSources();
   if(dech){
-    const nD=cy.deload;
+    const mode=deloadMode(admCycle), suivant=cycleSuivant(admCycle);
     box.innerHTML=`<div class="deload-card">
-      <div class="dl-t">Repos actif${nD>1?` · ${admWeek-cy.semaines} sur ${nD}`:""}</div>
-      <div class="dl-s">Réduction du volume total de 40 à 60 %, maintien de la technique. Ton corps récupère, consolide les gains et prépare la phase suivante.</div>
+      <div class="dl-t">Repos actif</div>
+      <div class="dl-s">Tu continues à t'entraîner, mais allégé : volume et intensité réduits de 40 à 60 %, technique maintenue. Le programme ne prévoit pas de séances dédiées, tu reprends des séances existantes.</div>
+      <div class="dl-choix">
+        <button class="dl-c${mode==="meme"?" on":""}" data-m="meme">
+          <b>Je redémarre le cycle ${cy.num}</b>
+          <span>Tes séances habituelles à charges réduites, en retirant une partie du renforcement.</span></button>
+        ${suivant?`<button class="dl-c${mode==="suivant"?" on":""}" data-m="suivant">
+          <b>Je passe au cycle ${suivant.num} · ${suivant.nom}</b>
+          <span>Semaine 0 : tu découvres les nouveaux formats à intensité réduite.</span></button>`:""}
+      </div>
       <div class="dl-opt"><b>Test de performance</b>
         <span>Un test sur les 4 mouvements est possible en fin de bloc, mais le programme conseille de l'éviter et d'utiliser plutôt les équivalents, pour t'économiser.</span></div>
-      <div class="dl-opt"><b>Si tu redémarres le même cycle</b>
-        <span>Baisse le volume et l'intensité de 40 à 60 % sur tes formats habituels, et supprime une partie des exercices de renforcement.</span></div>
-      <div class="dl-opt"><b>Si tu passes au cycle suivant</b>
-        <span>Utilise cette semaine comme semaine 0 : familiarise-toi avec les nouveaux formats, à intensité réduite et volume allégé.</span></div>
       <div class="src-row">
         <button class="src-link" data-p="3">Structure du programme · p.3</button>
         <button class="src-link" data-p="11">Repos et deload · p.11</button>
       </div>
     </div>`;
     box.querySelectorAll(".src-link").forEach(b=>b.onclick=()=>ouvrirPage(+b.dataset.p));
+    box.querySelectorAll(".dl-c").forEach(b=>b.onclick=()=>{
+      S.adam.deload[admCycle]=b.dataset.m; save(); renderAdamHome(); vibrate(8);
+    });
+    if(!mode) return;
+    const src=deloadSrc(admCycle), cs=cycleById(src);
+    box.insertAdjacentHTML("beforeend",
+      `<div class="dl-sep">Séances de la semaine · cycle ${cs.num} allégé</div>`);
+    cs.trainings.forEach(tr=>{
+      const done=!!S.adam.sessDone[admSk(admCycle,admWeek,tr.n)];
+      const n=admFaites(src,admWeek,tr.n,admCycle), tot=tr.exos.length;
+      const b=document.createElement("button");
+      b.className="srow"+(done?" done":"");
+      b.innerHTML=`<span class="dot" style="background:${cs.couleur}"></span>
+        <div style="min-width:0">
+          <div class="s-name">Training ${tr.n}<span class="s-tag dl">allégé</span></div>
+          <div class="s-meta">${tr.titre}${tr.sous?" · "+tr.sous:""}</div>
+        </div>
+        <div class="s-right">
+          ${done?'<span class="s-check">Fait</span>':n?`<span class="s-part mono">${n}/${tot}</span>`:""}
+          <span class="s-load mono">${tot}<small> exos</small></span>
+          <span class="chev">›</span>
+        </div>`;
+      b.onclick=()=>openAdamSess(admCycle,admWeek,tr.n,src);
+      box.appendChild(b);
+    });
     return;
   }
   cy.trainings.forEach(tr=>{
@@ -2130,25 +2179,34 @@ function majSources(){
 $("#admWkPrev").onclick=()=>{ if(admWeek>1){ admWeek--; renderAdamHome(); vibrate(8); } };
 $("#admWkNext").onclick=()=>{ admWeek++; renderAdamHome(); vibrate(8); };
 
-function openAdamSess(c,w,t){ admSess={c,w,t}; switchView("v-asess"); renderAdamSess(); }
+function openAdamSess(c,w,t,src){ admSess={c,w,t,src:src||c}; switchView("v-asess"); renderAdamSess(); }
 
 function renderAdamSess(){
-  const {c,w,t}=admSess, cy=cycleById(c);
-  const tr=cy.trainings.find(x=>x.n===t);
-  document.documentElement.style.setProperty("--accent",cy.couleur);
-  $("#asCycle").textContent=`Cycle ${cy.num} · ${cy.nom} · semaine ${w} sur ${cy.semaines}`;
+  const {c,w,t}=admSess, src=admSess.src||c;
+  const cy=cycleById(c), cs=cycleById(src), dech=admDeload(c,w);
+  const tr=cs.trainings.find(x=>x.n===t);
+  document.documentElement.style.setProperty("--accent",cs.couleur);
+  $("#asCycle").textContent=dech
+    ? `Deload · semaine ${semAbs(c,w)} · cycle ${cs.num} allégé`
+    : `Cycle ${cy.num} · ${cy.nom} · semaine ${semAbs(c,w)} du programme`;
   $("#asTitle").textContent=`Training ${t} — ${tr.titre}`;
-  $("#asSub").textContent=tr.sous||"";
-  const pg=PAGES[c].t[t];
-  $("#asPage").innerHTML=`<button class="src-link" data-p="${pg}">Voir cette séance dans le programme · p.${pg}</button>`;
-  $("#asPage .src-link").onclick=()=>ouvrirPage(pg,`Cycle ${cy.num} · Training ${t}`);
+  $("#asSub").textContent=dech
+    ? "Volume et intensité réduits de 40 à 60 %, technique maintenue"
+    : (tr.sous||"");
+  const pg=PAGES[src].t[t];
+  $("#asPage").innerHTML=`<button class="src-link" data-p="${pg}">Voir cette séance dans le programme · p.${pg}</button>`
+    +(dech?`<button class="src-link" data-p="11">Consignes de deload · p.11</button>`:"");
+  $("#asPage").className="src-row";
+  $$("#asPage .src-link").forEach(b=>b.onclick=()=>ouvrirPage(+b.dataset.p,`Cycle ${cs.num} · Training ${t}`));
 
   const el=$("#asList"); el.innerHTML="";
   tr.exos.forEach((ex,i)=>{
     const k=admKey(c,w,t,i), d=S.adam.logs[k]||{};
-    const prec=admPrecedent(c,w,t,i);
-    const fmt=admFormat(ex,w);
-    const cible=planCible(c,t,i,w);
+    const prec=dech?null:admPrecedent(c,w,t,i);
+    const fmt=admFormat(ex,dech?1:w);
+    const cible=dech
+      ? planReduit(src,t,i)
+      : planCible(c,t,i,w);
     const card=document.createElement("div");
     card.className="exo"+(d.res?" fait":"");
     card.innerHTML=`
@@ -2164,7 +2222,9 @@ function renderAdamSess(){
       ${ex.parSemaine?`<div class="exo-prog">Progression du cycle : ${ex.parSemaine.map((f,n)=>
           `<span class="${n===w-1?"on":""}">S${n+1} ${f}</span>`).join(" · ")}</div>`:""}
       <div class="exo-plan">
-        <button class="plan-chip${cible?" on":""}" data-i="${i}">${cible?`Objectif S${w} · ${cible}`:"Planifier les charges"}</button>
+        <button class="plan-chip${cible?" on":""}${dech?" dl":""}" data-i="${i}"${dech?" disabled":""}>${
+          dech ? (cible?`Deload · ${cible}`:"Charge libre, nettement allégée")
+               : (cible?`Objectif S${w} · ${cible}`:"Planifier les charges")}</button>
         ${prec?`<span class="plan-prec">S${prec.semaine} : ${prec.charge}</span>`:""}
       </div>
       <div class="exo-saisie">
@@ -2191,7 +2251,7 @@ function renderAdamSess(){
       if(v) startRest(v,"Série suivante");
       else toast("Repos au feeling : récupère complètement avant la suite"); };
   });
-  el.querySelectorAll(".plan-chip").forEach(b=>b.onclick=()=>ouvrirPlan(c,t,+b.dataset.i));
+  if(!dech) el.querySelectorAll(".plan-chip").forEach(b=>b.onclick=()=>ouvrirPlan(c,t,+b.dataset.i));
   el.querySelectorAll(".resb").forEach(b=>{
     b.onclick=()=>{
       const k=b.dataset.k, r=b.dataset.r;
@@ -2204,7 +2264,7 @@ function renderAdamSess(){
     };
   });
 
-  const faites=admFaites(c,w,t), tot=tr.exos.length;
+  const faites=admFaites(src,w,t,c), tot=tr.exos.length;
   $("#asProg").style.width=(faites/tot*100)+"%";
   $("#asCount").textContent = faites===tot?`Séance complète · ${tot} exercices`:`${faites} exercice${faites>1?"s":""} sur ${tot}`;
 }
@@ -2223,7 +2283,7 @@ $("#asSave").onclick=()=>{
 
 /* ═════ STATISTIQUES ═════ */
 function renderAdamBI(){
-  const faites=Object.keys(S.adam.sessDone).length;
+  const faites=admSeancesProg();
   let notes=0;
   for(const k in S.adam.logs) if(S.adam.logs[k].charge) notes++;
   const res={ok:0,moyen:0,echec:0};
@@ -2510,9 +2570,6 @@ function renderSettings(){
   $("#themeSwitch").classList.toggle("on",curTheme()==="dark");
   $("#restSwitch").classList.toggle("on",S.ui.rest);
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
-  ["restEchauf","restForce","restPuiss","restVol","restMax"].forEach(k=>{
-    const e=$("#"+k+"Val"); if(e) e.textContent=fmtSec(S.ui[k]);
-  });
   const rs=$("#rmSettings"); rs.innerHTML="";
   LIFT_IDS.forEach(id=>{
     const L=LIFTS[id], row=document.createElement("div");
