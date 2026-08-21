@@ -369,7 +369,13 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .plan-apercu{margin-top:16px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .pa-row{display:flex;justify-content:space-between;padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px}
 .pa-row:last-child{border-bottom:none}
-.pa-row b{font-size:15px}
+.pa-row b{font-size:15px;margin-left:auto}
+.pa-abs{color:var(--ink-3);font-size:11px}
+.pa-dep{font-size:11px;color:var(--ink-3);margin-left:auto}
+.pa-inc{width:62px;margin-left:auto;padding:5px 7px;font-size:12.5px;text-align:center;
+  border:1px solid var(--line-2);border-radius:7px;background:var(--panel);color:var(--ink)}
+.pa-inc:focus{outline:none;border-color:var(--accent)}
+.pa-row b{min-width:74px;text-align:right}
 .deload-card{padding:18px 16px;border-top:1px solid var(--line)}
 .dl-t{font-family:var(--f-display);font-size:17px;font-weight:600}
 .dl-s{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.5}
@@ -924,7 +930,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div class="grip"></div>
     <h3 id="planTitre">Planifier</h3>
     <div class="muted tiny" id="planFmt"></div>
-    <div class="plan-help">Méthode du programme : fixe ton objectif sur la <b>dernière semaine</b>, choisis l'agrémentation appliquée de séance en séance, l'application soustrait jusqu'à la semaine 1.</div>
+    <div class="plan-help">Méthode de la page 8, en six étapes : fixe un objectif réalisable sur le format imposé, pose-le sur la <b>dernière semaine</b>, choisis l'agrémentation appliquée de séance en séance, soustrais jusqu'à la semaine 1, relis pour vérifier que tout est réalisable — puis tout arracher.
+      <button class="src-link" id="planSrc" style="margin-top:10px">Voir la méthode · p.8</button></div>
     <div class="plan-row">
       <div class="frow" style="flex:1"><label for="planObj">Objectif dernière semaine</label>
         <input id="planObj" inputmode="decimal" placeholder="20"></div>
@@ -1813,7 +1820,7 @@ const FEELING={lab:"Feeling",bas:0,haut:0};
 
 const ADAM=[
 {
-  id:"c1", nom:"Volume", num:1, semaines:5, couleur:"var(--adam-1)",
+  id:"c1", nom:"Volume", num:1, semaines:5, debut:1, deload:1, couleur:"var(--adam-1)",
   objectif:"Accumuler du volume et construire les fondations",
   trainings:[
     {n:1, titre:"Street 3 mouvements", sous:"Muscle up, traction, dips", exos:[
@@ -1859,7 +1866,7 @@ const ADAM=[
   ],
 },
 {
-  id:"c2", nom:"Masse", num:2, semaines:4, couleur:"var(--adam-2)",
+  id:"c2", nom:"Masse", num:2, semaines:4, debut:7, deload:2, couleur:"var(--adam-2)",
   objectif:"Développer la puissance et les fibres musculaires",
   trainings:[
     {n:1, titre:"Squat principal, dips", exos:[
@@ -1905,7 +1912,7 @@ const ADAM=[
   ],
 },
 {
-  id:"c3", nom:"Force", num:3, semaines:4, couleur:"var(--adam-3)",
+  id:"c3", nom:"Force", num:3, semaines:3, debut:13, deload:0, couleur:"var(--adam-3)",
   objectif:"Développer la qualité de force pure",
   trainings:[
     {n:1, titre:"Muscle up principal, dips principal", exos:[
@@ -1929,7 +1936,7 @@ const ADAM=[
       {nom:"Dips", format:"2 × 2", plus:["puis 2 × 4 dips","puis 2 × 6 dips"], repos:FEELING},
       {nom:"Triceps extension tempo", format:"3 × 10", note:"4 s excentrique", repos:FEELING},
     ]},
-    {n:4, titre:"Muscle up secondaire, squat secondaire", exos:[
+    {n:4, titre:"Squat secondaire", sous:"Le sommaire du cycle annonce aussi du muscle up : la page ne le prévoit pas", exos:[
       {nom:"Squat", format:"1 × 1", repos:R("3 à 5 min",180,300)},
       {nom:"Squat", format:"3 × 3", repos:R("3 à 5 min",180,300)},
       {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 2",90,120)},
@@ -1963,10 +1970,14 @@ const PAGES={
   c3:{intro:26, methodes:27, t:{1:28,2:29,3:30,4:31}},
 };
 const PAGES_GEN=[
+  {p:3,  t:"Structure du programme", d:"15 semaines, 3 cycles, 2 deloads"},
+  {p:4,  t:"Matériel et phase d'adaptation", d:"Ce qu'il faut avant de lancer le cycle 1"},
   {p:5,  t:"Les fondamentaux", d:"Ce qu'il faut respecter tout au long du programme"},
   {p:6,  t:"Erreur à ne pas faire", d:"Les critères d'exécution déterminent tout"},
+  {p:7,  t:"Choisir ses objectifs", d:"Trois approches : record, banalisation, calcul de 1RM"},
   {p:8,  t:"Choisir ses charges", d:"La méthode de planification en six étapes"},
   {p:9,  t:"En cas d'échec", d:"Analyser la cause et adapter la suite"},
+  {p:10, t:"Le rôle du renforcement", d:"Exercices principaux et exercices d'isolation"},
   {p:11, t:"Choisir ses temps de repos", d:"Feeling, tranches imposées et deload"},
   {p:32, t:"Lexique", d:"Définitions des termes techniques"},
 ];
@@ -1978,8 +1989,12 @@ const admKey=(c,w,t,e)=>`adam|${c}|${w}|${t}|${e}`;
 const admSk =(c,w,t)=>`adam|${c}|${w}|${t}`;
 const admTotalSeances=ADAM.reduce((n,c)=>n+c.semaines*c.trainings.length,0);
 /* Chaque fin de cycle est suivie d'une semaine de repos actif (page 11). */
-const admDeload=(cid,w)=>w===cycleById(cid).semaines+1;
-const admDerniereSem=cid=>cycleById(cid).semaines+1;
+const admDeload=(cid,w)=>w>cycleById(cid).semaines;
+const admDerniereSem=cid=>{ const c=cycleById(cid); return c.semaines+c.deload; };
+/* Numérotation officielle du programme, page 3 : 15 semaines au total. */
+const semAbs=(cid,w)=>cycleById(cid).debut+w-1;
+/* Repères d'intensité par cycle, page 8. */
+const ZONE={c1:"8 à 12 reps · 50 à 70 % du 1RM", c2:"6 à 8 reps · 70 à 80 % du 1RM", c3:"1 à 5 reps · plus de 80 % du 1RM"};
 
 /* Toutes les lignes d'une séance, exercice par exercice. */
 function admExos(cid,t){ return cycleById(cid).trainings.find(x=>x.n===t)?.exos||[]; }
@@ -2052,14 +2067,14 @@ function renderAdamHome(){
   $("#admCompteur").innerHTML=
     '<div class="res3"><div><div class="res-v mono">'+faites+'</div><div class="res-l">séances faites</div></div>'
     +'<div><div class="res-v mono">'+admTotalSeances+'</div><div class="res-l">au programme</div></div>'
-    +'<div><div class="res-v mono">'+cy.semaines+'</div><div class="res-l">semaines · cycle '+cy.num+'</div></div></div>';
+    +'<div><div class="res-v mono">15</div><div class="res-l">semaines au total</div></div></div>';
 
   /* Navigation des semaines */
-  const dech=admDeload(admCycle,admWeek);
-  $("#admWkTitle").textContent=dech?"Semaine de deload":`Semaine ${admWeek}`;
+  const dech=admDeload(admCycle,admWeek), abs=semAbs(admCycle,admWeek);
+  $("#admWkTitle").textContent=dech?`Deload · semaine ${abs}`:`Semaine ${abs} du programme`;
   $("#admWkSub").textContent=dech
-    ? `Après le cycle ${cy.num} · repos actif`
-    : `Cycle ${cy.num} · ${cy.nom} · ${cy.trainings.length} séances`;
+    ? `Repos actif après le cycle ${cy.num}`
+    : `Cycle ${cy.num} · ${cy.nom} · semaine ${admWeek} sur ${cy.semaines} · ${cy.trainings.length} séances`;
   $("#admWkPrev").disabled=admWeek<=1;
   $("#admWkNext").disabled=admWeek>=admDerniereSem(admCycle);
 
@@ -2067,16 +2082,22 @@ function renderAdamHome(){
   const box=$("#admRows"); box.innerHTML="";
   majSources();
   if(dech){
+    const nD=cy.deload;
     box.innerHTML=`<div class="deload-card">
-      <div class="dl-t">Repos actif d'une semaine</div>
-      <div class="dl-s">Chaque fin de cycle est suivie d'une semaine de deload : ton corps récupère et assimile les gains.</div>
+      <div class="dl-t">Repos actif${nD>1?` · ${admWeek-cy.semaines} sur ${nD}`:""}</div>
+      <div class="dl-s">Réduction du volume total de 40 à 60 %, maintien de la technique. Ton corps récupère, consolide les gains et prépare la phase suivante.</div>
+      <div class="dl-opt"><b>Test de performance</b>
+        <span>Un test sur les 4 mouvements est possible en fin de bloc, mais le programme conseille de l'éviter et d'utiliser plutôt les équivalents, pour t'économiser.</span></div>
       <div class="dl-opt"><b>Si tu redémarres le même cycle</b>
         <span>Baisse le volume et l'intensité de 40 à 60 % sur tes formats habituels, et supprime une partie des exercices de renforcement.</span></div>
       <div class="dl-opt"><b>Si tu passes au cycle suivant</b>
         <span>Utilise cette semaine comme semaine 0 : familiarise-toi avec les nouveaux formats, à intensité réduite et volume allégé.</span></div>
-      <button class="src-link" data-page="11">Voir la page 11 du programme</button>
+      <div class="src-row">
+        <button class="src-link" data-p="3">Structure du programme · p.3</button>
+        <button class="src-link" data-p="11">Repos et deload · p.11</button>
+      </div>
     </div>`;
-    box.querySelector(".src-link").onclick=()=>ouvrirPage(11,"Structure et deload");
+    box.querySelectorAll(".src-link").forEach(b=>b.onclick=()=>ouvrirPage(+b.dataset.p));
     return;
   }
   cy.trainings.forEach(tr=>{
@@ -2322,32 +2343,50 @@ function drawAdamRegular(){
 let planCtx=null;
 function ouvrirPlan(cid,t,i){
   const cy=cycleById(cid), ex=admExos(cid,t)[i];
-  planCtx={cid,t,i,n:cy.semaines};
+  planCtx={cid,t,i,n:cy.semaines,incs:null};
   $("#planTitre").textContent=ex.nom;
-  $("#planFmt").textContent=`${admFormat(ex,cy.semaines)} · objectif à poser sur la semaine ${cy.semaines}`;
+  $("#planFmt").textContent=`${admFormat(ex,cy.semaines)} · cycle ${cy.num} · ${ZONE[cid]}`;
   const pl=planDe(cid,t,i);
   $("#planObj").value=pl?.objectif??"";
   $("#planInc").value=pl?.inc??"";
+  planCtx.incs = pl?.incs ? pl.incs.slice() : null;
   majApercu();
   $("#planSheet2").classList.add("open");
 }
+/* Agrémentations en vigueur : une par passage de semaine, ajustable ligne à ligne
+   comme le montre l'exemple 3 de la page 8 (2,5 / 2,5 / 5). */
+function planIncs(){
+  const n=planCtx.n, base=$("#planInc").value;
+  const out=new Array(n).fill(base);
+  if(planCtx.incs) planCtx.incs.forEach((v,k)=>{ if(v!=null&&v!=="") out[k]=v; });
+  return out;
+}
 function majApercu(){
   if(!planCtx) return;
-  const o=$("#planObj").value, inc=$("#planInc").value, n=planCtx.n;
-  const c=planCalcule(o, new Array(n).fill(inc), n);
-  $("#planApercu").innerHTML = c
-    ? c.map((v,k)=>`<div class="pa-row"><span>Semaine ${k+1}</span><b class="mono">${fmt(v)} kg</b></div>`).join("")
-      +`<div class="tiny muted" style="margin-top:10px">Relis la colonne : si la semaine 1 te paraît déjà difficile, revois l'objectif à la baisse.</div>`
-    : '<div class="tiny muted">Saisis un objectif et une agrémentation pour voir la progression.</div>';
+  const n=planCtx.n, c=planCalcule($("#planObj").value, planIncs(), n);
+  if(!c){ $("#planApercu").innerHTML=`<div class="tiny muted">Saisis l&rsquo;objectif de la dernière semaine et l&rsquo;agrémentation : les semaines précédentes se déduisent par soustraction.</div>`; return; }
+  const incs=planIncs();
+  $("#planApercu").innerHTML =
+    c.map((v,k)=>`<div class="pa-row"><span>Semaine ${k+1}<small class="pa-abs"> · S${semAbs(planCtx.cid,k+1)}</small></span>
+      ${k?`<input class="pa-inc mono" data-k="${k}" inputmode="decimal" value="${incs[k]??""}" placeholder="+">`:'<span class="pa-dep">départ</span>'}
+      <b class="mono">${fmt(v)} kg</b></div>`).join("")
+    +`<div class="tiny muted" style="margin-top:10px">Étape 5 du programme : relis la colonne. Si la semaine 1 te crame déjà, revois l'objectif à la baisse.</div>`;
+  $$("#planApercu .pa-inc").forEach(inp=>inp.oninput=()=>{
+    if(!planCtx.incs) planCtx.incs=new Array(planCtx.n).fill(null);
+    planCtx.incs[+inp.dataset.k]=inp.value;
+    const pos=inp.selectionStart; majApercu();
+    const again=$(`#planApercu .pa-inc[data-k="${inp.dataset.k}"]`);
+    if(again){ again.focus(); try{ again.setSelectionRange(pos,pos); }catch(e){} }
+  });
 }
 $("#planObj").oninput=majApercu;
 $("#planInc").oninput=majApercu;
 $("#planOk").onclick=()=>{
   if(!planCtx) return;
-  const o=$("#planObj").value, inc=$("#planInc").value, n=planCtx.n;
-  const c=planCalcule(o,new Array(n).fill(inc),n);
+  const o=$("#planObj").value, inc=$("#planInc").value, incs=planIncs();
+  const c=planCalcule(o,incs,planCtx.n);
   if(!c){ toast("Saisis un objectif chiffré"); return; }
-  S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)]={objectif:o, inc, cibles:c};
+  S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)]={objectif:o, inc, incs, cibles:c};
   save(); $("#planSheet2").classList.remove("open");
   renderAdamSess(); toast("Progression enregistrée");
 };
@@ -2356,6 +2395,7 @@ $("#planRaz").onclick=()=>{
   delete S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)];
   save(); $("#planSheet2").classList.remove("open"); renderAdamSess(); toast("Planification effacée");
 };
+$("#planSrc").onclick=()=>ouvrirPage(8,"Choisir ses charges de travail");
 $("#planFerme").onclick=()=>$("#planSheet2").classList.remove("open");
 $("#planSheet2").onclick=e=>{ if(e.target.id==="planSheet2") $("#planSheet2").classList.remove("open"); };
 
