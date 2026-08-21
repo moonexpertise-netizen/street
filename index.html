@@ -2153,14 +2153,41 @@ function drawAutoRegular(){
 
 /* ═════ NAV ═════ */
 const VIEW_SUBS={ "v-home":"", "v-sess":"Séance", "v-asess":"Séance", "v-bi":"Statistiques", "v-set":"Réglages" };
+
+/* On retient la page ouverte hors des données synchronisées : c'est un état
+   propre à cet appareil, il n'a pas à voyager d'un téléphone à l'autre. */
+const VUE_KEY="moonsport.vue";
+function memoriserVue(id){
+  try{
+    localStorage.setItem(VUE_KEY, JSON.stringify({
+      vue:id, autoSess, curSess, lift:S.ui.lift, autoWeek, homeWeek, mode:S.ui.mode,
+    }));
+  }catch(e){}
+}
+function restaurerVue(){
+  let v=null;
+  try{ v=JSON.parse(localStorage.getItem(VUE_KEY)); }catch(e){}
+  if(!v||!v.vue||!document.getElementById(v.vue)){ homeWeek=null; renderHome(); return; }
+  if(v.lift && LIFTS[v.lift]) S.ui.lift=v.lift;
+  if(v.autoWeek) autoWeek=v.autoWeek;
+  if(v.homeWeek) homeWeek=v.homeWeek;
+  if(v.vue==="v-asess" && v.autoSess && AUTO_SEANCES[v.autoSess.s]){
+    openAutoSess(v.autoSess.s, v.autoSess.w, v.autoSess.se); return;
+  }
+  if(v.vue==="v-sess" && v.curSess){ openSession(v.curSess.w, v.curSess.se); return; }
+  switchView(v.vue);
+}
 function switchView(id){
   $$(".view").forEach(v=>v.classList.toggle("active",v.id===id));
-  $$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===id));
+  /* Les deux vues de séance partagent le même onglet. */
+  const onglet = id==="v-asess" ? "v-sess" : id;
+  $$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===onglet));
   $("#topSub").textContent=VIEW_SUBS[id]||"";
   if(id==="v-home") renderHome();
   if(id==="v-bi"){ $("#topSub").textContent = S.ui.mode==="classic" ? "Stats · archive" : "Statistiques"; renderBI(); }
   if(id==="v-asess") renderAutoSess();
   if(id==="v-set") renderSettings();
+  memoriserVue(id);
   window.scrollTo({top:0});
 }
 $$(".tab").forEach(t=>t.onclick=()=>{
@@ -2434,14 +2461,13 @@ async function initAuth(){
   account={email:info.email,name:info.name};
   $("#lock").classList.add("hide");
   await pullCloud();
-  homeWeek=null;
-  renderHome();
+  restaurerVue();
 }
 $("#msBtn").onclick=()=>{
   $("#msBtn").innerHTML='<span class="spin"></span> Redirection…';
   location.href="/api/sso";
 };
-$("#signOutBtn").onclick=()=>{ location.href="/api/logout"; };
+$("#signOutBtn").onclick=()=>{ try{ localStorage.removeItem(VUE_KEY); }catch(e){} location.href="/api/logout"; };
 
 /* ═════ INIT ═════ */
 applyTheme();
