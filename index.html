@@ -371,6 +371,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   border-radius:10px;background:var(--panel-2);border:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
 .archive-bar button{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink);
   text-decoration:underline;text-underline-offset:2px}
+.a-detail{grid-column:3;font-size:11.5px;color:var(--ink-2);line-height:1.35;align-self:center}
 .a-libre{font-family:var(--f-body);font-size:11.5px;font-weight:600;color:var(--ink-2);line-height:1.2;display:inline-block}
 .reg-cells i.dech{outline:1px dashed var(--line-2);outline-offset:-1px}
 .reg-key i.dech{outline:1px dashed var(--line-2);outline-offset:-1px}
@@ -690,6 +691,10 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
           <div class="switch on" id="restSwitch"></div>
         </div>
         <div class="settings-item">
+          <div><div class="si-t">Repos · échauffement</div><div class="si-s">Entre les deux passages</div></div>
+          <div class="mini-step"><button data-t="restEchauf" data-d="-15">−</button><span class="mono" id="restEchaufVal">0:45</span><button data-t="restEchauf" data-d="15">+</button></div>
+        </div>
+        <div class="settings-item">
           <div><div class="si-t">Repos · montée en gamme</div><div class="si-s">Séries lourdes jusqu'à la tête</div></div>
           <div class="mini-step"><button data-t="restForce" data-d="-15">−</button><span class="mono" id="restForceVal">4:00</span><button data-t="restForce" data-d="15">+</button></div>
         </div>
@@ -932,7 +937,7 @@ const DEF = {
   auto:{rm:{push:70, pushSquat:60, pull:50, pullSdt:100, mu:20}, logs:{}, sessDone:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
   ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"auto",
-      restForce:240, restPuiss:180, restVol:120, restMax:120}
+      restForce:240, restPuiss:180, restVol:120, restMax:120, restEchauf:45}
 };
 /* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
    pour qu'une version plus ancienne des données reste exploitable. */
@@ -1685,35 +1690,43 @@ const AUTO_RES=[
 /* La montée en gamme ne bouge jamais. En revanche les plages de puissance
    et de volume s'adaptent au mouvement : un muscle-up dont le maximum à vide
    tourne autour de 5 reps ne peut pas viser les mêmes séries qu'un dip. */
-const AUTO_BLOCS=(finition,r={})=>{
-  const b=[
-    {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
-    {t:"Puissance",       rmin:r.pmin??4, rmax:r.pmax??6,  pcts:[.60,.60]},
-    {t:"Volume",          rmin:r.vmin??8, rmax:r.vmax??10, pcts:[.35,.35]},
-  ];
-  /* Les séries max ne concernent que les mouvements où elles ont du sens :
-     on les omet en passant une finition nulle. */
-  if(finition) b.push({t:"Max reps", libre:true, charge:finition, pcts:[0,0]});
-  return b;
-};
-/* Mouvements à la barre : montée en trois temps puis un seul bloc de volume
-   plus lourd. Six séries au lieu de huit. */
-const AUTO_BLOCS_BARRE=()=>[
-  {t:"Montée en gamme", rmin:1, rmax:2,  pcts:[.33,.67,AUTO_TOP], reps:[2,1,1]},
-  {t:"Volume",          rmin:8, rmax:10, pcts:[.70,.70,.70]},
+/* Échauffement commun à toutes les séances : deux passages identiques,
+   le second lesté. Aucune répétition à saisir, seulement la validation. */
+const ECHAUFFEMENT=()=>({nom:"Échauffement", court:"Échauff.", sansRm:true, blocs:[
+  {t:"Échauffement", libre:true, sansReps:true, pcts:[0,0], charges:["À vide","20 kg"],
+   detail:"10 s hold · 10 scapula pull-up · 10 s hold"},
+]});
+
+/* Mouvements lestés au poids de corps : un test de répétitions maximales à
+   froid, la montée en gamme, puissance, volume, puis un second test à chaud. */
+const BLOCS_LEST=()=>[
+  {t:"Max reps · à froid", libre:true, charge:"À vide", pcts:[0]},
+  {t:"Montée en gamme", rmin:1, rmax:6, pcts:[.25,.50,.75,AUTO_TOP], reps:[6,4,2,1]},
+  {t:"Puissance", rmin:4, rmax:6,  cible:4, pcts:[.60,.60,.60]},
+  {t:"Volume",    rmin:8, rmax:10, cible:8, pcts:[.35,.35,.35]},
+  {t:"Max reps · à chaud", libre:true, charge:"À vide", pcts:[0]},
 ];
+
+/* Muscle-up : plages resserrées, maximum à vide autour de 5 répétitions. */
+const BLOCS_MU=()=>[
+  {t:"Montée en gamme", rmin:1, rmax:2, pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
+  {t:"Puissance", rmin:2, rmax:3, pcts:[.60,.60]},
+  {t:"Volume",    rmin:4, rmax:5, pcts:[.35,.35]},
+  {t:"Max reps",  libre:true, charge:"À vide", pcts:[0,0]},
+];
+
 const AUTO_SEANCES={
   push:{ nom:"Push", color:"var(--lift-2)", exos:[
-    {nom:"Dips lestés",          court:"Dips",  rm:"push",      blocs:AUTO_BLOCS("À vide")},
-    {nom:"Squat barre assistée", court:"Squat", rm:"pushSquat", blocs:AUTO_BLOCS_BARRE()},
+    ECHAUFFEMENT(),
+    {nom:"Dips lestés", court:"Dips", rm:"push", blocs:BLOCS_LEST()},
   ]},
   pull:{ nom:"Pull", color:"var(--lift-1)", exos:[
-    {nom:"Tractions lestées", court:"Tractions", rm:"pull",    blocs:AUTO_BLOCS("À vide")},
-    {nom:"Soulevé de terre",  court:"SDT",       rm:"pullSdt", blocs:AUTO_BLOCS_BARRE()},
+    ECHAUFFEMENT(),
+    {nom:"Tractions lestées", court:"Tractions", rm:"pull", blocs:BLOCS_LEST()},
   ]},
   mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
-    {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu",
-     blocs:AUTO_BLOCS("À vide", {pmin:2, pmax:3, vmin:4, vmax:5})},
+    ECHAUFFEMENT(),
+    {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu", blocs:BLOCS_MU()},
     /* Au poids de corps : aucun RM, on ne saisit que les répétitions. */
     {nom:"Tractions explosives", court:"Explosif", sansRm:true, blocs:[
       {t:"Explosif", libre:true, charge:"À vide", rmin:5, rmax:8, pcts:[0,0,0,0]},
@@ -1732,14 +1745,24 @@ const autoExos=s=>AUTO_SEANCES[s].exos;
 const autoNb=s=>AUTO_SEANCES[s].seances||2;
 const autoList=s=>autoNb(s)===1?[1]:[1,2];
 /* Repos associé à chaque bloc, paramétrable dans les réglages. */
-const AUTO_REPOS={"Montée en gamme":"restForce","Puissance":"restPuiss","Volume":"restVol","Max reps":"restMax"};
+const AUTO_REPOS={"Échauffement":"restEchauf","Montée en gamme":"restForce",
+  "Puissance":"restPuiss","Volume":"restVol","Max reps":"restMax",
+  "Max reps · à froid":"restMax","Max reps · à chaud":"restMax","Explosif":"restVol"};
 const autoRepos=bloc=>S.ui[AUTO_REPOS[bloc]] ?? 120;
 
 /* Position, dans la liste à plat, de la série de tête d'un exercice. */
+/* La montée en gamme n'est plus forcément le premier bloc : on repère la
+   série de tête à son pourcentage. Renvoie -1 pour un exercice sans RM. */
 function autoTopIdx(s,ei){
   let i=0;
-  autoExos(s).forEach((ex,e)=>{ if(e<ei) ex.blocs.forEach(b=>i+=b.pcts.length); });
-  return i + autoExos(s)[ei].blocs[0].pcts.length - 1;
+  const exos=autoExos(s);
+  for(let e=0;e<ei;e++) exos[e].blocs.forEach(b=>i+=b.pcts.length);
+  for(const b of exos[ei].blocs){
+    const k=b.libre?-1:b.pcts.indexOf(AUTO_TOP);
+    if(k>=0) return i+k;
+    i+=b.pcts.length;
+  }
+  return -1;
 }
 /* RM d'un exercice à l'entrée d'une séance : base + une hausse par série de
    tête validée OK dans les séances précédentes. Recalculé, jamais stocké. */
@@ -1766,14 +1789,19 @@ function autoSeries(s,w,se){
   const out=[]; let i=0;
   autoExos(s).forEach((ex,ei)=>{
     const rmM=autoRm(s,ei,w,se), rmA=autoRmApres(s,ei,w,se);
+    const idxMontee=ex.blocs.findIndex(b=>!b.libre && b.pcts.includes(AUTO_TOP));
     ex.blocs.forEach((b,bi)=>{
-      const rm = bi===0 ? rmM : rmA;                 // la montée garde le RM d'entrée
+      /* Le nouveau RM ne s'applique qu'aux blocs situés après la montée. */
+      const apres = idxMontee>=0 && bi>idxMontee;
+      const rm = apres ? rmA : rmM;
       b.pcts.forEach((p,pi)=>{ const pe=autoPct(p,w,se);
         out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
         pct:pe, kg:round125(rm*pe), rmin:b.rmin, rmax:b.rmax,
-        cible: b.reps ? b.reps[pi] : b.rmax,
-        top: bi===0 && !b.libre && pi===b.pcts.length-1, libre:!!b.libre, charge:b.charge,
-        surNouveauRM: bi>0 && !b.libre && rmA!==rmM}); });
+        cible: b.reps ? b.reps[pi] : (b.cible ?? b.rmax),
+        top: !b.libre && b.pcts[pi]===AUTO_TOP,
+        libre:!!b.libre, sansReps:!!b.sansReps, detail:b.detail,
+        charge: b.charges ? b.charges[pi] : b.charge,
+        surNouveauRM: apres && !b.libre && rmA!==rmM}); });
     });
   });
   return out;
@@ -1858,8 +1886,10 @@ function renderAutoSess(){
   const dech=autoDecharge(w), series=autoSeries(s,w,se);
   $("#asCycle").textContent=`Bloc ${autoBloc(w)} · semaine ${w}${dech?" · décharge":""}`;
   $("#asTitle").textContent=`${cfg.nom} · Séance ${se}`;
-  const tete0=series.find(x=>x.top && x.ex===0);
-  $("#asCharge").textContent=fmt(tete0.kg);
+  /* La première série de tête de la séance, quel que soit l'exercice :
+     l'échauffement occupe désormais la position d'ouverture. */
+  const tete0=series.find(x=>x.top);
+  $("#asCharge").textContent=tete0?fmt(tete0.kg):"—";
   $("#asMeta").innerHTML=autoExos(s).filter(ex=>!ex.sansRm).map((ex)=>{
     const ei=autoExos(s).indexOf(ex);
     const a=autoRm(s,ei,w,se), b=autoRmApres(s,ei,w,se);
@@ -1876,7 +1906,8 @@ function renderAutoSess(){
       const nb=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc).length;
       const memeBloc=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc);
       const cibles=[...new Set(memeBloc.map(y=>y.cible))];
-      const reps=x.libre&&x.rmax?`${x.rmin} à ${x.rmax} reps`
+      const reps=x.sansReps?"passages"
+        :x.libre&&x.rmax?`${x.rmin} à ${x.rmax} reps`
         :x.libre?"maximum de reps"
         :cibles.length>1?`${cibles.join(" puis ")} reps`
         :x.rmin!==x.rmax?`${x.rmin} à ${x.rmax} reps`
@@ -1893,10 +1924,12 @@ function renderAutoSess(){
     const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
     const row=document.createElement("div");
     row.className="arow"+(d.res?" isdone":"")+(x.top?" top":"")+(x.surNouveauRM?" maj":"");
-    row.innerHTML=`<div class="a-pct mono">${x.libre?(x.rmax?"":"max"):Math.round(x.pct*1000)/10+"%"}</div>
+    row.innerHTML=`<div class="a-pct mono">${x.libre?((x.rmax||x.sansReps)?"":"max"):Math.round(x.pct*1000)/10+"%"}</div>
       <div class="a-kg mono">${x.libre?`<span class="a-libre">${x.charge}</span>`
         :`${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}`}</div>
-      <div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?(x.rmax||"reps"):x.cible}" value="${d.reps??""}"></div>
+      ${x.sansReps
+        ? `<div class="a-detail">${x.detail||""}</div>`
+        : `<div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?(x.rmax||"reps"):x.cible}" value="${d.reps??""}"></div>`}
       <div class="a-res${x.libre?" une":""}">${x.libre
         ? `<button class="resb${d.res?" on":""}" data-k="${k}" data-r="fait"
              style="${d.res?"background:var(--ink);border-color:var(--ink);color:var(--page)":""}">${d.res?"Série faite":"Valider la série"}</button>`
@@ -1920,7 +1953,7 @@ function renderAutoSess(){
       const avant=S.auto.logs[k].res;
       S.auto.logs[k].res = avant===r ? undefined : r;
       const x=series.find(y=>autoKey(s,w,se,y.i)===k);
-      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && (!x.libre||x.rmax)) S.auto.logs[k].reps=x.cible;
+      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && !x.sansReps && (!x.libre||x.rmax)) S.auto.logs[k].reps=x.cible;
       save(); vibrate(14);
       if(x.top && S.auto.logs[k].res==="ok" && autoTeteQualifiante(w,se)){
         const ex=autoExos(s)[x.ex], base=autoRm(s,x.ex,w,se);
@@ -2171,7 +2204,7 @@ function renderSettings(){
   $("#themeSwitch").classList.toggle("on",curTheme()==="dark");
   $("#restSwitch").classList.toggle("on",S.ui.rest);
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
-  ["restForce","restPuiss","restVol","restMax"].forEach(k=>{
+  ["restEchauf","restForce","restPuiss","restVol","restMax"].forEach(k=>{
     const e=$("#"+k+"Val"); if(e) e.textContent=fmtSec(S.ui[k]);
   });
   const ar=$("#autoRmSettings"); ar.innerHTML="";
