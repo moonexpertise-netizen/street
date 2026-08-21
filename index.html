@@ -459,11 +459,12 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .ge-mod span{font-size:13px;color:var(--ink-2);line-height:1.5}
 .ge-avert{margin-top:22px;padding:12px 13px;border-radius:10px;background:var(--panel-2);
   border:1px solid var(--line);font-size:12px;color:var(--ink-2);line-height:1.5}
-.exo-saisie.sup{margin-top:8px;padding-left:14px;position:relative}
-.exo-saisie.sup::before{content:"";position:absolute;left:3px;top:14px;bottom:14px;width:1.5px;
+.exo-sup{margin-top:10px;padding-left:14px;position:relative}
+.exo-sup::before{content:"";position:absolute;left:3px;top:6px;bottom:6px;width:1.5px;
   border-radius:1px;background:var(--line-2)}
-.exo-saisie.sup .field label{color:var(--ink-3)}
-.exo-saisie.sup .field input{font-size:15px}
+.exo-sup .exo-plan.sup{margin-top:0}
+.exo-sup .exo-saisie{margin-top:7px}
+.exo-sup .field label{color:var(--ink-3)}
 .exo.fait::before{opacity:1;background:var(--good)}
 .exo.fait{border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:color-mix(in srgb,var(--good) 4%,var(--panel))}
 .exo-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -2081,6 +2082,12 @@ const ZONE={c1:"8 à 12 reps · 50 à 70 % du 1RM", c2:"6 à 8 reps · 70 à 80 
 function admExos(cid,t){ return cycleById(cid).trainings.find(x=>x.n===t)?.exos||[]; }
 /* Le complément porte son propre format ("+ 10 tirage horizontal…") : pour
    le champ de charge on ne garde que le nom du mouvement. */
+/* "+ 10 tirage horizontal…" → "10 répétitions" ; "+ 30 s gainage" → "30 s". */
+function compFormat(txt){
+  const m=String(txt).match(/^\s*(?:\+|puis)?\s*(\d+(?:\s*(?:à|-)\s*\d+)?)\s*(s|sec|secondes?)?/i);
+  if(!m) return "Complément";
+  return m[2] ? `${m[1]} s` : `${m[1]} répétitions`;
+}
 function plusLabel(txt){
   let t=String(txt).replace(/^\s*(?:\+|puis)\s*/i,"")     // le "+" ou "puis"
                    .replace(/\s*\([^)]*\)\s*$/,"")        // la consigne entre parenthèses
@@ -2114,8 +2121,8 @@ function admProchaine(){
 /* Planification descendante, telle que décrite page 8 du programme :
    on fixe l'objectif sur la dernière semaine, on choisit l'agrémentation,
    puis on soustrait jusqu'à la semaine 1. */
-const planKey=(cid,t,i)=>`${cid}|${t}|${i}`;
-function planDe(cid,t,i){ return S.adam.plan[planKey(cid,t,i)]||null; }
+const planKey=(cid,t,i,n)=>`${cid}|${t}|${i}`+(n==null?"":`|p${n}`);
+function planDe(cid,t,i,n){ return S.adam.plan[planKey(cid,t,i,n)]||null; }
 function planCalcule(objectif,incs,nSem){
   const o=parseFloat(String(objectif).replace(",","."));
   if(isNaN(o)) return null;
@@ -2127,15 +2134,15 @@ function planCalcule(objectif,incs,nSem){
 }
 /* En deload, on repart de la dernière charge planifiée du cycle et on la
    coupe de moitié : le milieu de la fourchette 40-60 % du programme. */
-function planReduit(cid,t,i){
-  const pl=planDe(cid,t,i);
+function planReduit(cid,t,i,n){
+  const pl=planDe(cid,t,i,n);
   if(pl&&pl.fixe!=null) return null;
   if(!pl||!pl.cibles) return null;
   const v=pl.cibles[pl.cibles.length-1];
   return v==null?null:fmt(Math.round(v*DELOAD_BAISSE*4)/4)+" kg";
 }
-function planCible(cid,t,i,w){
-  const pl=planDe(cid,t,i);
+function planCible(cid,t,i,w,n){
+  const pl=planDe(cid,t,i,n);
   if(pl&&pl.fixe!=null){
     const v=parseFloat(String(pl.fixe).replace(",","."));
     return isNaN(v)?null:(v>0?"+"+fmt(v)+" kg":fmt(v)+" kg");
@@ -2335,14 +2342,22 @@ function renderAdamSess(){
         ${ex.repos.haut&&ex.repos.haut!==ex.repos.bas?`<button class="rt-mini" data-sec="${ex.repos.haut}">${fmtSec(ex.repos.haut)}</button>`:""}
         ${!ex.repos.bas?`<button class="rt-mini" data-sec="0">Repos libre</button>`:""}
       </div>
-      ${ex.plus?ex.plus.map((pl,n)=>`
-        <div class="exo-saisie sup">
-          <div class="field">
-            <label>${plusLabel(pl)}${gesteDe(pl)?` <button class="ge-lien mini" data-g="${encodeURIComponent(pl)}">?</button>`:""}</label>
-            <input data-k="${k}" data-f="plus" data-n="${n}" placeholder="kg, PDC, élastique…"
-              value="${(d.plus&&d.plus[n])??""}">
+      ${ex.plus?ex.plus.map((pl,n)=>{
+        const cb = dech ? planReduit(src,t,i,n) : planCible(c,t,i,w,n);
+        return `<div class="exo-sup">
+          <div class="exo-plan sup">
+            <button class="plan-chip${cb?" on":""}${dech?" dl":""}" data-i="${i}" data-rang="${n}"${dech?" disabled":""}>${
+              dech ? (cb?`Deload · ${cb}`:"Charge libre, allégée")
+                   : (cb?`Objectif S${w} · ${cb}`:"Planifier les charges")}</button>
           </div>
-        </div>`).join(""):""}
+          <div class="exo-saisie">
+            <div class="field">
+              <label>${plusLabel(pl)}${gesteDe(pl)?` <button class="ge-lien mini" data-g="${encodeURIComponent(pl)}">?</button>`:""}</label>
+              <input data-k="${k}" data-f="plus" data-n="${n}" placeholder="${cb||"kg, PDC, élastique…"}"
+                value="${(d.plus&&d.plus[n])??""}">
+            </div>
+          </div>
+        </div>`;}).join(""):""}
       <div class="a-res">${RES3.map(r=>
         `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}" data-sec="${ex.repos.bas}"
            style="${d.res===r.k?`background:${r.col};border-color:${r.col};color:var(--panel)`:""}">${r.lab}</button>`).join("")}</div>`;
@@ -2366,7 +2381,8 @@ function renderAdamSess(){
     b.onclick=e=>{ e.preventDefault(); e.stopPropagation();
       ouvrirGeste(decodeURIComponent(b.dataset.g)); };
   });
-  if(!dech) el.querySelectorAll(".plan-chip").forEach(b=>b.onclick=()=>ouvrirPlan(c,t,+b.dataset.i));
+  if(!dech) el.querySelectorAll(".plan-chip").forEach(b=>b.onclick=()=>
+    ouvrirPlan(c,t,+b.dataset.i, b.dataset.rang==null?null:+b.dataset.rang));
   el.querySelectorAll(".resb").forEach(b=>{
     b.onclick=()=>{
       const k=b.dataset.k, r=b.dataset.r;
@@ -2516,12 +2532,15 @@ function drawAdamRegular(){
 
 /* ═════ PLANIFICATION DES CHARGES ═════ */
 let planCtx=null;
-function ouvrirPlan(cid,t,i){
+function ouvrirPlan(cid,t,i,rang){
   const cy=cycleById(cid), ex=admExos(cid,t)[i];
-  const fixe=ex.charge==="fixe";
-  planCtx={cid,t,i,n:cy.semaines,incs:null,fixe,ex};
-  $("#planTitre").textContent=ex.nom;
-  const pl=planDe(cid,t,i);
+  const comp = rang!=null ? ex.plus[rang] : null;
+  /* Un complément n'a ni charge maintenue ni séquence de formats : c'est un
+     exercice de renforcement, il se planifie comme les autres. */
+  const fixe = comp ? false : ex.charge==="fixe";
+  planCtx={cid,t,i,rang,n:cy.semaines,incs:null,fixe,ex,comp};
+  $("#planTitre").textContent = comp ? plusLabel(comp).replace("Charge · ","") : ex.nom;
+  const pl=planDe(cid,t,i,rang);
   $("#planSheet2").classList.toggle("mode-fixe",fixe);
   $("#planHelp").innerHTML = fixe
     ? `Consigne du programme pour cet exercice : « si le format te semble réalisable avec une charge supplémentaire, choisis-la et <b>maintiens-la tout au long du cycle</b> ». Si les formats imposés sont hors de portée, la même page propose deux séquences adaptées.
@@ -2538,7 +2557,9 @@ function ouvrirPlan(cid,t,i){
     $("#planObj").placeholder="vide = poids du corps";
     $("#planObj").value=pl?.fixe??"";
   }else{
-    $("#planFmt").textContent=`${admFormat(ex,cy.semaines,seqDe(cid,t,i,ex))} · cycle ${cy.num} · ${ZONE[cid]}`;
+    $("#planFmt").textContent = comp
+      ? `${compFormat(comp)} · complément de « ${ex.nom} » · cycle ${cy.num}`
+      : `${admFormat(ex,cy.semaines,seqDe(cid,t,i,ex))} · cycle ${cy.num} · ${ZONE[cid]}`;
     $("#planObjLab").textContent="Objectif dernière semaine";
     $("#planObj").placeholder="20";
     $("#planObj").value=pl?.objectif??"";
@@ -2547,7 +2568,8 @@ function ouvrirPlan(cid,t,i){
   }
   /* Toujours : la feuille est réutilisée d'un exercice à l'autre, le bloc des
      séquences doit disparaître dès que l'exercice n'en propose pas. */
-  majVariantes();
+  if(comp) $("#planVariantes").innerHTML="";
+  else majVariantes();
   majApercu();
   $("#planSheet2").classList.add("open");
 }
@@ -2607,7 +2629,7 @@ $("#planOk").onclick=()=>{
   if(!planCtx) return;
   if(planCtx.fixe){
     const raw=$("#planObj").value.trim();
-    const key=planKey(planCtx.cid,planCtx.t,planCtx.i);
+    const key=planKey(planCtx.cid,planCtx.t,planCtx.i,planCtx.rang);
     if(raw) S.adam.plan[key]={fixe:raw};
     else delete S.adam.plan[key];
     save(); $("#planSheet2").classList.remove("open"); renderAdamSess();
@@ -2617,13 +2639,13 @@ $("#planOk").onclick=()=>{
   const o=$("#planObj").value, inc=$("#planInc").value, incs=planIncs();
   const c=planCalcule(o,incs,planCtx.n);
   if(!c){ toast("Saisis un objectif chiffré"); return; }
-  S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)]={objectif:o, inc, incs, cibles:c};
+  S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i,planCtx.rang)]={objectif:o, inc, incs, cibles:c};
   save(); $("#planSheet2").classList.remove("open");
   renderAdamSess(); toast("Progression enregistrée");
 };
 $("#planRaz").onclick=()=>{
   if(!planCtx) return;
-  delete S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)];
+  delete S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i,planCtx.rang)];
   save(); $("#planSheet2").classList.remove("open"); renderAdamSess(); toast("Planification effacée");
 };
 $("#planFerme").onclick=()=>$("#planSheet2").classList.remove("open");
