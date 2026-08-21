@@ -2362,6 +2362,10 @@ function renderAdamSess(){
       if(v) startRest(v,"Série suivante");
       else toast("Repos au feeling : récupère complètement avant la suite"); };
   });
+  el.querySelectorAll(".ge-lien").forEach(b=>{
+    b.onclick=e=>{ e.preventDefault(); e.stopPropagation();
+      ouvrirGeste(decodeURIComponent(b.dataset.g)); };
+  });
   if(!dech) el.querySelectorAll(".plan-chip").forEach(b=>b.onclick=()=>ouvrirPlan(c,t,+b.dataset.i));
   el.querySelectorAll(".resb").forEach(b=>{
     b.onclick=()=>{
