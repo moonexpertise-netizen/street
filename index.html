@@ -352,12 +352,13 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
 
 /* ── séance auto-régulée ── */
-.arow{display:grid;grid-template-columns:46px 66px 1fr;gap:8px;align-items:center;margin-top:9px;
+.arow{display:grid;grid-template-columns:52px 66px 1fr;gap:8px;align-items:center;margin-top:9px;
   padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:var(--panel-2)}
 .arow.top{border-color:color-mix(in srgb,var(--gold) 60%,var(--line));
   background:color-mix(in srgb,var(--gold) 9%,var(--panel-2))}
 .arow.isdone{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
-.a-pct{font-size:11.5px;color:var(--ink-3);font-weight:600}
+.a-pct{font-size:11.5px;color:var(--ink-3);font-weight:600;line-height:1.3}
+.a-cible{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin-top:1px}
 .a-kg{font-family:var(--f-display);font-size:17px;font-weight:600;letter-spacing:-.01em}
 .a-kg small{font-size:10.5px;font-weight:400;color:var(--ink-3);font-family:var(--f-body)}
 .arow .field{grid-column:3;grid-row:1}
@@ -1924,7 +1925,10 @@ function renderAutoSess(){
     const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
     const row=document.createElement("div");
     row.className="arow"+(d.res?" isdone":"")+(x.top?" top":"")+(x.surNouveauRM?" maj":"");
-    row.innerHTML=`<div class="a-pct mono">${x.libre?((x.rmax||x.sansReps)?"":"max"):Math.round(x.pct*1000)/10+"%"}</div>
+    row.innerHTML=`<div class="a-pct mono">${x.libre?((x.rmax||x.sansReps)?"":"max"):Math.round(x.pct*1000)/10+"%"}${
+        x.sansReps ? "" : x.libre
+          ? (x.rmax?`<span class="a-cible">× ${x.rmin}-${x.rmax}</span>`:"")
+          : `<span class="a-cible">× ${x.cible}</span>`}</div>
       <div class="a-kg mono">${x.libre?`<span class="a-libre">${x.charge}</span>`
         :`${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}`}</div>
       ${x.sansReps
