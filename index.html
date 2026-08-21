@@ -2466,7 +2466,6 @@ function ouvrirPlan(cid,t,i){
     $("#planObjLab").textContent="Charge maintenue tout le cycle";
     $("#planObj").placeholder="vide = poids du corps";
     $("#planObj").value=pl?.fixe??"";
-    majVariantes();
   }else{
     $("#planFmt").textContent=`${admFormat(ex,cy.semaines,seqDe(cid,t,i,ex))} · cycle ${cy.num} · ${ZONE[cid]}`;
     $("#planObjLab").textContent="Objectif dernière semaine";
@@ -2475,6 +2474,9 @@ function ouvrirPlan(cid,t,i){
     $("#planInc").value=pl?.inc??"";
     planCtx.incs = pl?.incs ? pl.incs.slice() : null;
   }
+  /* Toujours : la feuille est réutilisée d'un exercice à l'autre, le bloc des
+     séquences doit disparaître dès que l'exercice n'en propose pas. */
+  majVariantes();
   majApercu();
   $("#planSheet2").classList.add("open");
 }
