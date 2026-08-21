@@ -1,4 +1,4 @@
-<title>MoonSport · Push / Pull / Muscle-up</title>
+<title>MoonSport · Programme Adamantium</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -23,6 +23,7 @@
   --line:#e8e8e3; --line-2:#dadad4;
   --gold:#a88962; --gold-ink:#8a6d47;
   --lift-1:#2563eb; --lift-2:#b0701c; --lift-3:#a83279;
+  --adam-1:#a8842a; --adam-2:#c2571a; --adam-3:#b3392f;
   --good:#1f7a45; --warn:#a8701a; --crit:#c0392b;
   --btn-fg:#ffffff;
   --shadow:0 1px 2px rgba(1,7,27,.04);
@@ -40,6 +41,7 @@
     --line:#1a2038; --line-2:#262d47;
     --gold:#d3b88a; --gold-ink:#e6cda0;
     --lift-1:#4f93e8; --lift-2:#c6821f; --lift-3:#cf6b9e;
+  --adam-1:#d3b88a; --adam-2:#d5731f; --adam-3:#e06a5c;
     --good:#2f9e6f; --warn:#d3a04a; --crit:#d68a8a;
     --btn-fg:#01071b;
     --shadow:0 1px 2px rgba(0,0,0,.35);
@@ -53,6 +55,7 @@
   --line:#1a2038; --line-2:#262d47;
   --gold:#d3b88a; --gold-ink:#e6cda0;
   --lift-1:#4f93e8; --lift-2:#c6821f; --lift-3:#cf6b9e;
+  --adam-1:#d3b88a; --adam-2:#d5731f; --adam-3:#e06a5c;
   --good:#2f9e6f; --warn:#d3a04a; --crit:#d68a8a;
   --btn-fg:#01071b;
   --shadow:0 1px 2px rgba(0,0,0,.35);
@@ -65,6 +68,7 @@
   --line:#e8e8e3; --line-2:#dadad4;
   --gold:#a88962; --gold-ink:#8a6d47;
   --lift-1:#2563eb; --lift-2:#b0701c; --lift-3:#a83279;
+  --adam-1:#a8842a; --adam-2:#c2571a; --adam-3:#b3392f;
   --good:#1f7a45; --warn:#a8701a; --crit:#c0392b;
   --btn-fg:#ffffff;
   --shadow:0 1px 2px rgba(1,7,27,.04);
@@ -351,6 +355,42 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   color:var(--ink-2);background:var(--panel-2)}
 
 
+/* ── séance Adamantium ── */
+.exolist{display:flex;flex-direction:column;gap:12px}
+.exo{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--shadow);transition:.2s}
+.exo.fait{border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:color-mix(in srgb,var(--good) 4%,var(--panel))}
+.exo-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.exo-fmt{font-family:var(--f-display);font-size:20px;font-weight:600;letter-spacing:-.02em;color:var(--accent)}
+.exo-nom{font-weight:600;font-size:15px;margin-top:2px}
+.exo-repos{font-size:11.5px;color:var(--ink-2);background:var(--panel-2);padding:4px 9px;border-radius:6px;white-space:nowrap;flex:0 0 auto}
+.exo-plus{margin:9px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.exo-plus li{font-size:13px;color:var(--ink-2);padding-left:12px;position:relative}
+.exo-plus li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--line-2)}
+.exo-note{margin-top:9px;font-size:12px;color:var(--ink-2);font-style:italic;line-height:1.45}
+.exo-prog{margin-top:10px;font-size:11px;color:var(--ink-3);line-height:1.6}
+.exo-prog .on{color:var(--accent);font-weight:700}
+.exo-saisie{display:flex;align-items:flex-end;gap:9px;margin-top:12px}
+.exo-saisie .field{flex:1;min-width:0}
+.exo-saisie input{text-align:left;padding:0 12px;font-size:15px;font-weight:600}
+.rt-mini{height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel-2);
+  font-size:12.5px;font-weight:600;color:var(--ink-2);flex:0 0 auto;transition:.15s}
+.rt-mini:active{transform:scale(.94)}
+.s-part{font-size:11.5px;font-weight:600;color:var(--accent)}
+.mv{margin-bottom:16px}
+.mv:last-child{margin-bottom:0}
+.mv-head{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.mv-nom{font-weight:600;font-size:13.5px}
+.mv-row{display:flex;align-items:baseline;gap:9px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.mv-row:last-child{border-bottom:none}
+.mv-w{color:var(--ink-3);font-size:11px;width:52px;flex:0 0 auto}
+.mv-ex{color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mv-ex em{font-style:normal;color:var(--ink-3);font-size:11px}
+.mv-ch{margin-left:auto;font-weight:650;color:var(--ink);flex:0 0 auto}
+.lex{padding:11px 0;border-bottom:1px solid var(--line)}
+.lex:last-child{border-bottom:none}
+.lex-t{font-weight:650;font-size:13.5px}
+.lex-d{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.5}
+
 /* ── séance auto-régulée ── */
 .arow{display:grid;grid-template-columns:52px 66px 1fr;gap:8px;align-items:center;margin-top:9px;
   padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:var(--panel-2)}
@@ -508,7 +548,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
     <div id="authLogin" style="display:none">
       <h1 class="lock-h">MoonSport</h1>
-      <div class="lock-sub">Suivi de vos séances Push, Pull et Muscle-up.<br>Accès réservé aux comptes MOON Expertise.</div>
+      <div class="lock-sub">Programme Adamantium · Streetlifting.<br>Accès réservé aux comptes MOON Expertise.</div>
       <button class="ms-btn" id="msBtn">
         <svg viewBox="0 0 21 21" aria-hidden="true">
           <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
@@ -546,21 +586,27 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <section class="view active" id="v-home">
   <div class="wrap stack">
     <div id="homeAuto" style="display:none">
-      <div class="card pad" id="aCompteur" style="margin-bottom:18px"></div>
-      <div class="label">Programme auto-régulé</div>
+      <div class="card pad" id="admCompteur" style="margin-bottom:18px"></div>
+
+      <div class="label">Programme Adamantium</div>
+      <div class="chips" id="admCycles" style="margin-bottom:8px"></div>
+      <div class="tiny muted" id="admObjectif" style="margin-bottom:16px"></div>
+
       <div class="card">
         <div class="wknav">
-          <button class="wkbtn" id="aWkPrev">‹</button>
+          <button class="wkbtn" id="admWkPrev">‹</button>
           <div style="text-align:center">
-            <div class="wknav-t" id="aWkTitle">Semaine 1</div>
-            <div class="wknav-s" id="aWkSub">Bloc 1</div>
+            <div class="wknav-t" id="admWkTitle">Semaine 1</div>
+            <div class="wknav-s" id="admWkSub"></div>
           </div>
-          <button class="wkbtn" id="aWkNext">›</button>
+          <button class="wkbtn" id="admWkNext">›</button>
         </div>
-        <div id="aRows"></div>
+        <div id="admRows"></div>
       </div>
-      <div class="label" style="margin-top:18px">RM de référence</div>
-      <div class="rmgrid" id="aRmRow"></div>
+
+      <button class="btn ghost" id="lexBtn" style="margin-top:16px;height:42px;font-size:13px;font-weight:500">
+        Lexique des termes techniques
+      </button>
     </div>
 
     <div id="homeClassic">
@@ -620,20 +666,18 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 </section>
 
 
-<!-- ═══ SÉANCE AUTO-RÉGULÉE ═══ -->
+<!-- ═══ SÉANCE ADAMANTIUM ═══ -->
 <section class="view" id="v-asess">
   <div class="wrap stack">
     <button class="btn ghost sm" id="asBack">‹ Choisir une autre séance</button>
-    <div class="card sess-top">
+    <div class="card sess-top" style="text-align:left">
       <div class="st-eyebrow" id="asCycle">…</div>
       <h2 id="asTitle">…</h2>
-      <div class="charge"><span class="cv" id="asCharge">0</span><span class="cu">kg</span></div>
-      <div class="charge-sub" id="asMeta"></div>
+      <div class="charge-sub" id="asSub" style="margin-top:4px"></div>
       <div class="sess-prog"><i id="asProg" style="width:0%"></i></div>
       <div class="sess-count" id="asCount"></div>
-      <div class="asnext" id="asNext" style="display:none"></div>
     </div>
-    <div class="card pad" id="asList"></div>
+    <div id="asList" class="exolist"></div>
     <div class="savebar"><button class="btn" id="asSave">Terminer la séance</button></div>
   </div>
 </section>
@@ -716,12 +760,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
           <div class="switch on" id="hapticSwitch"></div>
         </div>
       </div>
-    </div>
-
-    <div>
-      <div class="label">RM de référence</div>
-      <div class="card" id="autoRmSettings"></div>
-      <div class="tiny muted" style="margin-top:8px">Ces valeurs évoluent seules quand une série de tête passe en OK. Les modifier ici réinitialise la base de calcul.</div>
     </div>
 
     <div>
@@ -837,6 +875,17 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   </div>
 </div>
 
+<!-- lexique -->
+<div class="overlay" id="lexSheet">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h3>Lexique</h3>
+    <div class="muted tiny">Les termes techniques employés dans le programme.</div>
+    <div id="lexList" style="margin-top:14px"></div>
+    <button class="btn" id="lexClose" style="margin-top:16px">Fermer</button>
+  </div>
+</div>
+
 <!-- planification Outlook -->
 <div class="overlay" id="planSheet">
   <div class="sheet">
@@ -935,9 +984,9 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 /* ═════ ÉTAT ═════ */
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
-  auto:{rm:{push:70, pushSquat:60, pull:50, pullSdt:100, mu:20}, logs:{}, sessDone:{}},
+  adam:{logs:{}, sessDone:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"auto",
+  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"adam",
       restForce:240, restPuiss:180, restVol:120, restMax:120, restEchauf:45}
 };
 /* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
@@ -947,8 +996,7 @@ function normalize(r){
   return {...structuredClone(DEF), ...r,
     rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
     logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{},
-    auto:{rm:{...DEF.auto.rm, ...((r.auto&&r.auto.rm)||{})},
-          logs:(r.auto&&r.auto.logs)||{}, sessDone:(r.auto&&r.auto.sessDone)||{}}};
+    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}}};
 }
 let S = load();
 function load(){
@@ -1022,7 +1070,7 @@ function renderHome(){
   const auto=S.ui.mode!=="classic";
   $("#homeAuto").style.display=auto?"":"none";
   $("#homeClassic").style.display=auto?"none":"";
-  if(auto){ renderAutoHome(); return; }
+  if(auto){ renderAdamHome(); return; }
   const g=globalStats();
   const pct=Math.round(g.done/TOTAL_SESSIONS*100);
   $("#prgPct").textContent=pct+" %";
@@ -1139,7 +1187,7 @@ function openStep(lift,w){
 }
 $("#stepSheet").onclick=e=>{ if(e.target.id==="stepSheet") $("#stepSheet").classList.remove("open"); };
 $("#stepCancel").onclick=()=>$("#stepSheet").classList.remove("open");
-$("#quitArchive").onclick=()=>{ S.ui.mode="auto"; save(); autoWeek=null; renderHome(); vibrate(8); };
+$("#quitArchive").onclick=()=>{ S.ui.mode="adam"; save(); admCycle=null; renderHome(); vibrate(8); };
 $("#wkPrev").onclick=()=>{ if(homeWeek>1){ homeWeek--; renderWeekPicker(); vibrate(8); } };
 $("#wkNext").onclick=()=>{ if(homeWeek<12){ homeWeek++; renderWeekPicker(); vibrate(8); } };
 
@@ -1518,7 +1566,7 @@ function conseil(pts){
 }
 
 function renderBI(){
-  if(S.ui.mode!=="classic") return renderAutoBI();
+  if(S.ui.mode!=="classic") return renderAdamBI();
   const per=statsPerLift(), g=globalStats();
   const faites=Object.keys(S.sessDone).length;
   const kilos=LIFT_IDS.reduce((a,l)=>a+per[l].reduce((s,p)=>s+p.vol,0),0);
@@ -1668,488 +1716,463 @@ function drawRecords(){
       <span class="pr-d">${d}</span></div>`;
   }).join("");
 }
-/* ═════ PROGRAMME AUTO-RÉGULÉ ═════
-   Blocs de 5 semaines : 4 de montée, la 5e en décharge (tous les % × 0,75).
-   Chaque exercice possède sa propre montée en gamme terminée par une série
-   de tête à 102,5 %. Validée OK, elle devient le nouveau RM de l'exercice. */
-const AUTO_TOP=1.025, AUTO_DELOAD=0.75, AUTO_BLOC=5, AUTO_S2=0.05;
-/* Pourcentage réellement appliqué : la séance 2 retire 5 points comme dans
-   le programme 12 semaines, puis la semaine de décharge réduit d'un quart. */
-const autoPct=(p,w,se)=>Math.max(0,(p-(se===2?AUTO_S2:0)))*autoFacteur(w);
-/* Une série de tête ne fait progresser le RM que si elle constitue un vrai
-   test de maximum, c'est-à-dire au moins 100 % du RM en vigueur. */
-const autoTeteQualifiante=(w,se)=>autoPct(AUTO_TOP,w,se)>=1;
-const AUTO_RES=[
+
+/* ═════ PROGRAMME ADAMANTIUM ═════
+   Streetlifting : traction, dips, muscle up, squat.
+   Trois cycles enchaînés. Contrairement au programme précédent, rien n'est
+   calculé depuis un 1RM : chaque exercice a un format imposé et l'athlète
+   note la charge qu'il a tenue, semaine par semaine. */
+
+const RES3=[
   {k:"ok",    lab:"OK",    col:"var(--good)"},
   {k:"moyen", lab:"Moyen", col:"var(--warn)"},
   {k:"echec", lab:"Échec", col:"var(--crit)"},
 ];
-/* Schéma commun à tous les exercices : montée en gamme terminée par la
-   série de tête, puis puissance, puis volume. 8 séries au total. */
-/* Schéma commun : montée en gamme terminée par la série de tête, puissance,
-   volume, puis deux séries de répétitions maximales sans charge de travail. */
-/* La montée en gamme ne bouge jamais. En revanche les plages de puissance
-   et de volume s'adaptent au mouvement : un muscle-up dont le maximum à vide
-   tourne autour de 5 reps ne peut pas viser les mêmes séries qu'un dip. */
-/* Échauffement commun à toutes les séances : deux passages identiques,
-   le second lesté. Aucune répétition à saisir, seulement la validation. */
-const ECHAUFFEMENT=()=>({nom:"Échauffement", court:"Échauff.", sansRm:true, blocs:[
-  {t:"Échauffement", libre:true, sansReps:true, pcts:[0,0], charges:["À vide","20 kg"],
-   detail:"10 s hold · 10 scapula pull-up · 10 s hold"},
-]});
 
-/* Mouvements lestés au poids de corps : un test de répétitions maximales à
-   froid, la montée en gamme, puissance, volume, puis un second test à chaud. */
-const BLOCS_LEST=()=>[
-  {t:"Max reps · à froid", libre:true, charge:"À vide", pcts:[0]},
-  {t:"Montée en gamme", rmin:1, rmax:6, pcts:[.25,.50,.75,AUTO_TOP], reps:[6,4,2,1]},
-  {t:"Puissance", rmin:4, rmax:6,  cible:4, pcts:[.60,.60,.60]},
-  {t:"Volume",    rmin:8, rmax:10, cible:8, pcts:[.35,.35,.35]},
-  {t:"Max reps · à chaud", libre:true, charge:"À vide", pcts:[0]},
-];
+/* Repos : libellé affiché tel quel, et durée retenue pour le minuteur.
+   « Feeling » laisse volontairement l'athlète juger. */
+const R=(lab,sec)=>({lab,sec});
+const FEELING=R("Feeling",0);
 
-/* Muscle-up : plages resserrées, maximum à vide autour de 5 répétitions. */
-const BLOCS_MU=()=>[
-  {t:"Montée en gamme", rmin:1, rmax:2, pcts:[.25,.50,.75,AUTO_TOP], reps:[2,2,1,1]},
-  {t:"Puissance", rmin:2, rmax:3, pcts:[.60,.60]},
-  {t:"Volume",    rmin:4, rmax:5, pcts:[.35,.35]},
-  {t:"Max reps",  libre:true, charge:"À vide", pcts:[0,0]},
-];
-
-const AUTO_SEANCES={
-  push:{ nom:"Push", color:"var(--lift-2)", exos:[
-    ECHAUFFEMENT(),
-    {nom:"Dips lestés", court:"Dips", rm:"push", blocs:BLOCS_LEST()},
-  ]},
-  pull:{ nom:"Pull", color:"var(--lift-1)", exos:[
-    ECHAUFFEMENT(),
-    {nom:"Tractions lestées", court:"Tractions", rm:"pull", blocs:BLOCS_LEST()},
-  ]},
-  mu:{ nom:"Muscle-up", color:"var(--lift-3)", seances:1, exos:[
-    ECHAUFFEMENT(),
-    {nom:"Muscle-up lesté", court:"Muscle-up", rm:"mu", blocs:BLOCS_MU()},
-    /* Au poids de corps : aucun RM, on ne saisit que les répétitions. */
-    {nom:"Tractions explosives", court:"Explosif", sansRm:true, blocs:[
-      {t:"Explosif", libre:true, charge:"À vide", rmin:5, rmax:8, pcts:[0,0,0,0]},
+const ADAM=[
+{
+  id:"c1", nom:"Volume", num:1, semaines:5, couleur:"var(--adam-1)",
+  objectif:"Accumuler du volume et construire les fondations",
+  trainings:[
+    {n:1, titre:"Street 3 mouvements", sous:"Muscle up, traction, dips", exos:[
+      {nom:"Muscle up", parSemaine:["4 × 4","6 × 4","6 × 6","3 × 8","3 × AMRAP"], repos:FEELING},
+      {nom:"Tractions", format:"3 × 10", repos:FEELING},
+      {nom:"Dips", format:"3 × 10", repos:FEELING},
     ]},
-  ]},
-};
-const AUTO_IDS=Object.keys(AUTO_SEANCES);
-const autoBloc    = w => Math.floor((w-1)/AUTO_BLOC)+1;
-const autoPos     = w => ((w-1)%AUTO_BLOC)+1;
-const autoDecharge= w => autoPos(w)===AUTO_BLOC;
-const autoFacteur = w => autoDecharge(w) ? AUTO_DELOAD : 1;
-const autoKey=(s,w,se,i)=>`auto|${s}|${w}|${se}|${i}`;
-const autoSk =(s,w,se)=>`auto|${s}|${w}|${se}`;
-const autoExos=s=>AUTO_SEANCES[s].exos;
-/* Nombre de séances hebdomadaires du groupe : 2 par défaut, 1 pour le muscle-up. */
-const autoNb=s=>AUTO_SEANCES[s].seances||2;
-const autoList=s=>autoNb(s)===1?[1]:[1,2];
-/* Repos associé à chaque bloc, paramétrable dans les réglages. */
-const AUTO_REPOS={"Échauffement":"restEchauf","Montée en gamme":"restForce",
-  "Puissance":"restPuiss","Volume":"restVol","Max reps":"restMax",
-  "Max reps · à froid":"restMax","Max reps · à chaud":"restMax","Explosif":"restVol"};
-const autoRepos=bloc=>S.ui[AUTO_REPOS[bloc]] ?? 120;
+    {n:2, titre:"Squat principal", sous:"Renforcement membre inférieur antérieur", exos:[
+      {nom:"Squat", format:"3 × 10", repos:R("3 à 5 min",180)},
+      {nom:"Gobelet squat", format:"3 × 6", plus:["+ 8 gobelet squat","+ 10 gobelet squat"],
+       note:"La charge diminue quand les répétitions augmentent", repos:R("2 à 3 min",120)},
+      {nom:"Legs extensions", format:"3 × 15", repos:R("1 à 1 min 30",60)},
+      {nom:"Extensions lombaires", format:"5 × 10", note:"Contrôle sur la phase excentrique", repos:R("1 min",60)},
+    ]},
+    {n:3, titre:"Renforcement haut du corps", exos:[
+      {nom:"Traction", format:"3 × 10", repos:FEELING},
+      {nom:"Développé couché", format:"4 × 10",
+       plus:["+ 10 tirage horizontal unilatéral deadstop (1 s minimum)"], repos:R("2 à 4 min",120)},
+      {nom:"Développé militaire barre ou haltère", format:"3 × 10",
+       plus:["+ 10 tirage vertical pronation (4 s excentrique ou 2 s pause)",
+             "+ 10 tirage vertical supination (4 s excentrique si 2 s pause en pronation)"],
+       repos:R("2 min 30 à 3",150)},
+      {nom:"Élévation frontale to latérale", format:"3 × 10",
+       plus:["+ 10 biceps curl pronation à la barre (contrôle excentrique)"], repos:R("1 min 30 à 2",90)},
+    ]},
+    {n:4, titre:"Squat secondaire", sous:"Renforcement membre inférieur postérieur", exos:[
+      {nom:"Squat tempo", format:"4 × 6", note:"4 s excentrique", repos:R("3 à 5 min",180)},
+      {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 3",90)},
+      {nom:"Soulevé de terre roumain", format:"3 × 10", plus:["+ 10 legs curl"], repos:R("1 à 1 min 30",60)},
+      {nom:"Chinese plank", format:"3 × 30 s", note:"Possibilité de dégressif toutes les 10 s",
+       plus:["+ 30 s gainage cuillère"], repos:R("1 à 1 min 30",60)},
+    ]},
+    {n:5, titre:"Street 2 mouvements", sous:"Traction, dips", exos:[
+      {nom:"Traction", format:"3 × 10", repos:FEELING},
+      {nom:"Dips", format:"3 × 4", note:"Dropset 4/6/8 : force, puissance, résistance",
+       plus:["+ 6 dips (focus puissance)","+ 8 dips (focus résistance)"], repos:FEELING},
+      {nom:"Rowing barre pronation", format:"3 × 10",
+       plus:["+ 10 rowing barre supination","+ 10 à 30 pompes"], repos:R("2 min 30 à 3",150)},
+      {nom:"Élévation frontale haltère", format:"3 × 10", note:"Excentrique contrôlé",
+       plus:["+ 10 élévation latérale haltère (excentrique contrôlé)",
+             "+ 10 triceps extension poulie haute (excentrique contrôlé)"], repos:R("3 min",180)},
+    ]},
+  ],
+},
+{
+  id:"c2", nom:"Masse", num:2, semaines:4, couleur:"var(--adam-2)",
+  objectif:"Développer la puissance et les fibres musculaires",
+  trainings:[
+    {n:1, titre:"Squat principal, dips", exos:[
+      {nom:"Squat pause", format:"4 × 6", note:"2 s de pause en amplitude complète, environ 70 % du 1RM",
+       repos:R("3 à 5 min",180)},
+      {nom:"Dips deadstop", format:"4 × 4", note:"Deadstop 1 s minimum",
+       plus:["+ 6 dips one shoot"], repos:R("4 à 6 min",240)},
+      {nom:"Hip thrust", format:"3 × 10", plus:["+ 10 fente bulgare"], repos:R("2 à 3 min",120)},
+      {nom:"Chinese plank", format:"3 × 30 s", repos:R("1 min 30",90)},
+    ]},
+    {n:2, titre:"Muscle up, traction", exos:[
+      {nom:"Muscle up", format:"4 × 4", note:"Montante : la charge augmente à chaque série", repos:FEELING},
+      {nom:"Traction deadstop", format:"4 × 6", note:"Descendante : maintenir l'intention malgré la baisse de charge",
+       repos:FEELING},
+      {nom:"Tirage horizontal tempo", format:"3 × 6", note:"4 s excentrique",
+       plus:["+ 6 biceps curl tempo (2 s pause bras à 90°)"], repos:R("2 à 3 min",120)},
+    ]},
+    {n:3, titre:"Renforcement haut du corps", exos:[
+      {nom:"Développé couché", format:"4 × 6", note:"2 s de pause", repos:FEELING},
+      {nom:"Tirage vertical pronation", format:"3 × 4", note:"Dégressive : lourd, mi-lourd, léger",
+       plus:["+ 6 tirage vertical pronation","+ 8 tirage vertical pronation"], repos:R("2 min 30 à 3",150)},
+      {nom:"Développé militaire", format:"1 × 4", note:"1 s deadstop minimum, puis 3 × 6",
+       plus:["puis 3 × 6 développé militaire (1 s deadstop minimum)"], repos:R("2 à 4 min",120)},
+      {nom:"Butterfly", format:"3 × 10", note:"2 s de pause", plus:["+ 6 à 10 pompes claquées"],
+       repos:R("2 min 30 à 3",150)},
+      {nom:"Triceps extension", format:"3 × 10", note:"Contrôle phase excentrique", repos:R("1 min 30 à 2",90)},
+    ]},
+    {n:4, titre:"Squat secondaire", sous:"Renforcement membre inférieur", exos:[
+      {nom:"Muscle up", format:"1 répétition", note:"Montante, poids de corps à 60-70 % du 1RM actuel, augmentation de 1,25 à 2,5 kg",
+       repos:FEELING},
+      {nom:"Squat", format:"3 × 8", repos:R("3 à 5 min",180)},
+      {nom:"Legs extension tempo", format:"3 × 10", note:"4 s excentrique", repos:R("1 min 30 à 2",90)},
+      {nom:"Legs curl tempo", format:"3 × 10", note:"2 s pause", repos:R("1 min 30 à 2",90)},
+      {nom:"Extension lombaire", format:"3 × 10", repos:R("1 à 1 min 30",60)},
+    ]},
+    {n:5, titre:"Street 2 mouvements", sous:"Traction, dips", exos:[
+      {nom:"Tractions one shoot", format:"4 × 8", note:"Descendante, focus trajectoire et résistance sur effort de puissance",
+       repos:FEELING},
+      {nom:"Dips tempo", format:"4 × 6", note:"4 s excentrique", repos:R("4 à 6 min",240)},
+      {nom:"Développé couché one shoot", format:"3 × 8",
+       plus:["+ 10 à 12 triceps extension haltère"], repos:R("2 min 30 à 3",150)},
+    ]},
+  ],
+},
+{
+  id:"c3", nom:"Force", num:3, semaines:4, couleur:"var(--adam-3)",
+  objectif:"Développer la qualité de force pure",
+  trainings:[
+    {n:1, titre:"Muscle up principal, dips principal", exos:[
+      {nom:"Muscle up", format:"3 × 1", repos:R("4 à 7 min",240)},
+      {nom:"Muscle up", format:"3 × 3", repos:R("4 à 7 min",240)},
+      {nom:"Dips deadstop", format:"1 × 1", note:"Deadstop 1 s minimum", repos:R("4 à 6 min",240)},
+      {nom:"Dips deadstop", format:"1 × 3", note:"Deadstop 1 s minimum", repos:FEELING},
+      {nom:"Dips deadstop", format:"3 × 5", note:"Deadstop 1 s minimum", repos:FEELING},
+      {nom:"Développé militaire", format:"3 × 10",
+       plus:["puis 3 × 10 développé couché incliné haltère prise neutre"], repos:R("2 min 30 à 3",150)},
+    ]},
+    {n:2, titre:"Traction, squat principal", exos:[
+      {nom:"Traction", format:"3 × 3", note:"Descendante", repos:FEELING},
+      {nom:"Tractions tempo", format:"2 × 6", note:"4 s excentrique, 2 s pause", repos:R("2 min 30 à 3",150)},
+      {nom:"Squat", format:"1 × 3", repos:FEELING},
+      {nom:"Squat", format:"3 × 5", repos:FEELING},
+      {nom:"Extension lombaire iso", format:"3 × 10 s", plus:["+ 10 extension lombaire"], repos:R("1 min 30",90)},
+    ]},
+    {n:3, titre:"Traction, dips secondaire", exos:[
+      {nom:"Traction deadstop", format:"4 × 4", note:"Focus explosivité et puissance", repos:FEELING},
+      {nom:"Dips", format:"2 × 2", plus:["puis 2 × 4 dips","puis 2 × 6 dips"], repos:FEELING},
+      {nom:"Triceps extension tempo", format:"3 × 10", note:"4 s excentrique", repos:FEELING},
+    ]},
+    {n:4, titre:"Muscle up secondaire, squat secondaire", exos:[
+      {nom:"Squat", format:"1 × 1", repos:R("3 à 5 min",180)},
+      {nom:"Squat", format:"3 × 3", repos:R("3 à 5 min",180)},
+      {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 2",90)},
+      {nom:"Legs curl", format:"3 × 10", plus:["+ 10 extension lombaire"], repos:R("1 min 30 à 2",90)},
+    ]},
+  ],
+},
+];
 
-/* Position, dans la liste à plat, de la série de tête d'un exercice. */
-/* La montée en gamme n'est plus forcément le premier bloc : on repère la
-   série de tête à son pourcentage. Renvoie -1 pour un exercice sans RM. */
-function autoTopIdx(s,ei){
-  let i=0;
-  const exos=autoExos(s);
-  for(let e=0;e<ei;e++) exos[e].blocs.forEach(b=>i+=b.pcts.length);
-  for(const b of exos[ei].blocs){
-    const k=b.libre?-1:b.pcts.indexOf(AUTO_TOP);
-    if(k>=0) return i+k;
-    i+=b.pcts.length;
-  }
-  return -1;
-}
-/* RM d'un exercice à l'entrée d'une séance : base + une hausse par série de
-   tête validée OK dans les séances précédentes. Recalculé, jamais stocké. */
-function autoRm(s,ei,w,se){
-  let rm=S.auto.rm[autoExos(s)[ei].rm]||0;
-  const top=autoTopIdx(s,ei);
-  for(let ww=1;ww<=w;ww++) for(const ss of autoList(s)){
-    if(ww===w&&ss>=se) return rm;
-    if(!autoTeteQualifiante(ww,ss)) continue;
-    if(S.auto.logs[autoKey(s,ww,ss,top)]?.res==="ok") rm=round125(rm*AUTO_TOP);
-  }
-  return rm;
-}
-/* RM en vigueur après la montée : la série de tête validée s'applique
-   immédiatement au reste des séries du même exercice. */
-function autoRmApres(s,ei,w,se){
-  const base=autoRm(s,ei,w,se);
-  const ok=S.auto.logs[autoKey(s,w,se,autoTopIdx(s,ei))]?.res==="ok";
-  return (ok && autoTeteQualifiante(w,se)) ? round125(base*AUTO_TOP) : base;
-}
-const autoRmCourant=(s,ei)=>autoRm(s,ei,999,1);
+/* Lexique repris de la dernière page du programme. */
+const LEXIQUE=[
+  ["1RM","Charge maximale que tu peux soulever une seule fois sur un mouvement donné."],
+  ["AMRAP","Maximum de répétitions possibles avec une charge donnée, sans tricher sur la technique."],
+  ["Deadstop","Un arrêt total, comme si c'était la première répétition."],
+  ["One shoot","Répétitions enchaînées sans deadstop."],
+  ["Montante","Format où la charge augmente à chaque série."],
+  ["Descendante","Tu démarres lourd et réduis la charge, en gardant la même intention."],
+  ["Dropset","Méthode d'intensification enchaînant plusieurs mini-séries dans une seule."],
+  ["Excentrique","Phase de descente ou d'étirement du mouvement."],
+  ["Tempo","Contrôle du rythme sur chaque phase : excentrique, pause, concentrique, deadstop."],
+  ["Format linéaire","Format identique répété, pour développer une seule qualité physique."],
+  ["Deload","Semaine de récupération active, volume et intensité réduits."],
+  ["Semaine 0","Semaine de transition avant un nouveau cycle : découvrir les formats et tester les intensités."],
+  ["PDC","Poids du corps."],
+];
 
-function autoSeries(s,w,se){
-  const out=[]; let i=0;
-  autoExos(s).forEach((ex,ei)=>{
-    const rmM=autoRm(s,ei,w,se), rmA=autoRmApres(s,ei,w,se);
-    const idxMontee=ex.blocs.findIndex(b=>!b.libre && b.pcts.includes(AUTO_TOP));
-    ex.blocs.forEach((b,bi)=>{
-      /* Le nouveau RM ne s'applique qu'aux blocs situés après la montée. */
-      const apres = idxMontee>=0 && bi>idxMontee;
-      const rm = apres ? rmA : rmM;
-      b.pcts.forEach((p,pi)=>{ const pe=autoPct(p,w,se);
-        out.push({i:i++, ex:ei, exNom:ex.nom, exCourt:ex.court, bloc:b.t,
-        pct:pe, kg:round125(rm*pe), rmin:b.rmin, rmax:b.rmax,
-        cible: b.reps ? b.reps[pi] : (b.cible ?? b.rmax),
-        top: !b.libre && b.pcts[pi]===AUTO_TOP,
-        libre:!!b.libre, sansReps:!!b.sansReps, detail:b.detail,
-        charge: b.charges ? b.charges[pi] : b.charge,
-        surNouveauRM: apres && !b.libre && rmA!==rmM}); });
-    });
-  });
-  return out;
+const ADAM_IDS=ADAM.map(c=>c.id);
+const cycleById=id=>ADAM.find(c=>c.id===id)||ADAM[0];
+const admKey=(c,w,t,e)=>`adam|${c}|${w}|${t}|${e}`;
+const admSk =(c,w,t)=>`adam|${c}|${w}|${t}`;
+const admTotalSeances=ADAM.reduce((n,c)=>n+c.semaines*c.trainings.length,0);
+
+/* Toutes les lignes d'une séance, exercice par exercice. */
+function admExos(cid,t){ return cycleById(cid).trainings.find(x=>x.n===t)?.exos||[]; }
+function admFormat(ex,w){
+  return ex.parSemaine ? (ex.parSemaine[w-1]||ex.parSemaine[ex.parSemaine.length-1]) : ex.format;
 }
-function autoFaites(s,w,se){
-  return autoSeries(s,w,se).filter(x=>S.auto.logs[autoKey(s,w,se,x.i)]?.res).length;
+function admFaites(cid,w,t){
+  return admExos(cid,t).filter((e,i)=>S.adam.logs[admKey(cid,w,t,i)]?.res).length;
 }
-function autoProchaine(){
-  for(let w=1;w<=104;w++) for(const se of [1,2]) for(const id of AUTO_IDS){
-    if(se>autoNb(id)) continue;
-    if(!S.auto.sessDone[autoSk(id,w,se)]) return {s:id,w,se};
+function admProchaine(){
+  for(const c of ADAM) for(let w=1;w<=c.semaines;w++) for(const tr of c.trainings)
+    if(!S.adam.sessDone[admSk(c.id,w,tr.n)]) return {c:c.id,w,t:tr.n};
+  return null;
+}
+/* Dernière charge notée sur cet exercice, pour l'afficher en repère. */
+function admPrecedent(cid,w,t,i){
+  for(let ww=w-1;ww>=1;ww--){
+    const d=S.adam.logs[admKey(cid,ww,t,i)];
+    if(d&&d.charge) return {semaine:ww, charge:d.charge};
   }
   return null;
 }
 
-/* ═════ RENDU DU PROGRAMME AUTO-RÉGULÉ ═════ */
-let autoWeek=null, autoSess={s:"push",w:1,se:1}, autoRmKey=null;
+/* ═════ RENDU DU PROGRAMME ADAMANTIUM ═════ */
+let admCycle=null, admWeek=null, admSess={c:"c1",w:1,t:1};
 
-function renderAutoHome(){
-  if(autoWeek==null){ const n=autoProchaine(); autoWeek=n?n.w:1; }
-  const w=autoWeek, dech=autoDecharge(w), nx=autoProchaine();
-  $("#aWkTitle").textContent=`Semaine ${w}`;
-  $("#aWkSub").textContent = dech
-    ? `Bloc ${autoBloc(w)} · décharge · toutes les charges à 75 %`
-    : `Bloc ${autoBloc(w)} · montée ${autoPos(w)} sur 4`;
-  $("#aWkPrev").disabled=w<=1;
+function renderAdamHome(){
+  const nx=admProchaine();
+  if(admCycle==null){ admCycle=nx?nx.c:"c1"; admWeek=nx?nx.w:1; }
+  const cy=cycleById(admCycle);
+  if(admWeek>cy.semaines) admWeek=cy.semaines;
 
-  const comptes=AUTO_IDS.map(id=>({id, n:Object.keys(S.auto.sessDone)
-    .filter(k=>k.startsWith("auto|"+id+"|")).length}));
-  $("#aCompteur").innerHTML='<div class="res3" style="grid-template-columns:repeat('
-    + comptes.length + ',1fr)">'
-    + comptes.map(c=>'<div><div class="res-v mono" style="color:'+liftColor2(c.id)+'">'+c.n+'</div>'
-        + '<div class="res-l">séance'+(c.n>1?"s":"")+' '+AUTO_SEANCES[c.id].nom+'</div></div>').join("")
-    + '</div>';
+  document.documentElement.style.setProperty("--accent",cy.couleur);
 
-  const box=$("#aRows"); box.innerHTML="";
-  AUTO_IDS.forEach(id=>{
-    const cfg=AUTO_SEANCES[id];
-    const head=document.createElement("div");
-    head.className="lifthead";
-    head.innerHTML=`<span class="dot2" style="background:${cfg.color}"></span>
-      <span class="lh-name">${cfg.nom}</span>
-      <span class="palier-chip${dech?" deload":""}" style="pointer-events:none">${dech?"Décharge":"Montée"}</span>`;
-    box.appendChild(head);
-    for(const se of autoList(id)){
-      const done=!!S.auto.sessDone[autoSk(id,w,se)];
-      const suivant=nx&&nx.s===id&&nx.w===w&&nx.se===se;
-      const series=autoSeries(id,w,se);
-      const tetes=series.filter(x=>x.top);
-      const b=document.createElement("button");
-      b.className="srow"+(done?" done":"");
-      b.innerHTML=`<div style="min-width:0">
-          <div class="s-name">Séance ${se}${suivant?'<span class="s-tag">à suivre</span>':""}</div>
-          <div class="s-meta">${series.length} séries · tête${tetes.length>1?"s":""} ${tetes.map(t=>fmt(t.kg)+" kg").join(" et ")}</div>
-        </div>
-        <div class="s-right">${done?'<span class="s-check">Fait</span>':""}<span class="chev">›</span></div>`;
-      b.onclick=()=>openAutoSess(id,w,se);
-      box.appendChild(b);
-    }
+  /* Chips de cycle */
+  const cc=$("#admCycles"); cc.innerHTML="";
+  ADAM.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="chip"+(c.id===admCycle?" on":"");
+    if(c.id===admCycle) b.style.background=c.couleur;
+    b.textContent=`${c.num} · ${c.nom}`;
+    b.onclick=()=>{ admCycle=c.id; admWeek=1; renderAdamHome(); vibrate(8); };
+    cc.appendChild(b);
   });
+  $("#admObjectif").textContent=cy.objectif;
 
-  const rr=$("#aRmRow"); rr.innerHTML="";
-  AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
-    if(ex.sansRm) return;
-    const base=S.auto.rm[ex.rm]||0, cour=autoRmCourant(id,ei);
-    const t=document.createElement("button");
-    t.className="rm-tile";
-    t.innerHTML=`<div style="min-width:0"><div class="r-lab">${ex.nom}</div>
-      <div class="r-val mono">${fmt(cour)}<small> kg</small></div>
-      ${cour!==base?`<div class="tiny muted" style="margin-top:2px">départ ${fmt(base)} kg</div>`:""}</div>
-      <span class="chev">›</span>`;
-    t.onclick=()=>openAutoRm(ex.rm,ex.nom);
-    rr.appendChild(t);
-  }));
+  /* Compteur global */
+  const faites=Object.keys(S.adam.sessDone).length;
+  $("#admCompteur").innerHTML=
+    '<div class="res3"><div><div class="res-v mono">'+faites+'</div><div class="res-l">séances faites</div></div>'
+    +'<div><div class="res-v mono">'+admTotalSeances+'</div><div class="res-l">au programme</div></div>'
+    +'<div><div class="res-v mono">'+cy.semaines+'</div><div class="res-l">semaines · cycle '+cy.num+'</div></div></div>';
+
+  /* Navigation des semaines */
+  $("#admWkTitle").textContent=`Semaine ${admWeek}`;
+  $("#admWkSub").textContent=`Cycle ${cy.num} · ${cy.nom} · ${cy.trainings.length} séances`;
+  $("#admWkPrev").disabled=admWeek<=1;
+  $("#admWkNext").disabled=admWeek>=cy.semaines;
+
+  /* Séances de la semaine */
+  const box=$("#admRows"); box.innerHTML="";
+  cy.trainings.forEach(tr=>{
+    const done=!!S.adam.sessDone[admSk(admCycle,admWeek,tr.n)];
+    const suiv=nx&&nx.c===admCycle&&nx.w===admWeek&&nx.t===tr.n;
+    const n=admFaites(admCycle,admWeek,tr.n), tot=tr.exos.length;
+    const b=document.createElement("button");
+    b.className="srow"+(done?" done":"");
+    b.innerHTML=`<span class="dot" style="background:${cy.couleur}"></span>
+      <div style="min-width:0">
+        <div class="s-name">Training ${tr.n}${suiv?'<span class="s-tag">à suivre</span>':""}</div>
+        <div class="s-meta">${tr.titre}${tr.sous?" · "+tr.sous:""}</div>
+      </div>
+      <div class="s-right">
+        ${done?'<span class="s-check">Fait</span>':n?`<span class="s-part mono">${n}/${tot}</span>`:""}
+        <span class="s-load mono">${tot}<small> exos</small></span>
+        <span class="chev">›</span>
+      </div>`;
+    b.onclick=()=>openAdamSess(admCycle,admWeek,tr.n);
+    box.appendChild(b);
+  });
 }
-$("#aWkPrev").onclick=()=>{ if(autoWeek>1){ autoWeek--; renderAutoHome(); vibrate(8); } };
-$("#aWkNext").onclick=()=>{ autoWeek++; renderAutoHome(); vibrate(8); };
+$("#admWkPrev").onclick=()=>{ if(admWeek>1){ admWeek--; renderAdamHome(); vibrate(8); } };
+$("#admWkNext").onclick=()=>{ admWeek++; renderAdamHome(); vibrate(8); };
 
-function openAutoSess(s,w,se){ autoSess={s,w,se}; switchView("v-asess"); renderAutoSess(); }
-function renderAutoSess(){
-  const {s,w,se}=autoSess, cfg=AUTO_SEANCES[s];
-  const dech=autoDecharge(w), series=autoSeries(s,w,se);
-  $("#asCycle").textContent=`Bloc ${autoBloc(w)} · semaine ${w}${dech?" · décharge":""}`;
-  $("#asTitle").textContent=`${cfg.nom} · Séance ${se}`;
-  /* La première série de tête de la séance, quel que soit l'exercice :
-     l'échauffement occupe désormais la position d'ouverture. */
-  const tete0=series.find(x=>x.top);
-  $("#asCharge").textContent=tete0?fmt(tete0.kg):"—";
-  $("#asMeta").innerHTML=autoExos(s).filter(ex=>!ex.sansRm).map((ex)=>{
-    const ei=autoExos(s).indexOf(ex);
-    const a=autoRm(s,ei,w,se), b=autoRmApres(s,ei,w,se);
-    return `${ex.court} <b>${a===b?fmt(a):fmt(a)+" → "+fmt(b)} kg</b>`;
-  }).join(" · ");
+function openAdamSess(c,w,t){ admSess={c,w,t}; switchView("v-asess"); renderAdamSess(); }
+
+function renderAdamSess(){
+  const {c,w,t}=admSess, cy=cycleById(c);
+  const tr=cy.trainings.find(x=>x.n===t);
+  document.documentElement.style.setProperty("--accent",cy.couleur);
+  $("#asCycle").textContent=`Cycle ${cy.num} · ${cy.nom} · semaine ${w} sur ${cy.semaines}`;
+  $("#asTitle").textContent=`Training ${t} — ${tr.titre}`;
+  $("#asSub").textContent=tr.sous||"";
 
   const el=$("#asList"); el.innerHTML="";
-  let cle=null, wrap=null;
-  series.forEach(x=>{
-    const c=x.ex+"|"+x.bloc;
-    if(c!==cle){
-      cle=c;
-      wrap=document.createElement("div"); wrap.className="ex";
-      const nb=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc).length;
-      const memeBloc=series.filter(y=>y.ex===x.ex&&y.bloc===x.bloc);
-      const cibles=[...new Set(memeBloc.map(y=>y.cible))];
-      const reps=x.sansReps?"passages"
-        :x.libre&&x.rmax?`${x.rmin} à ${x.rmax} reps`
-        :x.libre?"maximum de reps"
-        :cibles.length>1?`${cibles.join(" puis ")} reps`
-        :x.rmin!==x.rmax?`${x.rmin} à ${x.rmax} reps`
-        :x.rmin===1?"1 rep":`${x.rmin} reps`;
-      const exo=autoExos(s)[x.ex];
-      const premier=!exo.sansRm && series.find(y=>y.ex===x.ex).bloc===x.bloc;
-      wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${x.bloc}</div>
-        <div class="ex-scheme">${nb} × ${reps}</div></div>
-        <div class="target">${x.exNom}${premier
-          ? ` <button class="rmchip" data-rm="${exo.rm}" data-nom="${exo.nom}">RM ${fmt(autoRm(s,x.ex,w,se))} kg · modifier</button>`
-          : ""}</div>`;
-      el.appendChild(wrap);
-    }
-    const k=autoKey(s,w,se,x.i), d=S.auto.logs[k]||{};
-    const row=document.createElement("div");
-    row.className="arow"+(d.res?" isdone":"")+(x.top?" top":"")+(x.surNouveauRM?" maj":"");
-    row.innerHTML=`<div class="a-pct mono">${x.libre?((x.rmax||x.sansReps)?"":"max"):Math.round(x.pct*1000)/10+"%"}${
-        x.sansReps ? "" : x.libre
-          ? (x.rmax?`<span class="a-cible">× ${x.rmin}-${x.rmax}</span>`:"")
-          : `<span class="a-cible">× ${x.cible}</span>`}</div>
-      <div class="a-kg mono">${x.libre?`<span class="a-libre">${x.charge}</span>`
-        :`${fmt(x.kg)}<small> kg</small>${x.surNouveauRM?'<span class="maj-tag">RM+</span>':""}`}</div>
-      ${x.sansReps
-        ? `<div class="a-detail">${x.detail||""}</div>`
-        : `<div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?(x.rmax||"reps"):x.cible}" value="${d.reps??""}"></div>`}
-      <div class="a-res${x.libre?" une":""}">${x.libre
-        ? `<button class="resb${d.res?" on":""}" data-k="${k}" data-r="fait"
-             style="${d.res?"background:var(--good);border-color:var(--good);color:var(--panel)":""}">${d.res?"Série faite":"Valider la série"}</button>`
-        : AUTO_RES.map(r=>
-        `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}"
+  tr.exos.forEach((ex,i)=>{
+    const k=admKey(c,w,t,i), d=S.adam.logs[k]||{};
+    const prec=admPrecedent(c,w,t,i);
+    const fmt=admFormat(ex,w);
+    const card=document.createElement("div");
+    card.className="exo"+(d.res?" fait":"");
+    card.innerHTML=`
+      <div class="exo-head">
+        <div>
+          <div class="exo-fmt mono">${fmt}</div>
+          <div class="exo-nom">${ex.nom}</div>
+        </div>
+        <div class="exo-repos">${ex.repos.lab}</div>
+      </div>
+      ${ex.plus?`<ul class="exo-plus">${ex.plus.map(p=>`<li>${p}</li>`).join("")}</ul>`:""}
+      ${ex.note?`<div class="exo-note">${ex.note}</div>`:""}
+      ${ex.parSemaine?`<div class="exo-prog">Progression du cycle : ${ex.parSemaine.map((f,n)=>
+          `<span class="${n===w-1?"on":""}">S${n+1} ${f}</span>`).join(" · ")}</div>`:""}
+      <div class="exo-saisie">
+        <div class="field">
+          <label>Charge${prec?` · S${prec.semaine} : ${prec.charge}`:""}</label>
+          <input data-k="${k}" data-f="charge" placeholder="${prec?prec.charge:"kg, PDC, élastique…"}" value="${d.charge??""}">
+        </div>
+        <button class="rt-mini" data-sec="${ex.repos.sec}" title="Lancer le repos">${ex.repos.sec?"Repos":"—"}</button>
+      </div>
+      <div class="a-res">${RES3.map(r=>
+        `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}" data-sec="${ex.repos.sec}"
            style="${d.res===r.k?`background:${r.col};border-color:${r.col};color:var(--panel)`:""}">${r.lab}</button>`).join("")}</div>`;
-    wrap.appendChild(row);
+    el.appendChild(card);
   });
 
-  el.querySelectorAll(".rmchip").forEach(c=>{
-    c.onclick=()=>openAutoRm(c.dataset.rm,c.dataset.nom);
-  });
   el.querySelectorAll("input").forEach(inp=>{
-    inp.oninput=()=>{ const k=inp.dataset.k; S.auto.logs[k]=S.auto.logs[k]||{};
-      S.auto.logs[k].reps=inp.value===""?undefined:parseInt(inp.value,10); save(); };
+    inp.oninput=()=>{ const k=inp.dataset.k; S.adam.logs[k]=S.adam.logs[k]||{};
+      S.adam.logs[k].charge=inp.value||undefined; save(); };
+  });
+  el.querySelectorAll(".rt-mini").forEach(b=>{
+    b.onclick=()=>{ const s=+b.dataset.sec; if(s) startRest(s,"Série suivante"); else toast("Repos au feeling"); };
   });
   el.querySelectorAll(".resb").forEach(b=>{
     b.onclick=()=>{
       const k=b.dataset.k, r=b.dataset.r;
-      S.auto.logs[k]=S.auto.logs[k]||{};
-      const avant=S.auto.logs[k].res;
-      S.auto.logs[k].res = avant===r ? undefined : r;
-      const x=series.find(y=>autoKey(s,w,se,y.i)===k);
-      if(S.auto.logs[k].res && S.auto.logs[k].reps==null && !x.sansReps && (!x.libre||x.rmax)) S.auto.logs[k].reps=x.cible;
+      S.adam.logs[k]=S.adam.logs[k]||{};
+      S.adam.logs[k].res = S.adam.logs[k].res===r ? undefined : r;
       save(); vibrate(14);
-      if(x.top && S.auto.logs[k].res==="ok" && autoTeteQualifiante(w,se)){
-        const ex=autoExos(s)[x.ex], base=autoRm(s,x.ex,w,se);
-        showPR(`${ex.court} · nouveau RM ${fmt(round125(base*AUTO_TOP))} kg`,
-               `${ex.nom} : ${fmt(base)} → ${fmt(round125(base*AUTO_TOP))} kg`);
-      }
-      renderAutoSess();
-      if(S.ui.rest && S.auto.logs[k].res){
-        const suiv=series[series.indexOf(x)+1];
-        startRest(autoRepos(x.bloc), suiv ? suiv.exCourt+" · "+suiv.bloc : "Dernière série terminée");
-      }
+      renderAdamSess();
+      const sec=+b.dataset.sec;
+      if(S.ui.rest && S.adam.logs[k].res && sec) startRest(sec,"Exercice suivant");
     };
   });
 
-  const faites=autoFaites(s,w,se), tot=series.length;
+  const faites=admFaites(c,w,t), tot=tr.exos.length;
   $("#asProg").style.width=(faites/tot*100)+"%";
-  $("#asCount").textContent = faites===tot?`Séance complète · ${tot} séries`:`${faites} série${faites>1?"s":""} sur ${tot}`;
-
-  const montees=autoExos(s).map((ex,ei)=>({ex, a:autoRm(s,ei,w,se), b:autoRmApres(s,ei,w,se)}))
-    .filter(x=>!x.ex.sansRm && x.a!==x.b);
-  const ban=$("#asNext");
-  if(montees.length){
-    ban.style.display="";
-    ban.innerHTML=montees.map(m=>`${m.ex.court} : nouveau RM <b>${fmt(m.b)} kg</b>`).join(" · ");
-  } else ban.style.display="none";
+  $("#asCount").textContent = faites===tot?`Séance complète · ${tot} exercices`:`${faites} exercice${faites>1?"s":""} sur ${tot}`;
 }
 $("#asBack").onclick=()=>switchView("v-home");
 $("#asSave").onclick=()=>{
-  const {s,w,se}=autoSess;
-  if(!autoFaites(s,w,se)){ toast("Renseignez au moins une série"); return; }
-  const neuf=!S.auto.sessDone[autoSk(s,w,se)];
-  S.auto.sessDone[autoSk(s,w,se)]=Date.now(); save();
+  const {c,w,t}=admSess;
+  if(!admFaites(c,w,t)){ toast("Validez au moins un exercice"); return; }
+  const neuf=!S.adam.sessDone[admSk(c,w,t)];
+  S.adam.sessDone[admSk(c,w,t)]=Date.now(); save();
   stopRest();
   if(neuf){ confettiBurst(); vibrate([30,50,30]); }
   toast("Séance enregistrée");
-  autoWeek=w; switchView("v-home");
+  admCycle=c; admWeek=w;
+  switchView("v-home");
 };
-function openAutoRm(k,nom){
-  autoRmKey=k;
-  $("#rmSheetName").textContent=nom;
-  $("#rmInput").value=S.auto.rm[k]||0;
-  $("#rmSheet").classList.add("open");
-}
 
+/* ═════ STATISTIQUES ═════ */
+function renderAdamBI(){
+  const faites=Object.keys(S.adam.sessDone).length;
+  let notes=0;
+  for(const k in S.adam.logs) if(S.adam.logs[k].charge) notes++;
+  const res={ok:0,moyen:0,echec:0};
+  for(const k in S.adam.logs){ const v=S.adam.logs[k].res; if(v&&res[v]!==undefined) res[v]++; }
 
-/* ═════ STATISTIQUES DU PROGRAMME AUTO-RÉGULÉ ═════
-   La métrique reine est le RM : lui seul matérialise la progression.
-   Le reste répond à « est-ce que ça passe ? » via OK / Moyen / Échec. */
-const liftColor2 = id => getComputedStyle(document.documentElement)
-  .getPropertyValue(AUTO_SEANCES[id].color.slice(4,-1)).trim() || "#888";
+  $("#biResume").innerHTML=
+    '<div class="res3">'
+    +'<div><div class="res-v mono">'+faites+'</div><div class="res-l">séances sur '+admTotalSeances+'</div></div>'
+    +'<div><div class="res-v mono">'+notes+'</div><div class="res-l">charges notées</div></div>'
+    +'<div><div class="res-v mono">'+(res.ok+res.moyen+res.echec)+'</div><div class="res-l">exercices validés</div></div></div>';
 
-function autoStats(){
-  const exos=[], parSemaine=[];
-  AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
-    if(ex.sansRm) return;
-    const suite=[];
-    for(let w=1;w<=52;w++) suite.push(autoRm(id,ei,w,1));
-    exos.push({id, ei, ex, base:S.auto.rm[ex.rm]||0, courant:autoRmCourant(id,ei), suite});
-  }));
-  let faites=0, valid=0; const res={ok:0,moyen:0,echec:0};
-  for(let w=1;w<=52;w++){
-    const r={w, faites:0};
-    AUTO_IDS.forEach(id=>{ for(const se of autoList(id)){
-      if(S.auto.sessDone[autoSk(id,w,se)]){ r.faites++; faites++; }
-      autoSeries(id,w,se).forEach(x=>{
-        const v=S.auto.logs[autoKey(id,w,se,x.i)]?.res;
-        if(v){ valid++; if(res[v]!==undefined) res[v]++; }
-      });
-    }});
-    parSemaine.push(r);
-  }
-  return {exos, parSemaine, faites, valid, res};
-}
-
-function renderAutoBI(){
-  const st=autoStats();
-  const hausses=st.exos.filter(e=>e.courant>e.base).length;
-
-  const parSeance=AUTO_IDS.map(id=>({id, n:Object.keys(S.auto.sessDone)
-    .filter(k=>k.startsWith("auto|"+id+"|")).length}));
-  $("#biResume").innerHTML='<div class="res3" style="grid-template-columns:repeat('+(parSeance.length+1)+',1fr)">'
-    + parSeance.map(c=>'<div><div class="res-v mono" style="color:'+liftColor2(c.id)+'">'+c.n+'</div>'
-        + '<div class="res-l">séance'+(c.n>1?"s":"")+' '+AUTO_SEANCES[c.id].nom+'</div></div>').join("")
-    + '<div><div class="res-v mono">'+st.valid+'</div><div class="res-l">séries validées</div></div></div>';
-
+  /* Avancement cycle par cycle */
   const lr=$("#liftRows"); lr.innerHTML="";
-  st.exos.forEach(e=>{
-    const d=e.courant-e.base, top=autoTopIdx(e.id,e.ei);
-    let dernier=null;
-    for(let w=52;w>=1&&!dernier;w--) for(const se of autoList(e.id).slice().reverse()){
-      const v=S.auto.logs[autoKey(e.id,w,se,top)]?.res;
-      if(v){ dernier=v; break; }
-    }
-    const info=AUTO_RES.find(r=>r.k===dernier);
+  ADAM.forEach(cy=>{
+    const total=cy.semaines*cy.trainings.length;
+    let n=0;
+    for(let w=1;w<=cy.semaines;w++) cy.trainings.forEach(tr=>{ if(S.adam.sessDone[admSk(cy.id,w,tr.n)]) n++; });
     lr.insertAdjacentHTML("beforeend",
       '<div class="liftrow"><div class="lr-head">'
-      + '<span class="dot2" style="background:'+liftColor2(e.id)+'"></span>'
-      + '<span class="lr-name">'+e.ex.nom+'</span>'
-      + (info?'<span class="rpe-tag" style="color:'+info.col+';border-color:'+info.col+'">'+info.lab+'</span>':"")
-      + '</div><div class="lr-nums">'
-      + '<span class="lr-from mono">'+fmt(e.base)+' kg</span><span class="lr-arrow">→</span>'
-      + '<span class="lr-to mono">'+fmt(e.courant)+' kg</span>'
-      + (d?'<span class="lr-delta up">+'+fmt(d)+' kg</span>':"")
-      + '</div><div class="lr-tip">'+AUTO_SEANCES[e.id].nom+' · série de tête à '+(Math.round(AUTO_TOP*1000)/10)+' %</div></div>');
+      +'<span class="dot2" style="background:'+cy.couleur+'"></span>'
+      +'<span class="lr-name">Cycle '+cy.num+' · '+cy.nom+'</span>'
+      +'<span class="rpe-tag" style="color:var(--ink-2);border-color:var(--line-2)">'+n+'/'+total+'</span></div>'
+      +'<div class="prg-bar" style="margin-top:9px"><i style="width:'+(total?n/total*100:0)+'%;background:'+cy.couleur+'"></i></div>'
+      +'<div class="lr-tip">'+cy.objectif+'</div></div>');
   });
 
-  drawAutoRm(st);
-  drawAutoRes(st);
-  drawAutoRegular();
+  drawAdamCharges();
+  drawAdamRes(res);
+  drawAdamRegular();
 
   const bg=$("#badgeGrid"); bg.innerHTML="";
-  [{lab:"1ʳᵉ séance",ok:st.faites>=1},{lab:"5 séances",ok:st.faites>=5},
-   {lab:"10 séances",ok:st.faites>=10},{lab:"20 séances",ok:st.faites>=20},
-   {lab:"1ᵉʳ RM battu",ok:hausses>=1},{lab:"Tous les RM en hausse",ok:st.exos.length>0&&hausses>=st.exos.length},
-   {lab:"100 séries",ok:st.valid>=100},{lab:"Un bloc complet",ok:st.faites>=16}
+  [{lab:"1ʳᵉ séance",ok:faites>=1},{lab:"Une semaine complète",ok:faites>=5},
+   {lab:"10 séances",ok:faites>=10},{lab:"Cycle Volume bouclé",ok:cycleFait("c1")},
+   {lab:"25 séances",ok:faites>=25},{lab:"Cycle Masse bouclé",ok:cycleFait("c2")},
+   {lab:"50 charges notées",ok:notes>=50},{lab:"Cycle Force bouclé",ok:cycleFait("c3")},
   ].forEach(b=>bg.insertAdjacentHTML("beforeend",
     '<div class="troph-row '+(b.ok?"won":"")+'"><span class="t-dot"></span><span class="t-lab">'+b.lab+'</span></div>'));
 }
+function cycleFait(id){
+  const cy=cycleById(id);
+  for(let w=1;w<=cy.semaines;w++) for(const tr of cy.trainings)
+    if(!S.adam.sessDone[admSk(id,w,tr.n)]) return false;
+  return true;
+}
 
-/* Courbe des RM, semaines de décharge marquées en pointillé vertical. */
-function drawAutoRm(st){
-  const derniere=Math.max(1,...st.parSemaine.filter(r=>r.faites>0).map(r=>r.w));
-  const n=Math.max(6,Math.min(52,derniere+1));
-  if(st.faites===0 && st.exos.every(e=>e.courant===e.base)){
-    $("#chartLoad").innerHTML=emptyState("Vos RM apparaîtront ici dès la première série de tête validée.");
+/* Historique des charges sur les quatre mouvements du streetlifting. */
+const MOUV=[
+  {nom:"Traction", motifs:["traction"], col:"var(--lift-1)"},
+  {nom:"Dips",     motifs:["dips"],     col:"var(--lift-2)"},
+  {nom:"Muscle up",motifs:["muscle up"],col:"var(--lift-3)"},
+  {nom:"Squat",    motifs:["squat"],    col:"var(--adam-2)"},
+];
+function drawAdamCharges(){
+  const box=$("#chartLoad");
+  const lignes=[];
+  MOUV.forEach(m=>{
+    const pts=[];
+    ADAM.forEach(cy=>{
+      for(let w=1;w<=cy.semaines;w++) cy.trainings.forEach(tr=>{
+        tr.exos.forEach((ex,i)=>{
+          const n=ex.nom.toLowerCase();
+          if(!m.motifs.some(mo=>n.includes(mo))) return;
+          const d=S.adam.logs[admKey(cy.id,w,tr.n,i)];
+          if(d&&d.charge) pts.push({cy:cy.num, w, t:tr.n, ex:ex.nom, fmt:admFormat(ex,w), charge:d.charge});
+        });
+      });
+    });
+    if(pts.length) lignes.push({m, pts:pts.slice(-6).reverse()});
+  });
+  if(!lignes.length){
+    box.innerHTML=emptyState("Notez vos charges pendant les séances : elles s'accumuleront ici, mouvement par mouvement.");
     $("#legLoad").innerHTML=""; return;
   }
-  const W=640,H=230,pL=38,pR=76,pT=14,pB=28;
-  const xs=i=>pL+(W-pL-pR)*(i/(n-1));
-  let mx=0,mn=Infinity;
-  st.exos.forEach(e=>e.suite.slice(0,n).forEach(v=>{ if(v>mx)mx=v; if(v<mn)mn=v; }));
-  mn=Math.max(0,mn-5); mx=mx+5;
-  const ys=v=>H-pB-(H-pT-pB)*((v-mn)/((mx-mn)||1));
-  let g="";
-  for(let i=0;i<=4;i++){ const v=mn+(mx-mn)*i/4, y=ys(v);
-    g+='<line class="grid" x1="'+pL+'" y1="'+y+'" x2="'+(W-pR)+'" y2="'+y+'" opacity="'+(i===0?.9:.32)+'"/>'
-      +'<text class="axtx" x="'+(pL-6)+'" y="'+(y+3)+'" text-anchor="end">'+Math.round(v)+'</text>'; }
-  const pas=Math.ceil(n/8);
-  for(let i=0;i<n;i++){
-    if(i%pas===0) g+='<text class="axtx" x="'+xs(i)+'" y="'+(H-8)+'" text-anchor="middle">S'+(i+1)+'</text>';
-    if(autoDecharge(i+1)) g+='<line class="grid" x1="'+xs(i)+'" y1="'+pT+'" x2="'+xs(i)+'" y2="'+(H-pB)+'" opacity=".4" stroke-dasharray="3 3"/>';
-  }
-  st.exos.forEach(e=>{
-    const col=liftColor2(e.id), dash=e.ei===1?' stroke-dasharray="5 3"':"";
-    const pts=e.suite.slice(0,n).map((v,i)=>xs(i)+","+ys(v)).join(" ");
-    g+='<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2.2"'+dash+' stroke-linejoin="round"/>';
-    const y=ys(e.suite[n-1]);
-    g+='<circle cx="'+xs(n-1)+'" cy="'+y+'" r="3.6" fill="'+col+'" stroke="var(--panel)" stroke-width="1.4"/>';
-    g+='<text x="'+(xs(n-1)+8)+'" y="'+(y+3+(e.ei?10:-3))+'" font-size="10" font-weight="600" fill="'+col+'">'+e.ex.court+'</text>';
-  });
-  $("#chartLoad").innerHTML=svgOpen(W,H)+g+"</svg>";
-  $("#legLoad").innerHTML=AUTO_IDS.map(id=>
-    '<div class="l"><span class="sw" style="background:'+liftColor2(id)+'"></span>'+AUTO_SEANCES[id].nom+'</div>').join("")
-    + '<div class="l" style="color:var(--ink-3)">plein : 1ᵉʳ exercice · pointillé : 2ᵉ</div>';
+  box.innerHTML=lignes.map(l=>
+    '<div class="mv"><div class="mv-head"><span class="dot2" style="background:'+l.m.col+'"></span>'
+    +'<span class="mv-nom">'+l.m.nom+'</span></div>'
+    +l.pts.map(p=>'<div class="mv-row"><span class="mv-w mono">C'+p.cy+' S'+p.w+'</span>'
+      +'<span class="mv-ex">'+p.ex+' <em>'+p.fmt+'</em></span>'
+      +'<span class="mv-ch mono">'+p.charge+'</span></div>').join("")
+    +'</div>').join("");
+  $("#legLoad").innerHTML='<div class="l" style="color:var(--ink-3)">Six dernières charges notées par mouvement</div>';
 }
-
-/* Répartition OK / Moyen / Échec : le ressenti de ce programme. */
-function drawAutoRes(st){
-  const t=st.res.ok+st.res.moyen+st.res.echec;
-  if(!t){ $("#ressenti").innerHTML=emptyState("Renseignez OK, Moyen ou Échec sur vos séries."); return; }
+function drawAdamRes(res){
+  const t=res.ok+res.moyen+res.echec;
+  if(!t){ $("#ressenti").innerHTML=emptyState("Validez vos exercices en OK, Moyen ou Échec."); return; }
   let h='<div class="balbar">';
-  [["ok","var(--good)"],["moyen","var(--warn)"],["echec","var(--crit)"]].forEach(function(pair){
-    const p=st.res[pair[0]]/t*100;
-    if(p>0) h+='<span style="width:'+p+'%;background:'+pair[1]+'"></span>';
+  [["ok","var(--good)"],["moyen","var(--warn)"],["echec","var(--crit)"]].forEach(function(p){
+    const v=res[p[0]]/t*100; if(v>0) h+='<span style="width:'+v+'%;background:'+p[1]+'"></span>';
   });
   h+='</div><div class="ballegend">'
-   + '<div class="bl"><span class="sw" style="background:var(--good)"></span><b>'+Math.round(st.res.ok/t*100)+' %</b> OK</div>'
-   + '<div class="bl"><span class="sw" style="background:var(--warn)"></span><b>'+Math.round(st.res.moyen/t*100)+' %</b> Moyen</div>'
-   + '<div class="bl"><span class="sw" style="background:var(--crit)"></span><b>'+Math.round(st.res.echec/t*100)+' %</b> Échec</div></div>';
-  const conseil = st.res.echec/t>=.2 ? "Beaucoup d échecs : vos séries de tête sont sans doute trop ambitieuses."
-    : st.res.ok/t>=.85 ? "Presque tout passe : vos RM vont grimper vite."
-    : "Répartition saine entre séries maîtrisées et séries limites.";
-  h+='<div class="tiny muted" style="margin-top:12px">'+conseil+'</div>';
+   +'<div class="bl"><span class="sw" style="background:var(--good)"></span><b>'+Math.round(res.ok/t*100)+' %</b> OK</div>'
+   +'<div class="bl"><span class="sw" style="background:var(--warn)"></span><b>'+Math.round(res.moyen/t*100)+' %</b> Moyen</div>'
+   +'<div class="bl"><span class="sw" style="background:var(--crit)"></span><b>'+Math.round(res.echec/t*100)+' %</b> Échec</div></div>';
+  h+='<div class="tiny muted" style="margin-top:12px">'+(
+    res.echec/t>=.2 ? "Beaucoup d'échecs : vos charges sont sans doute trop ambitieuses pour le format prescrit."
+    : res.ok/t>=.85 ? "Presque tout passe : vous pouvez monter les charges la semaine prochaine."
+    : "Répartition saine entre séries maîtrisées et séries limites.")+'</div>';
   $("#ressenti").innerHTML=h;
 }
-
-function drawAutoRegular(){
-  const n=20;
+function drawAdamRegular(){
   let h='<div class="reg">';
-  AUTO_IDS.forEach(id=>{
-    h+='<div class="reg-row"><span class="reg-lab">'+AUTO_SEANCES[id].nom+'</span><div class="reg-cells">';
-    for(let w=1;w<=n;w++) for(const se of autoList(id)){
-      const done=!!S.auto.sessDone[autoSk(id,w,se)];
-      const entamee=autoSeries(id,w,se).some(x=>S.auto.logs[autoKey(id,w,se,x.i)]?.res);
-      h+='<i class="'+(done?"full":entamee?"part":"")+(autoDecharge(w)?" dech":"")+'" title="Semaine '+w+' séance '+se+'"></i>';
-    }
+  ADAM.forEach(cy=>{
+    h+='<div class="reg-row"><span class="reg-lab">C'+cy.num+'</span><div class="reg-cells">';
+    for(let w=1;w<=cy.semaines;w++) cy.trainings.forEach(tr=>{
+      const done=!!S.adam.sessDone[admSk(cy.id,w,tr.n)];
+      const part=admFaites(cy.id,w,tr.n)>0;
+      h+='<i class="'+(done?"full":part?"part":"")+'" title="Cycle '+cy.num+' semaine '+w+' training '+tr.n+'"></i>';
+    });
     h+='</div></div>';
   });
   h+='</div><div class="reg-key"><span><i class="full"></i>terminée</span><span><i class="part"></i>entamée</span>'
-   + '<span><i></i>à faire</span><span><i class="dech"></i>décharge</span></div>';
+   +'<span><i></i>à faire</span></div>';
   $("#regGrid").innerHTML=h;
 }
+
+/* ═════ LEXIQUE ═════ */
+function renderLexique(){
+  $("#lexList").innerHTML=LEXIQUE.map(function(e){
+    return '<div class="lex"><div class="lex-t">'+e[0]+'</div><div class="lex-d">'+e[1]+'</div></div>';
+  }).join("");
+}
+$("#lexBtn").onclick=()=>{ renderLexique(); $("#lexSheet").classList.add("open"); };
+$("#lexClose").onclick=()=>$("#lexSheet").classList.remove("open");
+$("#lexSheet").onclick=e=>{ if(e.target.id==="lexSheet") $("#lexSheet").classList.remove("open"); };
 
 /* ═════ NAV ═════ */
 const VIEW_SUBS={ "v-home":"", "v-sess":"Séance", "v-asess":"Séance", "v-bi":"Statistiques", "v-set":"Réglages" };
@@ -2160,7 +2183,7 @@ const VUE_KEY="moonsport.vue";
 function memoriserVue(id){
   try{
     localStorage.setItem(VUE_KEY, JSON.stringify({
-      vue:id, autoSess, curSess, lift:S.ui.lift, autoWeek, homeWeek, mode:S.ui.mode,
+      vue:id, admSess, curSess, lift:S.ui.lift, admCycle, admWeek, homeWeek, mode:S.ui.mode,
     }));
   }catch(e){}
 }
@@ -2169,10 +2192,11 @@ function restaurerVue(){
   try{ v=JSON.parse(localStorage.getItem(VUE_KEY)); }catch(e){}
   if(!v||!v.vue||!document.getElementById(v.vue)){ homeWeek=null; renderHome(); return; }
   if(v.lift && LIFTS[v.lift]) S.ui.lift=v.lift;
-  if(v.autoWeek) autoWeek=v.autoWeek;
+  if(v.admCycle) admCycle=v.admCycle;
+  if(v.admWeek) admWeek=v.admWeek;
   if(v.homeWeek) homeWeek=v.homeWeek;
-  if(v.vue==="v-asess" && v.autoSess && AUTO_SEANCES[v.autoSess.s]){
-    openAutoSess(v.autoSess.s, v.autoSess.w, v.autoSess.se); return;
+  if(v.vue==="v-asess" && v.admSess && cycleById(v.admSess.c)){
+    openAdamSess(v.admSess.c, v.admSess.w, v.admSess.t); return;
   }
   if(v.vue==="v-sess" && v.curSess){ openSession(v.curSess.w, v.curSess.se); return; }
   switchView(v.vue);
@@ -2185,7 +2209,7 @@ function switchView(id){
   $("#topSub").textContent=VIEW_SUBS[id]||"";
   if(id==="v-home") renderHome();
   if(id==="v-bi"){ $("#topSub").textContent = S.ui.mode==="classic" ? "Stats · archive" : "Statistiques"; renderBI(); }
-  if(id==="v-asess") renderAutoSess();
+  if(id==="v-asess") renderAdamSess();
   if(id==="v-set") renderSettings();
   memoriserVue(id);
   window.scrollTo({top:0});
@@ -2193,7 +2217,7 @@ function switchView(id){
 $$(".tab").forEach(t=>t.onclick=()=>{
   vibrate(8);
   if(t.dataset.view==="v-sess"){
-    if(S.ui.mode==="auto") openAutoSess(autoSess.s,autoSess.w,autoSess.se);
+    if(S.ui.mode!=="classic") openAdamSess(admSess.c,admSess.w,admSess.t);
     else openSession(curSess.w,curSess.se);
   }
   else switchView(t.dataset.view);
@@ -2202,7 +2226,7 @@ $$(".tab").forEach(t=>t.onclick=()=>{
 /* ═════ 1RM SHEET ═════ */
 let rmLift="tractions";
 function openRM(lift){
-  rmLift=lift; autoRmKey=null;
+  rmLift=lift;
   $("#rmSheetName").textContent=LIFTS[lift].name;
   $("#rmInput").value=S.rm[lift];
   $("#rmSheet").classList.add("open");
@@ -2212,8 +2236,7 @@ $("#rmPlus").onclick=()=>{ $("#rmInput").value=(parseFloat($("#rmInput").value)|
 $("#rmSave").onclick=()=>{
   const v=parseFloat(String($("#rmInput").value).replace(",","."));
   if(v>0){
-    if(autoRmKey){ S.auto.rm[autoRmKey]=v; autoRmKey=null; }
-    else S.rm[rmLift]=v;
+    S.rm[rmLift]=v;
     save(); toast("RM mis à jour, charges recalculées");
   }
   $("#rmSheet").classList.remove("open");
@@ -2238,18 +2261,6 @@ function renderSettings(){
   ["restEchauf","restForce","restPuiss","restVol","restMax"].forEach(k=>{
     const e=$("#"+k+"Val"); if(e) e.textContent=fmtSec(S.ui[k]);
   });
-  const ar=$("#autoRmSettings"); ar.innerHTML="";
-  AUTO_IDS.forEach(id=>autoExos(id).forEach((ex,ei)=>{
-    if(ex.sansRm) return;
-    const cour=autoRmCourant(id,ei), base=S.auto.rm[ex.rm]||0;
-    const row=document.createElement("div");
-    row.className="settings-item";
-    row.innerHTML=`<div style="min-width:0"><div class="si-t">${ex.nom}</div>
-        <div class="si-s">${AUTO_SEANCES[id].nom}${cour!==base?` · départ ${fmt(base)} kg`:""}</div></div>
-      <button class="btn ghost sm mono">${fmt(cour)} kg</button>`;
-    row.querySelector("button").onclick=()=>openAutoRm(ex.rm,ex.nom);
-    ar.appendChild(row);
-  }));
   const rs=$("#rmSettings"); rs.innerHTML="";
   LIFT_IDS.forEach(id=>{
     const L=LIFTS[id], row=document.createElement("div");
@@ -2367,6 +2378,7 @@ function mergeState(a,b){          // b l'emporte en cas de conflit sur une mêm
       return o; })(),
     logs:{...A.logs, ...B.logs},
     sessDone:{...A.sessDone, ...B.sessDone},
+    adam:{logs:{...A.adam.logs, ...B.adam.logs}, sessDone:{...A.adam.sessDone, ...B.adam.sessDone}},
     updatedAt:Math.max(A.updatedAt||0, B.updatedAt||0)};
 }
 async function pullCloud(){
