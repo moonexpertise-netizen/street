@@ -442,6 +442,23 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .exo{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px;
   box-shadow:var(--shadow);transition:.2s;position:relative;overflow:hidden}
 .exo::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:.85}
+.ge-lien{margin-top:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--accent) 45%,transparent);
+  padding-bottom:1px;transition:.15s}
+.ge-lien:active{opacity:.6}
+.ge-lien.mini{margin:0 0 0 5px;padding:0 5px;border:1px solid var(--line-2);border-radius:4px;
+  letter-spacing:0;font-size:10px}
+.ge-bloc{margin-top:18px}
+.ge-h{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:7px}
+.ge-bloc p{margin:0;font-size:14px;line-height:1.55;color:var(--ink)}
+.ge-err{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.ge-err li{font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.ge-mod{margin-bottom:10px}
+.ge-mod b{display:block;font-size:13px;margin-bottom:3px}
+.ge-mod span{font-size:13px;color:var(--ink-2);line-height:1.5}
+.ge-avert{margin-top:22px;padding:12px 13px;border-radius:10px;background:var(--panel-2);
+  border:1px solid var(--line);font-size:12px;color:var(--ink-2);line-height:1.5}
 .exo-saisie.sup{margin-top:8px;padding-left:14px;position:relative}
 .exo-saisie.sup::before{content:"";position:absolute;left:3px;top:14px;bottom:14px;width:1.5px;
   border-radius:1px;background:var(--line-2)}
@@ -967,6 +984,19 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <button class="btn" id="planOk" style="margin-top:16px">Enregistrer la progression</button>
     <button class="btn ghost" id="planRaz" style="margin-top:8px;height:44px">Effacer la planification</button>
     <button class="btn ghost" id="planFerme" style="margin-top:8px;height:44px;border:none;box-shadow:none;color:var(--ink-2)">Annuler</button>
+  </div>
+</div>
+
+<!-- comment faire le mouvement -->
+<div class="overlay" id="geSheet">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h3 id="geTitre">Mouvement</h3>
+    <div class="muted tiny" id="geCible"></div>
+    <div id="geCorps"></div>
+    <div class="ge-avert">Repères d'exécution courants, ajoutés à l'application : le programme ne décrit pas les mouvements. En cas de gêne ou de douleur, arrête et fais vérifier ton exécution.</div>
+    <button class="btn ghost" id="geVideo" style="margin-top:14px;height:46px">Chercher une démonstration en vidéo</button>
+    <button class="btn ghost" id="geFerme" style="margin-top:8px;height:44px;border:none;box-shadow:none;color:var(--ink-2)">Fermer</button>
   </div>
 </div>
 
@@ -2280,6 +2310,7 @@ function renderAdamSess(){
         <div>
           <div class="exo-fmt mono">${fmt}</div>
           <div class="exo-nom">${ex.nom}</div>
+          ${gesteDe(ex.nom)?`<button class="ge-lien" data-g="${encodeURIComponent(ex.nom)}">Comment faire ?</button>`:""}
         </div>
         <div class="exo-repos">${ex.repos.lab}</div>
       </div>
@@ -2307,7 +2338,7 @@ function renderAdamSess(){
       ${ex.plus?ex.plus.map((pl,n)=>`
         <div class="exo-saisie sup">
           <div class="field">
-            <label>${plusLabel(pl)}</label>
+            <label>${plusLabel(pl)}${gesteDe(pl)?` <button class="ge-lien mini" data-g="${encodeURIComponent(pl)}">?</button>`:""}</label>
             <input data-k="${k}" data-f="plus" data-n="${n}" placeholder="kg, PDC, élastique…"
               value="${(d.plus&&d.plus[n])??""}">
           </div>
@@ -2593,6 +2624,246 @@ $("#planRaz").onclick=()=>{
 };
 $("#planFerme").onclick=()=>$("#planSheet2").classList.remove("open");
 $("#planSheet2").onclick=e=>{ if(e.target.id==="planSheet2") $("#planSheet2").classList.remove("open"); };
+
+/* ═════ FICHES D'EXÉCUTION ═════
+   Le programme impose les formats mais ne décrit pas les mouvements.
+   Ces fiches sont des repères d'exécution courants, pas un contenu du PDF.
+   Les clés vont du plus spécifique au plus général : la première qui
+   correspond au nom de l'exercice gagne. */
+const GESTES=[
+  {cle:["muscle up"], nom:"Muscle up", cible:"Dos, pectoraux, triceps, gainage",
+   mise:"Prise pronation un peu plus large que les épaules, barre au-dessus de la tête, corps suspendu sans balancement.",
+   exec:"Tire la barre vers le bas du sternum en tirant les coudes en arrière, puis bascule le buste au-dessus de la barre en passant les poignets, et termine en poussant sur les bras jusqu'à verrouillage.",
+   err:["Chercher le passage avec un balancement de jambes plutôt qu'avec la tirée",
+        "Tirer trop bas sur la poitrine : sans hauteur suffisante, la transition est impossible",
+        "Passer un bras avant l'autre, ce qui charge une épaule"]},
+
+  {cle:["traction"], nom:"Traction", cible:"Dos, biceps",
+   mise:"Prise pronation largeur épaules ou un peu plus, bras tendus, épaules basses et engagées, jambes immobiles.",
+   exec:"Tire les coudes vers le bas et l'arrière jusqu'à passer le menton au-dessus de la barre, poitrine dirigée vers la barre. Redescends en contrôlant jusqu'aux bras tendus.",
+   err:["Ne pas descendre bras tendus : l'amplitude partielle fausse la progression",
+        "Donner un coup de reins ou de jambes pour lancer le mouvement",
+        "Laisser les épaules remonter aux oreilles en bas de mouvement"]},
+
+  {cle:["dips"], nom:"Dips", cible:"Pectoraux, triceps, épaules",
+   mise:"Barres parallèles, bras tendus, corps légèrement penché en avant, épaules basses.",
+   exec:"Descends en fléchissant les coudes jusqu'à ce que les épaules passent au niveau des coudes, sans laisser les épaules s'enrouler. Remonte en poussant jusqu'à verrouillage des bras.",
+   err:["Descendre plus bas que ce que l'épaule tolère : c'est là que les blessures arrivent",
+        "Rester complètement vertical, ce qui reporte tout sur les triceps et l'épaule",
+        "Rebondir en bas au lieu de contrôler"]},
+
+  {cle:["gobelet squat"], nom:"Gobelet squat", cible:"Quadriceps, fessiers, gainage",
+   mise:"Haltère ou kettlebell tenu verticalement contre la poitrine, à deux mains, coudes rentrés.",
+   exec:"Pieds largeur épaules, descends en poussant les genoux vers l'extérieur et en gardant le buste droit, jusqu'à ce que les cuisses passent la parallèle. Remonte en poussant dans les talons.",
+   err:["Laisser la charge s'écarter du buste, ce qui bascule le dos vers l'avant",
+        "Décoller les talons",
+        "Arrondir le bas du dos en fin de descente"]},
+
+  {cle:["squat"], nom:"Squat", cible:"Quadriceps, fessiers, ischio-jambiers, gainage",
+   mise:"Barre posée sur le haut du dos, pieds largeur épaules, pointes légèrement ouvertes, sangle abdominale gainée avant de descendre.",
+   exec:"Descends en fléchissant hanches et genoux ensemble, dos gainé, jusqu'à ce que les cuisses passent la parallèle. Remonte en poussant dans le sol, sans laisser les hanches partir avant les épaules.",
+   err:["Laisser les genoux rentrer vers l'intérieur",
+        "Arrondir le bas du dos en fin de descente",
+        "Remonter les hanches en premier, ce qui transforme le squat en bonjour"]},
+
+  {cle:["soulevé de terre roumain","soulevé de terre"], nom:"Soulevé de terre roumain", cible:"Ischio-jambiers, fessiers, lombaires",
+   mise:"Barre ou haltères devant les cuisses, pieds largeur bassin, jambes presque tendues avec un léger fléchissement de genou constant.",
+   exec:"Recule les hanches vers l'arrière en laissant la barre glisser le long des jambes, dos parfaitement droit, jusqu'à sentir l'étirement à l'arrière des cuisses. Reviens en poussant les hanches vers l'avant.",
+   err:["Plier les genoux au fur et à mesure : ce n'est plus un roumain",
+        "Arrondir le dos pour descendre plus bas",
+        "Éloigner la barre des jambes, ce qui charge les lombaires"]},
+
+  {cle:["hip thrust"], nom:"Hip thrust", cible:"Fessiers, ischio-jambiers",
+   mise:"Haut du dos appuyé sur un banc, barre sur le pli de la hanche avec une protection, pieds à plat, tibias verticaux en position haute.",
+   exec:"Pousse dans les talons pour monter le bassin jusqu'à ce que le corps forme une ligne des épaules aux genoux. Serre les fessiers en haut, redescends en contrôlant.",
+   err:["Hyperextendre le bas du dos en haut au lieu de serrer les fessiers",
+        "Pieds trop près ou trop loin, ce qui déplace le travail sur les quadriceps ou les ischios",
+        "Monter le menton et cambrer la nuque"]},
+
+  {cle:["fente bulgare"], nom:"Fente bulgare", cible:"Quadriceps, fessiers, équilibre",
+   mise:"Pied arrière posé sur un banc derrière toi, pied avant assez loin pour que le genou reste au-dessus de la cheville en bas.",
+   exec:"Descends verticalement en fléchissant la jambe avant jusqu'à ce que la cuisse soit parallèle au sol. Remonte en poussant dans le talon avant.",
+   err:["Pied avant trop proche du banc : le genou part loin devant",
+        "Se pousser avec la jambe arrière",
+        "Basculer le buste latéralement pour compenser un manque d'équilibre"]},
+
+  {cle:["press unilatéral","presse"], nom:"Press unilatéral", cible:"Quadriceps, fessiers",
+   mise:"À la presse à cuisses, un seul pied posé au milieu de la plateforme, bassin bien calé dans le dossier.",
+   exec:"Descends en contrôlant jusqu'à environ 90 degrés de flexion, sans que le bassin décolle. Pousse jusqu'à extension presque complète, sans verrouiller sèchement le genou.",
+   err:["Descendre trop bas et décoller le bas du dos du dossier",
+        "Verrouiller le genou d'un coup en fin de poussée",
+        "Laisser le genou rentrer vers l'intérieur"]},
+
+  {cle:["legs extension","legs extensions"], nom:"Leg extension", cible:"Quadriceps",
+   mise:"Assis, dos calé, axe de rotation de la machine aligné sur le genou, coussin sur le bas du tibia.",
+   exec:"Tends les jambes jusqu'à l'extension complète, marque un temps d'arrêt court en haut, redescends en contrôlant sans laisser la charge retomber.",
+   err:["Prendre de l'élan avec le buste",
+        "Relâcher la descente d'un coup",
+        "Axe de la machine mal réglé, ce qui tire sur l'articulation"]},
+
+  {cle:["legs curl","leg curl"], nom:"Leg curl", cible:"Ischio-jambiers",
+   mise:"Allongé ou assis selon la machine, coussin juste au-dessus des talons, bassin plaqué.",
+   exec:"Fléchis les genoux en amenant les talons vers les fessiers, marque la contraction, reviens en contrôlant sans tendre complètement d'un coup.",
+   err:["Décoller le bassin pour aller chercher de l'amplitude",
+        "Relâcher le retour",
+        "Charger trop lourd et n'utiliser qu'un tiers de l'amplitude"]},
+
+  {cle:["extension lombaire","extensions lombaires"], nom:"Extension lombaire", cible:"Lombaires, fessiers, ischio-jambiers",
+   mise:"Sur banc à lombaires, bassin calé sur le coussin, corps aligné, mains sur la poitrine ou derrière la tête.",
+   exec:"Descends en fléchissant les hanches, dos gardé droit, jusqu'à l'étirement. Remonte jusqu'à l'alignement du corps, sans aller au-delà.",
+   err:["Se cambrer en haut : le dos doit s'arrêter dans l'alignement",
+        "Arrondir le dos pendant la descente",
+        "Enchaîner par à-coups"],
+   variante:"En version isométrique, tu tiens simplement la position haute alignée pendant la durée indiquée."},
+
+  {cle:["chinese plank"], nom:"Chinese plank", cible:"Chaîne postérieure, gainage",
+   mise:"Deux appuis : la nuque et le haut des épaules sur un support, les talons sur un autre. Rien entre les deux.",
+   exec:"Tiens le corps parfaitement aligné, fessiers serrés, sans laisser le bassin s'affaisser. Respire normalement pendant la durée indiquée.",
+   err:["Laisser le bassin descendre progressivement",
+        "Cambrer le bas du dos pour compenser",
+        "Bloquer la respiration"]},
+
+  {cle:["gainage cuillère"], nom:"Gainage cuillère", cible:"Abdominaux profonds",
+   mise:"Allongé sur le dos, bas du dos plaqué au sol, jambes tendues et épaules décollées.",
+   exec:"Enroule légèrement le bassin pour creuser le ventre et garde la position, jambes et épaules maintenues à quelques centimètres du sol.",
+   err:["Laisser le bas du dos se décoller du sol",
+        "Tirer sur la nuque avec les mains",
+        "Descendre les jambes trop bas au point de cambrer"]},
+
+  {cle:["développé couché incliné"], nom:"Développé couché incliné haltères, prise neutre", cible:"Haut des pectoraux, épaules, triceps",
+   mise:"Banc incliné à 30 degrés environ, un haltère dans chaque main, paumes face à face, pieds ancrés au sol.",
+   exec:"Descends les haltères vers le haut de la poitrine, coudes à environ 45 degrés du buste, jusqu'à l'étirement. Pousse jusqu'à extension sans entrechoquer les haltères.",
+   err:["Incliner le banc trop haut, ce qui transforme l'exercice en développé épaules",
+        "Ouvrir les coudes à 90 degrés",
+        "Décoller les fessiers du banc"]},
+
+  {cle:["développé couché"], nom:"Développé couché", cible:"Pectoraux, épaules, triceps",
+   mise:"Allongé, yeux sous la barre, omoplates serrées et basses, pieds ancrés, léger arc naturel du dos.",
+   exec:"Descends la barre au niveau du bas des pectoraux en gardant les coudes à environ 45 degrés du buste. Pousse en ligne jusqu'à extension des bras.",
+   err:["Faire rebondir la barre sur la poitrine",
+        "Ouvrir les coudes perpendiculairement au buste",
+        "Perdre le serrage des omoplates pendant la poussée"]},
+
+  {cle:["développé militaire"], nom:"Développé militaire", cible:"Épaules, triceps, gainage",
+   mise:"Barre au niveau des clavicules, prise un peu plus large que les épaules, sangle abdominale gainée, fessiers serrés.",
+   exec:"Pousse la barre à la verticale en dégageant légèrement la tête en arrière, puis ramène la tête sous la barre en fin de poussée, bras verrouillés au-dessus des oreilles.",
+   err:["Cambrer le bas du dos pour compenser un manque de mobilité d'épaule",
+        "Pousser la barre en avant plutôt qu'à la verticale",
+        "Finir bras tendus mais barre trop en avant"]},
+
+  {cle:["butterfly","pec deck"], nom:"Butterfly", cible:"Pectoraux",
+   mise:"Assis, dos plaqué, poignées à hauteur de poitrine, coudes légèrement fléchis et maintenus ainsi.",
+   exec:"Rapproche les poignées devant toi par un mouvement d'arc, sans changer l'angle des coudes. Marque la contraction, reviens en contrôlant jusqu'à l'étirement.",
+   err:["Fléchir et tendre les coudes, ce qui en fait un développé",
+        "Décoller le dos du dossier",
+        "Aller chercher un étirement extrême qui tire sur l'épaule"]},
+
+  {cle:["pompes claquées"], nom:"Pompes claquées", cible:"Pectoraux, triceps, explosivité",
+   mise:"Position de pompe classique, mains sous les épaules, corps gainé en ligne.",
+   exec:"Descends en contrôlant, puis pousse assez fort pour décoller les mains du sol et claquer avant de réceptionner coudes souples.",
+   err:["Casser l'alignement du corps pour gagner de la hauteur",
+        "Réceptionner bras tendus et raides",
+        "Réduire l'amplitude de descente au fil des répétitions"]},
+
+  {cle:["pompes"], nom:"Pompes", cible:"Pectoraux, triceps, gainage",
+   mise:"Mains sous les épaules ou légèrement plus larges, corps aligné des chevilles aux épaules, fessiers serrés.",
+   exec:"Descends jusqu'à ce que la poitrine frôle le sol, coudes à environ 45 degrés du buste. Remonte jusqu'à extension complète.",
+   err:["Laisser le bassin s'affaisser ou remonter en pont",
+        "Ne descendre qu'à mi-course",
+        "Avancer la tête au lieu de descendre la poitrine"]},
+
+  {cle:["rowing barre"], nom:"Rowing barre", cible:"Dos, biceps",
+   mise:"Buste penché à environ 45 degrés, dos droit, genoux légèrement fléchis, barre à bout de bras.",
+   exec:"Tire la barre vers le nombril en amenant les coudes en arrière et en serrant les omoplates. Redescends en contrôlant jusqu'aux bras tendus.",
+   err:["Se redresser progressivement pour tirer plus lourd",
+        "Arrondir le dos",
+        "Tirer avec les bras sans engager les omoplates"],
+   variante:"En prise supination, paumes vers le haut, les biceps travaillent davantage et les coudes restent plus près du corps."},
+
+  {cle:["tirage horizontal"], nom:"Tirage horizontal", cible:"Dos, biceps",
+   mise:"Assis à la poulie basse, pieds calés, buste droit, léger fléchissement des genoux, épaules basses.",
+   exec:"Tire la poignée vers le bas du sternum en amenant les coudes en arrière le long du corps, serre les omoplates, puis reviens en contrôlant jusqu'à l'étirement.",
+   err:["Balancer le buste d'avant en arrière",
+        "Hausser les épaules pendant la tirée",
+        "Relâcher le retour au lieu de le contrôler"],
+   variante:"En unilatéral, une main à la fois, ce qui empêche le côté fort de compenser le côté faible."},
+
+  {cle:["tirage vertical"], nom:"Tirage vertical", cible:"Dos, biceps",
+   mise:"Assis, cuisses bloquées sous les coussins, prise pronation plus large que les épaules, buste très légèrement incliné en arrière.",
+   exec:"Tire la barre vers le haut de la poitrine en dirigeant les coudes vers le bas et l'arrière. Remonte en contrôlant jusqu'aux bras tendus, épaules étirées.",
+   err:["Tirer la barre derrière la nuque",
+        "Se pencher fortement en arrière pour tirer plus lourd",
+        "Ne pas laisser les bras se tendre en fin de retour"],
+   variante:"En prise supination, paumes vers toi, les coudes restent près du corps et les biceps participent davantage."},
+
+  {cle:["biceps curl"], nom:"Biceps curl", cible:"Biceps, avant-bras",
+   mise:"Debout, barre ou haltères à bout de bras, coudes collés au buste, épaules basses.",
+   exec:"Fléchis les coudes en gardant les bras immobiles le long du corps, monte jusqu'à la contraction complète, redescends en contrôlant jusqu'à extension.",
+   err:["Balancer le buste pour lancer la charge",
+        "Avancer les coudes, ce qui fait travailler les épaules",
+        "Ne pas tendre les bras en bas"],
+   variante:"En prise pronation, paumes vers le bas, le travail se déplace vers les avant-bras et le brachial."},
+
+  {cle:["triceps extension"], nom:"Triceps extension", cible:"Triceps",
+   mise:"À la poulie haute ou avec un haltère selon la variante, coudes collés au buste et fixes pendant tout le mouvement.",
+   exec:"Tends les bras en ne bougeant que les avant-bras, marque la contraction en extension, puis reviens en contrôlant sans laisser les coudes s'écarter.",
+   err:["Écarter ou avancer les coudes pour aider",
+        "Utiliser le buste pour pousser",
+        "Ne travailler que sur une demi-amplitude"]},
+
+  {cle:["élévation frontale","élévation latérale"], nom:"Élévations d'épaules", cible:"Deltoïdes",
+   mise:"Debout, haltères le long du corps, coudes très légèrement fléchis et maintenus ainsi, épaules basses.",
+   exec:"Monte les bras jusqu'à l'horizontale, devant toi pour la frontale, sur les côtés pour la latérale. Redescends lentement sans relâcher.",
+   err:["Monter au-dessus de l'horizontale en haussant les épaules",
+        "Balancer le buste pour lancer les haltères",
+        "Laisser retomber les bras sans contrôle"],
+   variante:"En version frontale vers latérale, tu montes devant puis écartes à l'horizontale avant de redescendre."},
+];
+
+/* Les modalités d'exécution, elles, viennent du lexique du programme (p.32). */
+const MODALITES=[
+  {cle:"deadstop", nom:"Deadstop", d:"Un arrêt total entre chaque répétition, comme si c'était la première. L'élan est supprimé : chaque répétition repart de zéro."},
+  {cle:"one shoot", nom:"One shoot", d:"Répétitions enchaînées sans deadstop, dans la continuité du mouvement."},
+  {cle:"oneshoot", nom:"One shoot", d:"Répétitions enchaînées sans deadstop, dans la continuité du mouvement."},
+  {cle:"tempo", nom:"Tempo", d:"Le rythme d'exécution est imposé sur une phase du mouvement, indiquée sur la carte de l'exercice. Une pause de 2 secondes ne doit jamais devenir 1 seconde pour finir la série."},
+  {cle:"pause", nom:"Pause", d:"Un temps d'arrêt maintenu en position basse, sous tension, avant de repartir."},
+  {cle:" iso", nom:"Isométrie", d:"La position est tenue immobile pendant la durée indiquée, sans mouvement."},
+  {cle:"unilatéral", nom:"Unilatéral", d:"Un côté à la fois, pour empêcher le côté fort de compenser le côté faible."},
+  {cle:"descendante", nom:"Série descendante", d:"Tu démarres lourd et réduis la charge sur les séries suivantes, en gardant la même intention qu'à la série précédente."},
+  {cle:"montante", nom:"Série montante", d:"La charge augmente à chaque série."},
+];
+const modalitesDe=nom=>{ const n=" "+String(nom).toLowerCase();
+  const vues=new Set();
+  return MODALITES.filter(m=>{ if(!n.includes(m.cle)||vues.has(m.nom)) return false;
+    vues.add(m.nom); return true; }); };
+/* Une fiche par mouvement : la première clé contenue dans le nom gagne. */
+function gesteDe(nom){
+  const n=String(nom).toLowerCase();
+  return GESTES.find(g=>g.cle.some(c=>n.includes(c)))||null;
+}
+function ouvrirGeste(nom){
+  const g=gesteDe(nom);
+  if(!g){ toast("Pas de fiche pour ce mouvement"); return; }
+  const mods=modalitesDe(nom);
+  $("#geTitre").textContent=g.nom;
+  $("#geCible").textContent=g.cible;
+  $("#geCorps").innerHTML=
+     `<div class="ge-bloc"><div class="ge-h">Mise en place</div><p>${g.mise}</p></div>`
+    +`<div class="ge-bloc"><div class="ge-h">Exécution</div><p>${g.exec}</p></div>`
+    +(g.variante?`<div class="ge-bloc"><div class="ge-h">Variantes</div><p>${g.variante}</p></div>`:"")
+    +`<div class="ge-bloc"><div class="ge-h">Erreurs fréquentes</div>
+        <ul class="ge-err">${g.err.map(e=>`<li>${e}</li>`).join("")}</ul></div>`
+    +(mods.length?`<div class="ge-bloc"><div class="ge-h">Imposé par le programme</div>
+        ${mods.map(m=>`<div class="ge-mod"><b>${m.nom}</b><span>${m.d}</span></div>`).join("")}
+        <button class="src-link" id="geLex" style="margin-top:10px">Voir le lexique · p.32</button></div>`:"");
+  if(mods.length) $("#geLex").onclick=()=>ouvrirPage(32,"Lexique du programme");
+  $("#geVideo").onclick=()=>window.open(
+    "https://www.youtube.com/results?search_query="+encodeURIComponent(g.nom+" technique musculation"),
+    "_blank","noopener");
+  $("#geSheet").classList.add("open");
+}
+$("#geFerme").onclick=()=>$("#geSheet").classList.remove("open");
+$("#geSheet").onclick=e=>{ if(e.target.id==="geSheet") $("#geSheet").classList.remove("open"); };
 
 /* ═════ PAGES DU PROGRAMME ═════ */
 function ouvrirPage(n,titre){
