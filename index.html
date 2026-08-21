@@ -378,10 +378,11 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   border:1px solid var(--line-2);border-radius:7px;background:var(--panel);color:var(--ink)}
 .pa-inc:focus{outline:none;border-color:var(--accent)}
 .pa-fix{margin-left:12px;font-size:12.5px;color:var(--ink-2);min-width:64px;text-align:right}
+.pv-src{display:block;margin-top:6px;font-size:10.5px;font-style:normal;
+  color:var(--ink-3);letter-spacing:.04em}
 .pv-seq{display:block;margin-top:7px;font-family:var(--f-mono);font-size:11px;
   color:var(--ink-2);font-style:normal;letter-spacing:-.02em}
 .mode-fixe #planIncBox{display:none}
-.mode-fixe .plan-help{display:none}
 .pa-row b{min-width:74px;text-align:right}
 /* Les trois cycles, comme les cartouches de couverture du programme */
 .chips{display:flex;gap:7px}
@@ -949,8 +950,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div class="grip"></div>
     <h3 id="planTitre">Planifier</h3>
     <div class="muted tiny" id="planFmt"></div>
-    <div class="plan-help">Méthode de la page 8, en six étapes : fixe un objectif réalisable sur le format imposé, pose-le sur la <b>dernière semaine</b>, choisis l'agrémentation appliquée de séance en séance, soustrais jusqu'à la semaine 1, relis pour vérifier que tout est réalisable — puis tout arracher.
-      <button class="src-link" id="planSrc" style="margin-top:10px">Voir la méthode · p.8</button></div>
+    <div class="plan-help" id="planHelp"></div>
     <div class="plan-row">
       <div class="frow" style="flex:1"><label for="planObj" id="planObjLab">Objectif dernière semaine</label>
         <input id="planObj" inputmode="decimal" placeholder="20"></div>
@@ -1846,11 +1846,11 @@ const ADAM=[
       {nom:"Muscle up", parSemaine:["4 × 4","6 × 4","6 × 6","3 × 8","3 × AMRAP"], repos:FEELING,
        charge:"fixe",
        variantes:[
-         {nom:"Formats du programme", d:"Monte jusqu'à 8 répétitions d'affilée",
+         {nom:"Formats du programme", d:"Monte jusqu'à 8 répétitions d'affilée", src:"Grille imprimée page 14",
           f:["4 × 4","6 × 4","6 × 6","3 × 8","3 × AMRAP"]},
-         {nom:"Adaptation moyenne", d:"Ne dépasse jamais 5 répétitions par série",
+         {nom:"Adaptation moyenne", d:"Ne dépasse jamais 5 répétitions par série", src:"Second exemple de la page 13",
           f:["4 × 4","6 × 4","4 × 5","6 × 5","3 × AMRAP"]},
-         {nom:"Adaptation douce", d:"Démarre à 2 répétitions par série",
+         {nom:"Adaptation douce", d:"Démarre à 2 répétitions par série", src:"Premier exemple de la page 13",
           f:["4 × 2","6 × 2","4 × 3","6 × 3","3 × AMRAP"]}]},
       {nom:"Tractions", format:"3 × 10", repos:FEELING},
       {nom:"Dips", format:"3 × 10", repos:FEELING},
@@ -2459,6 +2459,13 @@ function ouvrirPlan(cid,t,i){
   $("#planTitre").textContent=ex.nom;
   const pl=planDe(cid,t,i);
   $("#planSheet2").classList.toggle("mode-fixe",fixe);
+  $("#planHelp").innerHTML = fixe
+    ? `Consigne du programme pour cet exercice : « si le format te semble réalisable avec une charge supplémentaire, choisis-la et <b>maintiens-la tout au long du cycle</b> ». Si les formats imposés sont hors de portée, la même page propose deux séquences adaptées.
+       <button class="src-link" data-p="13" style="margin-top:10px">Voir la consigne · p.13</button>`
+    : `Méthode de la page 8, en six étapes : fixe un objectif réalisable sur le format imposé, pose-le sur la <b>dernière semaine</b>, choisis l'agrémentation appliquée de séance en séance, soustrais jusqu'à la semaine 1, relis pour vérifier que tout est réalisable — puis tout arracher.
+       <button class="src-link" data-p="8" style="margin-top:10px">Voir la méthode · p.8</button>`;
+  $("#planHelp .src-link").onclick=()=>ouvrirPage(fixe?13:8,
+    fixe?"Méthodes du cycle 1 · muscle up":"Choisir ses charges de travail");
   if(fixe){
     /* Le volume progresse déjà par le format : la charge, elle, ne bouge pas
        de tout le cycle (page 13). */
@@ -2488,7 +2495,8 @@ function majVariantes(){
   box.innerHTML=`<div class="label" style="margin-top:20px">Séquence de formats</div>`
     +ex.variantes.map((v,n)=>`<button class="dl-c${n===cur?" on":""}" data-n="${n}">
         <b>${v.nom}</b><span>${v.d}</span>
-        <em class="pv-seq">${v.f.join("  →  ")}</em></button>`).join("");
+        <em class="pv-seq">${v.f.join("  →  ")}</em>
+        <em class="pv-src">${v.src}</em></button>`).join("");
   $$("#planVariantes .dl-c").forEach(b=>b.onclick=()=>{
     S.adam.variante[planKey(planCtx.cid,planCtx.t,planCtx.i)]=+b.dataset.n;
     save(); majVariantes(); majApercu();
@@ -2554,8 +2562,6 @@ $("#planRaz").onclick=()=>{
   delete S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)];
   save(); $("#planSheet2").classList.remove("open"); renderAdamSess(); toast("Planification effacée");
 };
-$("#planSrc").onclick=()=>ouvrirPage(planCtx&&planCtx.fixe?13:8,
-  planCtx&&planCtx.fixe?"Méthodes du cycle 1":"Choisir ses charges de travail");
 $("#planFerme").onclick=()=>$("#planSheet2").classList.remove("open");
 $("#planSheet2").onclick=e=>{ if(e.target.id==="planSheet2") $("#planSheet2").classList.remove("open"); };
 
