@@ -355,6 +355,47 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   color:var(--ink-2);background:var(--panel-2)}
 
 
+/* ── planification, deload, pages sources ── */
+.exo-plan{display:flex;align-items:center;gap:9px;margin-top:11px;flex-wrap:wrap}
+.plan-chip{padding:6px 11px;border-radius:8px;border:1px dashed var(--line-2);background:none;
+  font-size:11.5px;font-weight:600;color:var(--ink-2);transition:.15s}
+.plan-chip.on{border-style:solid;border-color:var(--accent);color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.plan-chip:active{transform:scale(.95)}
+.plan-prec{font-size:11px;color:var(--ink-3)}
+.plan-help{margin-top:14px;padding:11px 13px;border-radius:10px;background:var(--panel-2);
+  border:1px solid var(--line);font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.plan-row{display:flex;gap:10px}
+.plan-apercu{margin-top:16px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pa-row{display:flex;justify-content:space-between;padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px}
+.pa-row:last-child{border-bottom:none}
+.pa-row b{font-size:15px}
+.deload-card{padding:18px 16px;border-top:1px solid var(--line)}
+.dl-t{font-family:var(--f-display);font-size:17px;font-weight:600}
+.dl-s{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.5}
+.dl-opt{margin-top:14px;padding:12px 13px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line)}
+.dl-opt b{font-size:12.5px;display:block;margin-bottom:4px}
+.dl-opt span{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.src-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.src-link{padding:8px 12px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
+  font-size:11.5px;font-weight:600;color:var(--ink-2);transition:.15s;text-align:left}
+.src-link:active{transform:scale(.96);background:var(--panel-2)}
+.fiches{display:flex;flex-direction:column;gap:8px}
+.fiche{display:flex;align-items:center;gap:10px;width:100%;padding:11px 13px;border-radius:10px;
+  border:1px solid var(--line);background:var(--panel-2);text-align:left;transition:.15s}
+.fiche:active{transform:scale(.985)}
+.fi-t{font-weight:600;font-size:13.5px;flex:0 0 auto}
+.fi-d{font-size:11.5px;color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi-p{margin-left:auto;font-size:11px;color:var(--ink-3);flex:0 0 auto}
+.pageview{align-items:stretch;justify-content:stretch;background:rgba(6,8,14,.94)}
+.pv-inner{display:flex;flex-direction:column;width:100%;height:100%}
+.pv-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+  color:var(--page);font-size:13px;font-weight:600;flex:0 0 auto}
+.pv-bar button{color:var(--page);font-weight:600;font-size:13px;padding:8px 14px;border-radius:9px;
+  background:rgba(255,255,255,.14)}
+.pv-img{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:0 8px calc(env(safe-area-inset-bottom) + 16px)}
+.pv-img img{width:100%;height:auto;display:block;border-radius:8px}
+
 /* ── séance Adamantium ── */
 .exolist{display:flex;flex-direction:column;gap:12px}
 .exo{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--shadow);transition:.2s}
@@ -604,8 +645,9 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
         <div id="admRows"></div>
       </div>
 
-      <button class="btn ghost" id="lexBtn" style="margin-top:16px;height:42px;font-size:13px;font-weight:500">
-        Lexique des termes techniques
+      <div class="src-row" id="admSources"></div>
+      <button class="btn ghost" id="lexBtn" style="margin-top:12px;height:42px;font-size:13px;font-weight:500">
+        Fiches et lexique du programme
       </button>
     </div>
 
@@ -676,6 +718,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="charge-sub" id="asSub" style="margin-top:4px"></div>
       <div class="sess-prog"><i id="asProg" style="width:0%"></i></div>
       <div class="sess-count" id="asCount"></div>
+      <div id="asPage" style="margin-top:12px"></div>
     </div>
     <div id="asList" class="exolist"></div>
     <div class="savebar"><button class="btn" id="asSave">Terminer la séance</button></div>
@@ -875,13 +918,47 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   </div>
 </div>
 
+<!-- planification des charges -->
+<div class="overlay" id="planSheet2">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h3 id="planTitre">Planifier</h3>
+    <div class="muted tiny" id="planFmt"></div>
+    <div class="plan-help">Méthode du programme : fixe ton objectif sur la <b>dernière semaine</b>, choisis l'agrémentation appliquée de séance en séance, l'application soustrait jusqu'à la semaine 1.</div>
+    <div class="plan-row">
+      <div class="frow" style="flex:1"><label for="planObj">Objectif dernière semaine</label>
+        <input id="planObj" inputmode="decimal" placeholder="20"></div>
+      <div class="frow" style="flex:1"><label for="planInc">Agrémentation par semaine</label>
+        <input id="planInc" inputmode="decimal" placeholder="2,5"></div>
+    </div>
+    <div id="planApercu" class="plan-apercu"></div>
+    <button class="btn" id="planOk" style="margin-top:16px">Enregistrer la progression</button>
+    <button class="btn ghost" id="planRaz" style="margin-top:8px;height:44px">Effacer la planification</button>
+    <button class="btn ghost" id="planFerme" style="margin-top:8px;height:44px;border:none;box-shadow:none;color:var(--ink-2)">Annuler</button>
+  </div>
+</div>
+
+<!-- page du programme -->
+<div class="overlay pageview" id="pageSheet">
+  <div class="pv-inner">
+    <div class="pv-bar">
+      <span id="pvTitre">Page</span>
+      <button id="pvClose">Fermer</button>
+    </div>
+    <div class="pv-img"><img id="pvImg" alt=""></div>
+  </div>
+</div>
+
 <!-- lexique -->
 <div class="overlay" id="lexSheet">
   <div class="sheet">
     <div class="grip"></div>
-    <h3>Lexique</h3>
-    <div class="muted tiny">Les termes techniques employés dans le programme.</div>
-    <div id="lexList" style="margin-top:14px"></div>
+    <h3>Le programme</h3>
+    <div class="muted tiny">Les pages de référence et les termes techniques.</div>
+    <div class="label" style="margin-top:16px">Fiches du programme</div>
+    <div id="lexFiches" class="fiches"></div>
+    <div class="label" style="margin-top:20px">Lexique</div>
+    <div id="lexList"></div>
     <button class="btn" id="lexClose" style="margin-top:16px">Fermer</button>
   </div>
 </div>
@@ -984,7 +1061,7 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 /* ═════ ÉTAT ═════ */
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
-  adam:{logs:{}, sessDone:{}},
+  adam:{logs:{}, sessDone:{}, plan:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
   ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"adam",
       restForce:240, restPuiss:180, restVol:120, restMax:120, restEchauf:45}
@@ -996,7 +1073,7 @@ function normalize(r){
   return {...structuredClone(DEF), ...r,
     rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
     logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{},
-    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}}};
+    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}, plan:(r.adam&&r.adam.plan)||{}}};
 }
 let S = load();
 function load(){
@@ -1731,8 +1808,8 @@ const RES3=[
 
 /* Repos : libellé affiché tel quel, et durée retenue pour le minuteur.
    « Feeling » laisse volontairement l'athlète juger. */
-const R=(lab,sec)=>({lab,sec});
-const FEELING=R("Feeling",0);
+const R=(lab,bas,haut)=>({lab:lab.split(" à ").pop().includes("min")?lab:lab+" min", bas, haut:haut||bas});
+const FEELING={lab:"Feeling",bas:0,haut:0};
 
 const ADAM=[
 {
@@ -1745,36 +1822,36 @@ const ADAM=[
       {nom:"Dips", format:"3 × 10", repos:FEELING},
     ]},
     {n:2, titre:"Squat principal", sous:"Renforcement membre inférieur antérieur", exos:[
-      {nom:"Squat", format:"3 × 10", repos:R("3 à 5 min",180)},
+      {nom:"Squat", format:"3 × 10", repos:R("3 à 5 min",180,300)},
       {nom:"Gobelet squat", format:"3 × 6", plus:["+ 8 gobelet squat","+ 10 gobelet squat"],
-       note:"La charge diminue quand les répétitions augmentent", repos:R("2 à 3 min",120)},
-      {nom:"Legs extensions", format:"3 × 15", repos:R("1 à 1 min 30",60)},
+       note:"La charge diminue quand les répétitions augmentent", repos:R("2 à 3 min",120,180)},
+      {nom:"Legs extensions", format:"3 × 15", repos:R("1 à 1 min 30",60,90)},
       {nom:"Extensions lombaires", format:"5 × 10", note:"Contrôle sur la phase excentrique", repos:R("1 min",60)},
     ]},
     {n:3, titre:"Renforcement haut du corps", exos:[
       {nom:"Traction", format:"3 × 10", repos:FEELING},
       {nom:"Développé couché", format:"4 × 10",
-       plus:["+ 10 tirage horizontal unilatéral deadstop (1 s minimum)"], repos:R("2 à 4 min",120)},
+       plus:["+ 10 tirage horizontal unilatéral deadstop (1 s minimum)"], repos:R("2 à 4 min",120,240)},
       {nom:"Développé militaire barre ou haltère", format:"3 × 10",
        plus:["+ 10 tirage vertical pronation (4 s excentrique ou 2 s pause)",
              "+ 10 tirage vertical supination (4 s excentrique si 2 s pause en pronation)"],
-       repos:R("2 min 30 à 3",150)},
+       repos:R("2 min 30 à 3",150,180)},
       {nom:"Élévation frontale to latérale", format:"3 × 10",
-       plus:["+ 10 biceps curl pronation à la barre (contrôle excentrique)"], repos:R("1 min 30 à 2",90)},
+       plus:["+ 10 biceps curl pronation à la barre (contrôle excentrique)"], repos:R("1 min 30 à 2",90,120)},
     ]},
     {n:4, titre:"Squat secondaire", sous:"Renforcement membre inférieur postérieur", exos:[
-      {nom:"Squat tempo", format:"4 × 6", note:"4 s excentrique", repos:R("3 à 5 min",180)},
-      {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 3",90)},
-      {nom:"Soulevé de terre roumain", format:"3 × 10", plus:["+ 10 legs curl"], repos:R("1 à 1 min 30",60)},
+      {nom:"Squat tempo", format:"4 × 6", note:"4 s excentrique", repos:R("3 à 5 min",180,300)},
+      {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 3",90,180)},
+      {nom:"Soulevé de terre roumain", format:"3 × 10", plus:["+ 10 legs curl"], repos:R("1 à 1 min 30",60,90)},
       {nom:"Chinese plank", format:"3 × 30 s", note:"Possibilité de dégressif toutes les 10 s",
-       plus:["+ 30 s gainage cuillère"], repos:R("1 à 1 min 30",60)},
+       plus:["+ 30 s gainage cuillère"], repos:R("1 à 1 min 30",60,90)},
     ]},
     {n:5, titre:"Street 2 mouvements", sous:"Traction, dips", exos:[
       {nom:"Traction", format:"3 × 10", repos:FEELING},
       {nom:"Dips", format:"3 × 4", note:"Dropset 4/6/8 : force, puissance, résistance",
        plus:["+ 6 dips (focus puissance)","+ 8 dips (focus résistance)"], repos:FEELING},
       {nom:"Rowing barre pronation", format:"3 × 10",
-       plus:["+ 10 rowing barre supination","+ 10 à 30 pompes"], repos:R("2 min 30 à 3",150)},
+       plus:["+ 10 rowing barre supination","+ 10 à 30 pompes"], repos:R("2 min 30 à 3",150,180)},
       {nom:"Élévation frontale haltère", format:"3 × 10", note:"Excentrique contrôlé",
        plus:["+ 10 élévation latérale haltère (excentrique contrôlé)",
              "+ 10 triceps extension poulie haute (excentrique contrôlé)"], repos:R("3 min",180)},
@@ -1787,10 +1864,10 @@ const ADAM=[
   trainings:[
     {n:1, titre:"Squat principal, dips", exos:[
       {nom:"Squat pause", format:"4 × 6", note:"2 s de pause en amplitude complète, environ 70 % du 1RM",
-       repos:R("3 à 5 min",180)},
+       repos:R("3 à 5 min",180,300)},
       {nom:"Dips deadstop", format:"4 × 4", note:"Deadstop 1 s minimum",
-       plus:["+ 6 dips one shoot"], repos:R("4 à 6 min",240)},
-      {nom:"Hip thrust", format:"3 × 10", plus:["+ 10 fente bulgare"], repos:R("2 à 3 min",120)},
+       plus:["+ 6 dips one shoot"], repos:R("4 à 6 min",240,360)},
+      {nom:"Hip thrust", format:"3 × 10", plus:["+ 10 fente bulgare"], repos:R("2 à 3 min",120,180)},
       {nom:"Chinese plank", format:"3 × 30 s", repos:R("1 min 30",90)},
     ]},
     {n:2, titre:"Muscle up, traction", exos:[
@@ -1798,32 +1875,32 @@ const ADAM=[
       {nom:"Traction deadstop", format:"4 × 6", note:"Descendante : maintenir l'intention malgré la baisse de charge",
        repos:FEELING},
       {nom:"Tirage horizontal tempo", format:"3 × 6", note:"4 s excentrique",
-       plus:["+ 6 biceps curl tempo (2 s pause bras à 90°)"], repos:R("2 à 3 min",120)},
+       plus:["+ 6 biceps curl tempo (2 s pause bras à 90°)"], repos:R("2 à 3 min",120,180)},
     ]},
     {n:3, titre:"Renforcement haut du corps", exos:[
       {nom:"Développé couché", format:"4 × 6", note:"2 s de pause", repos:FEELING},
       {nom:"Tirage vertical pronation", format:"3 × 4", note:"Dégressive : lourd, mi-lourd, léger",
-       plus:["+ 6 tirage vertical pronation","+ 8 tirage vertical pronation"], repos:R("2 min 30 à 3",150)},
+       plus:["+ 6 tirage vertical pronation","+ 8 tirage vertical pronation"], repos:R("2 min 30 à 3",150,180)},
       {nom:"Développé militaire", format:"1 × 4", note:"1 s deadstop minimum, puis 3 × 6",
-       plus:["puis 3 × 6 développé militaire (1 s deadstop minimum)"], repos:R("2 à 4 min",120)},
+       plus:["puis 3 × 6 développé militaire (1 s deadstop minimum)"], repos:R("2 à 4 min",120,240)},
       {nom:"Butterfly", format:"3 × 10", note:"2 s de pause", plus:["+ 6 à 10 pompes claquées"],
-       repos:R("2 min 30 à 3",150)},
-      {nom:"Triceps extension", format:"3 × 10", note:"Contrôle phase excentrique", repos:R("1 min 30 à 2",90)},
+       repos:R("2 min 30 à 3",150,180)},
+      {nom:"Triceps extension", format:"3 × 10", note:"Contrôle phase excentrique", repos:R("1 min 30 à 2",90,120)},
     ]},
     {n:4, titre:"Squat secondaire", sous:"Renforcement membre inférieur", exos:[
       {nom:"Muscle up", format:"1 répétition", note:"Montante, poids de corps à 60-70 % du 1RM actuel, augmentation de 1,25 à 2,5 kg",
        repos:FEELING},
-      {nom:"Squat", format:"3 × 8", repos:R("3 à 5 min",180)},
-      {nom:"Legs extension tempo", format:"3 × 10", note:"4 s excentrique", repos:R("1 min 30 à 2",90)},
-      {nom:"Legs curl tempo", format:"3 × 10", note:"2 s pause", repos:R("1 min 30 à 2",90)},
-      {nom:"Extension lombaire", format:"3 × 10", repos:R("1 à 1 min 30",60)},
+      {nom:"Squat", format:"3 × 8", repos:R("3 à 5 min",180,300)},
+      {nom:"Legs extension tempo", format:"3 × 10", note:"4 s excentrique", repos:R("1 min 30 à 2",90,120)},
+      {nom:"Legs curl tempo", format:"3 × 10", note:"2 s pause", repos:R("1 min 30 à 2",90,120)},
+      {nom:"Extension lombaire", format:"3 × 10", repos:R("1 à 1 min 30",60,90)},
     ]},
     {n:5, titre:"Street 2 mouvements", sous:"Traction, dips", exos:[
       {nom:"Tractions one shoot", format:"4 × 8", note:"Descendante, focus trajectoire et résistance sur effort de puissance",
        repos:FEELING},
-      {nom:"Dips tempo", format:"4 × 6", note:"4 s excentrique", repos:R("4 à 6 min",240)},
+      {nom:"Dips tempo", format:"4 × 6", note:"4 s excentrique", repos:R("4 à 6 min",240,360)},
       {nom:"Développé couché one shoot", format:"3 × 8",
-       plus:["+ 10 à 12 triceps extension haltère"], repos:R("2 min 30 à 3",150)},
+       plus:["+ 10 à 12 triceps extension haltère"], repos:R("2 min 30 à 3",150,180)},
     ]},
   ],
 },
@@ -1832,17 +1909,17 @@ const ADAM=[
   objectif:"Développer la qualité de force pure",
   trainings:[
     {n:1, titre:"Muscle up principal, dips principal", exos:[
-      {nom:"Muscle up", format:"3 × 1", repos:R("4 à 7 min",240)},
-      {nom:"Muscle up", format:"3 × 3", repos:R("4 à 7 min",240)},
-      {nom:"Dips deadstop", format:"1 × 1", note:"Deadstop 1 s minimum", repos:R("4 à 6 min",240)},
+      {nom:"Muscle up", format:"3 × 1", repos:R("4 à 7 min",240,420)},
+      {nom:"Muscle up", format:"3 × 3", repos:R("4 à 7 min",240,420)},
+      {nom:"Dips deadstop", format:"1 × 1", note:"Deadstop 1 s minimum", repos:R("4 à 6 min",240,360)},
       {nom:"Dips deadstop", format:"1 × 3", note:"Deadstop 1 s minimum", repos:FEELING},
       {nom:"Dips deadstop", format:"3 × 5", note:"Deadstop 1 s minimum", repos:FEELING},
       {nom:"Développé militaire", format:"3 × 10",
-       plus:["puis 3 × 10 développé couché incliné haltère prise neutre"], repos:R("2 min 30 à 3",150)},
+       plus:["puis 3 × 10 développé couché incliné haltère prise neutre"], repos:R("2 min 30 à 3",150,180)},
     ]},
     {n:2, titre:"Traction, squat principal", exos:[
       {nom:"Traction", format:"3 × 3", note:"Descendante", repos:FEELING},
-      {nom:"Tractions tempo", format:"2 × 6", note:"4 s excentrique, 2 s pause", repos:R("2 min 30 à 3",150)},
+      {nom:"Tractions tempo", format:"2 × 6", note:"4 s excentrique, 2 s pause", repos:R("2 min 30 à 3",150,180)},
       {nom:"Squat", format:"1 × 3", repos:FEELING},
       {nom:"Squat", format:"3 × 5", repos:FEELING},
       {nom:"Extension lombaire iso", format:"3 × 10 s", plus:["+ 10 extension lombaire"], repos:R("1 min 30",90)},
@@ -1853,10 +1930,10 @@ const ADAM=[
       {nom:"Triceps extension tempo", format:"3 × 10", note:"4 s excentrique", repos:FEELING},
     ]},
     {n:4, titre:"Muscle up secondaire, squat secondaire", exos:[
-      {nom:"Squat", format:"1 × 1", repos:R("3 à 5 min",180)},
-      {nom:"Squat", format:"3 × 3", repos:R("3 à 5 min",180)},
-      {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 2",90)},
-      {nom:"Legs curl", format:"3 × 10", plus:["+ 10 extension lombaire"], repos:R("1 min 30 à 2",90)},
+      {nom:"Squat", format:"1 × 1", repos:R("3 à 5 min",180,300)},
+      {nom:"Squat", format:"3 × 3", repos:R("3 à 5 min",180,300)},
+      {nom:"Press unilatéral", format:"3 × 10", repos:R("1 min 30 à 2",90,120)},
+      {nom:"Legs curl", format:"3 × 10", plus:["+ 10 extension lombaire"], repos:R("1 min 30 à 2",90,120)},
     ]},
   ],
 },
@@ -1879,11 +1956,30 @@ const LEXIQUE=[
   ["PDC","Poids du corps."],
 ];
 
+/* Page du PDF correspondant à chaque écran, pour lever un doute en salle. */
+const PAGES={
+  c1:{intro:12, methodes:13, t:{1:14,2:15,3:16,4:17,5:18}},
+  c2:{intro:19, methodes:20, t:{1:21,2:22,3:23,4:24,5:25}},
+  c3:{intro:26, methodes:27, t:{1:28,2:29,3:30,4:31}},
+};
+const PAGES_GEN=[
+  {p:5,  t:"Les fondamentaux", d:"Ce qu'il faut respecter tout au long du programme"},
+  {p:6,  t:"Erreur à ne pas faire", d:"Les critères d'exécution déterminent tout"},
+  {p:8,  t:"Choisir ses charges", d:"La méthode de planification en six étapes"},
+  {p:9,  t:"En cas d'échec", d:"Analyser la cause et adapter la suite"},
+  {p:11, t:"Choisir ses temps de repos", d:"Feeling, tranches imposées et deload"},
+  {p:32, t:"Lexique", d:"Définitions des termes techniques"},
+];
+const pageUrl=n=>`/prog/p${String(n).padStart(2,"0")}.jpg`;
+
 const ADAM_IDS=ADAM.map(c=>c.id);
 const cycleById=id=>ADAM.find(c=>c.id===id)||ADAM[0];
 const admKey=(c,w,t,e)=>`adam|${c}|${w}|${t}|${e}`;
 const admSk =(c,w,t)=>`adam|${c}|${w}|${t}`;
 const admTotalSeances=ADAM.reduce((n,c)=>n+c.semaines*c.trainings.length,0);
+/* Chaque fin de cycle est suivie d'une semaine de repos actif (page 11). */
+const admDeload=(cid,w)=>w===cycleById(cid).semaines+1;
+const admDerniereSem=cid=>cycleById(cid).semaines+1;
 
 /* Toutes les lignes d'une séance, exercice par exercice. */
 function admExos(cid,t){ return cycleById(cid).trainings.find(x=>x.n===t)?.exos||[]; }
@@ -1898,6 +1994,27 @@ function admProchaine(){
     if(!S.adam.sessDone[admSk(c.id,w,tr.n)]) return {c:c.id,w,t:tr.n};
   return null;
 }
+/* Planification descendante, telle que décrite page 8 du programme :
+   on fixe l'objectif sur la dernière semaine, on choisit l'agrémentation,
+   puis on soustrait jusqu'à la semaine 1. */
+const planKey=(cid,t,i)=>`${cid}|${t}|${i}`;
+function planDe(cid,t,i){ return S.adam.plan[planKey(cid,t,i)]||null; }
+function planCalcule(objectif,incs,nSem){
+  const o=parseFloat(String(objectif).replace(",","."));
+  if(isNaN(o)) return null;
+  const pas=incs.map(x=>parseFloat(String(x).replace(",","."))||0);
+  const out=new Array(nSem);
+  out[nSem-1]=o;
+  for(let w=nSem-2;w>=0;w--) out[w]=out[w+1]-(pas[w+1]??pas[pas.length-1]??0);
+  return out.map(v=>Math.round(v*100)/100);
+}
+function planCible(cid,t,i,w){
+  const pl=planDe(cid,t,i);
+  if(!pl||!pl.cibles) return null;
+  const v=pl.cibles[w-1];
+  return v==null?null:fmt(v)+" kg";
+}
+
 /* Dernière charge notée sur cet exercice, pour l'afficher en repère. */
 function admPrecedent(cid,w,t,i){
   for(let ww=w-1;ww>=1;ww--){
@@ -1914,7 +2031,7 @@ function renderAdamHome(){
   const nx=admProchaine();
   if(admCycle==null){ admCycle=nx?nx.c:"c1"; admWeek=nx?nx.w:1; }
   const cy=cycleById(admCycle);
-  if(admWeek>cy.semaines) admWeek=cy.semaines;
+  if(admWeek>admDerniereSem(admCycle)) admWeek=admDerniereSem(admCycle);
 
   document.documentElement.style.setProperty("--accent",cy.couleur);
 
@@ -1938,13 +2055,30 @@ function renderAdamHome(){
     +'<div><div class="res-v mono">'+cy.semaines+'</div><div class="res-l">semaines · cycle '+cy.num+'</div></div></div>';
 
   /* Navigation des semaines */
-  $("#admWkTitle").textContent=`Semaine ${admWeek}`;
-  $("#admWkSub").textContent=`Cycle ${cy.num} · ${cy.nom} · ${cy.trainings.length} séances`;
+  const dech=admDeload(admCycle,admWeek);
+  $("#admWkTitle").textContent=dech?"Semaine de deload":`Semaine ${admWeek}`;
+  $("#admWkSub").textContent=dech
+    ? `Après le cycle ${cy.num} · repos actif`
+    : `Cycle ${cy.num} · ${cy.nom} · ${cy.trainings.length} séances`;
   $("#admWkPrev").disabled=admWeek<=1;
-  $("#admWkNext").disabled=admWeek>=cy.semaines;
+  $("#admWkNext").disabled=admWeek>=admDerniereSem(admCycle);
 
   /* Séances de la semaine */
   const box=$("#admRows"); box.innerHTML="";
+  majSources();
+  if(dech){
+    box.innerHTML=`<div class="deload-card">
+      <div class="dl-t">Repos actif d'une semaine</div>
+      <div class="dl-s">Chaque fin de cycle est suivie d'une semaine de deload : ton corps récupère et assimile les gains.</div>
+      <div class="dl-opt"><b>Si tu redémarres le même cycle</b>
+        <span>Baisse le volume et l'intensité de 40 à 60 % sur tes formats habituels, et supprime une partie des exercices de renforcement.</span></div>
+      <div class="dl-opt"><b>Si tu passes au cycle suivant</b>
+        <span>Utilise cette semaine comme semaine 0 : familiarise-toi avec les nouveaux formats, à intensité réduite et volume allégé.</span></div>
+      <button class="src-link" data-page="11">Voir la page 11 du programme</button>
+    </div>`;
+    box.querySelector(".src-link").onclick=()=>ouvrirPage(11,"Structure et deload");
+    return;
+  }
   cy.trainings.forEach(tr=>{
     const done=!!S.adam.sessDone[admSk(admCycle,admWeek,tr.n)];
     const suiv=nx&&nx.c===admCycle&&nx.w===admWeek&&nx.t===tr.n;
@@ -1965,6 +2099,13 @@ function renderAdamHome(){
     box.appendChild(b);
   });
 }
+function majSources(){
+  const P=PAGES[admCycle];
+  $("#admSources").innerHTML=
+    `<button class="src-link" data-p="${P.intro}">Présentation du cycle · p.${P.intro}</button>`
+   +`<button class="src-link" data-p="${P.methodes}">Méthodes et focus · p.${P.methodes}</button>`;
+  $$("#admSources .src-link").forEach(b=>b.onclick=()=>ouvrirPage(+b.dataset.p));
+}
 $("#admWkPrev").onclick=()=>{ if(admWeek>1){ admWeek--; renderAdamHome(); vibrate(8); } };
 $("#admWkNext").onclick=()=>{ admWeek++; renderAdamHome(); vibrate(8); };
 
@@ -1977,12 +2118,16 @@ function renderAdamSess(){
   $("#asCycle").textContent=`Cycle ${cy.num} · ${cy.nom} · semaine ${w} sur ${cy.semaines}`;
   $("#asTitle").textContent=`Training ${t} — ${tr.titre}`;
   $("#asSub").textContent=tr.sous||"";
+  const pg=PAGES[c].t[t];
+  $("#asPage").innerHTML=`<button class="src-link" data-p="${pg}">Voir cette séance dans le programme · p.${pg}</button>`;
+  $("#asPage .src-link").onclick=()=>ouvrirPage(pg,`Cycle ${cy.num} · Training ${t}`);
 
   const el=$("#asList"); el.innerHTML="";
   tr.exos.forEach((ex,i)=>{
     const k=admKey(c,w,t,i), d=S.adam.logs[k]||{};
     const prec=admPrecedent(c,w,t,i);
     const fmt=admFormat(ex,w);
+    const cible=planCible(c,t,i,w);
     const card=document.createElement("div");
     card.className="exo"+(d.res?" fait":"");
     card.innerHTML=`
@@ -1997,15 +2142,21 @@ function renderAdamSess(){
       ${ex.note?`<div class="exo-note">${ex.note}</div>`:""}
       ${ex.parSemaine?`<div class="exo-prog">Progression du cycle : ${ex.parSemaine.map((f,n)=>
           `<span class="${n===w-1?"on":""}">S${n+1} ${f}</span>`).join(" · ")}</div>`:""}
+      <div class="exo-plan">
+        <button class="plan-chip${cible?" on":""}" data-i="${i}">${cible?`Objectif S${w} · ${cible}`:"Planifier les charges"}</button>
+        ${prec?`<span class="plan-prec">S${prec.semaine} : ${prec.charge}</span>`:""}
+      </div>
       <div class="exo-saisie">
         <div class="field">
-          <label>Charge${prec?` · S${prec.semaine} : ${prec.charge}`:""}</label>
-          <input data-k="${k}" data-f="charge" placeholder="${prec?prec.charge:"kg, PDC, élastique…"}" value="${d.charge??""}">
+          <label>Charge réalisée</label>
+          <input data-k="${k}" data-f="charge" placeholder="${cible||(prec?prec.charge:"kg, PDC, élastique…")}" value="${d.charge??""}">
         </div>
-        <button class="rt-mini" data-sec="${ex.repos.sec}" title="Lancer le repos">${ex.repos.sec?"Repos":"—"}</button>
+        ${ex.repos.bas?`<button class="rt-mini" data-sec="${ex.repos.bas}">${fmtSec(ex.repos.bas)}</button>`:""}
+        ${ex.repos.haut&&ex.repos.haut!==ex.repos.bas?`<button class="rt-mini" data-sec="${ex.repos.haut}">${fmtSec(ex.repos.haut)}</button>`:""}
+        ${!ex.repos.bas?`<button class="rt-mini" data-sec="0">Repos libre</button>`:""}
       </div>
       <div class="a-res">${RES3.map(r=>
-        `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}" data-sec="${ex.repos.sec}"
+        `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}" data-sec="${ex.repos.bas}"
            style="${d.res===r.k?`background:${r.col};border-color:${r.col};color:var(--panel)`:""}">${r.lab}</button>`).join("")}</div>`;
     el.appendChild(card);
   });
@@ -2015,8 +2166,11 @@ function renderAdamSess(){
       S.adam.logs[k].charge=inp.value||undefined; save(); };
   });
   el.querySelectorAll(".rt-mini").forEach(b=>{
-    b.onclick=()=>{ const s=+b.dataset.sec; if(s) startRest(s,"Série suivante"); else toast("Repos au feeling"); };
+    b.onclick=()=>{ const v=+b.dataset.sec;
+      if(v) startRest(v,"Série suivante");
+      else toast("Repos au feeling : récupère complètement avant la suite"); };
   });
+  el.querySelectorAll(".plan-chip").forEach(b=>b.onclick=()=>ouvrirPlan(c,t,+b.dataset.i));
   el.querySelectorAll(".resb").forEach(b=>{
     b.onclick=()=>{
       const k=b.dataset.k, r=b.dataset.r;
@@ -2164,8 +2318,66 @@ function drawAdamRegular(){
   $("#regGrid").innerHTML=h;
 }
 
+/* ═════ PLANIFICATION DES CHARGES ═════ */
+let planCtx=null;
+function ouvrirPlan(cid,t,i){
+  const cy=cycleById(cid), ex=admExos(cid,t)[i];
+  planCtx={cid,t,i,n:cy.semaines};
+  $("#planTitre").textContent=ex.nom;
+  $("#planFmt").textContent=`${admFormat(ex,cy.semaines)} · objectif à poser sur la semaine ${cy.semaines}`;
+  const pl=planDe(cid,t,i);
+  $("#planObj").value=pl?.objectif??"";
+  $("#planInc").value=pl?.inc??"";
+  majApercu();
+  $("#planSheet2").classList.add("open");
+}
+function majApercu(){
+  if(!planCtx) return;
+  const o=$("#planObj").value, inc=$("#planInc").value, n=planCtx.n;
+  const c=planCalcule(o, new Array(n).fill(inc), n);
+  $("#planApercu").innerHTML = c
+    ? c.map((v,k)=>`<div class="pa-row"><span>Semaine ${k+1}</span><b class="mono">${fmt(v)} kg</b></div>`).join("")
+      +`<div class="tiny muted" style="margin-top:10px">Relis la colonne : si la semaine 1 te paraît déjà difficile, revois l'objectif à la baisse.</div>`
+    : '<div class="tiny muted">Saisis un objectif et une agrémentation pour voir la progression.</div>';
+}
+$("#planObj").oninput=majApercu;
+$("#planInc").oninput=majApercu;
+$("#planOk").onclick=()=>{
+  if(!planCtx) return;
+  const o=$("#planObj").value, inc=$("#planInc").value, n=planCtx.n;
+  const c=planCalcule(o,new Array(n).fill(inc),n);
+  if(!c){ toast("Saisis un objectif chiffré"); return; }
+  S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)]={objectif:o, inc, cibles:c};
+  save(); $("#planSheet2").classList.remove("open");
+  renderAdamSess(); toast("Progression enregistrée");
+};
+$("#planRaz").onclick=()=>{
+  if(!planCtx) return;
+  delete S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)];
+  save(); $("#planSheet2").classList.remove("open"); renderAdamSess(); toast("Planification effacée");
+};
+$("#planFerme").onclick=()=>$("#planSheet2").classList.remove("open");
+$("#planSheet2").onclick=e=>{ if(e.target.id==="planSheet2") $("#planSheet2").classList.remove("open"); };
+
+/* ═════ PAGES DU PROGRAMME ═════ */
+function ouvrirPage(n,titre){
+  $("#pvTitre").textContent=titre||`Programme · page ${n}`;
+  $("#pvImg").src=pageUrl(n);
+  $("#pageSheet").classList.add("open");
+}
+$("#pvClose").onclick=()=>$("#pageSheet").classList.remove("open");
+$("#pageSheet").onclick=e=>{ if(e.target.id==="pageSheet") $("#pageSheet").classList.remove("open"); };
+
 /* ═════ LEXIQUE ═════ */
 function renderLexique(){
+  $("#lexFiches").innerHTML=PAGES_GEN.map(function(f){
+    return '<button class="fiche" data-p="'+f.p+'"><span class="fi-t">'+f.t+'</span>'
+      +'<span class="fi-d">'+f.d+'</span><span class="fi-p">p.'+f.p+'</span></button>';
+  }).join("");
+  $$("#lexFiches .fiche").forEach(b=>b.onclick=()=>{
+    $("#lexSheet").classList.remove("open");
+    ouvrirPage(+b.dataset.p);
+  });
   $("#lexList").innerHTML=LEXIQUE.map(function(e){
     return '<div class="lex"><div class="lex-t">'+e[0]+'</div><div class="lex-d">'+e[1]+'</div></div>';
   }).join("");
@@ -2378,7 +2590,8 @@ function mergeState(a,b){          // b l'emporte en cas de conflit sur une mêm
       return o; })(),
     logs:{...A.logs, ...B.logs},
     sessDone:{...A.sessDone, ...B.sessDone},
-    adam:{logs:{...A.adam.logs, ...B.adam.logs}, sessDone:{...A.adam.sessDone, ...B.adam.sessDone}},
+    adam:{logs:{...A.adam.logs, ...B.adam.logs}, sessDone:{...A.adam.sessDone, ...B.adam.sessDone},
+          plan:{...A.adam.plan, ...B.adam.plan}},
     updatedAt:Math.max(A.updatedAt||0, B.updatedAt||0)};
 }
 async function pullCloud(){
