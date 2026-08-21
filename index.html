@@ -128,7 +128,7 @@ input,select{font-family:inherit;font-size:16px}
 .wknav{display:flex;align-items:center;justify-content:space-between;padding:13px 12px 14px}
 .wknav-t{font-family:var(--f-display);font-size:16px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
 .wknav-s{font-size:12px;color:var(--ink-2);margin-top:3px}
-.wkbtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
+.wkbtn{width:44px;height:44px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
   display:grid;place-items:center;color:var(--ink-2);font-size:17px;transition:.15s;text-align:center}
 .wkbtn:active{transform:scale(.9);background:var(--panel-2)}
 .wkbtn[disabled]{opacity:.3;pointer-events:none}
@@ -359,8 +359,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
 /* ── planification, deload, pages sources ── */
 .exo-plan{display:flex;align-items:center;gap:9px;margin-top:11px;flex-wrap:wrap}
-.plan-chip{padding:6px 11px;border-radius:8px;border:1px dashed var(--line-2);background:none;
-  font-size:11.5px;font-weight:600;color:var(--ink-2);transition:.15s}
+.plan-chip{min-height:38px;padding:9px 13px;border-radius:9px;border:1px dashed var(--line-2);background:none;
+  font-size:11.5px;font-weight:700;color:var(--ink-2);transition:.15s}
 .plan-chip.on{border-style:solid;border-color:var(--accent);color:var(--accent);
   background:color-mix(in srgb,var(--accent) 9%,transparent)}
 .plan-chip:active{transform:scale(.95)}
@@ -386,11 +386,16 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .pa-row b{min-width:74px;text-align:right}
 /* Les trois cycles, comme les cartouches de couverture du programme */
 .chips{display:flex;gap:7px}
-.chip{flex:1;padding:10px 6px;border-radius:9px;border:1.5px solid var(--line-2);background:var(--panel);
+.chip{flex:1;min-height:42px;padding:11px 6px;border-radius:9px;border:1.5px solid var(--line-2);background:var(--panel);
   font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center;
   color:var(--ink-2);transition:.16s}
 .chip:active{transform:scale(.96)}
 .chip.on{color:var(--btn-fg);border-color:transparent}
+.amorce-t{font-family:var(--f-display);font-size:15px;font-weight:800;text-transform:uppercase;
+  letter-spacing:-.01em;color:var(--accent);margin-bottom:7px}
+.amorce-s{font-size:13px;color:var(--ink-2);line-height:1.55}
+.amorce-s b{color:var(--ink);font-weight:700}
+#admAmorce .src-link{margin-top:12px}
 .wordmark{text-align:center;font-size:10px;font-weight:800;letter-spacing:.42em;
   text-transform:uppercase;color:var(--ink-3);padding:20px 16px 4px}
 .deload-card{padding:18px 16px;border-top:1px solid var(--line)}
@@ -413,7 +418,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .dl-opt b{font-size:12.5px;display:block;margin-bottom:4px}
 .dl-opt span{font-size:12.5px;color:var(--ink-2);line-height:1.5}
 .src-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.src-link{padding:8px 12px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
+.src-link{min-height:40px;display:inline-flex;align-items:center;padding:10px 13px;border-radius:9px;
+  border:1px solid var(--line-2);background:var(--panel);
   font-size:11.5px;font-weight:600;color:var(--ink-2);transition:.15s;text-align:left}
 .src-link:active{transform:scale(.96);background:var(--panel-2)}
 .fiches{display:flex;flex-direction:column;gap:8px}
@@ -442,12 +448,16 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .exo{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px;
   box-shadow:var(--shadow);transition:.2s;position:relative;overflow:hidden}
 .exo::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:.85}
-.ge-lien{margin-top:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--accent) 45%,transparent);
-  padding-bottom:1px;transition:.15s}
+.ge-lien{display:inline-flex;align-items:center;gap:5px;margin-top:7px;min-height:40px;padding:9px 12px;
+  border-radius:8px;border:1px solid var(--line-2);background:var(--panel-2);
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);transition:.15s}
+.ge-lien::before{content:"?";display:grid;place-items:center;width:15px;height:15px;border-radius:50%;
+  background:var(--accent);color:var(--btn-fg);font-size:10px;font-weight:800}
 .ge-lien:active{opacity:.6}
-.ge-lien.mini{margin:0 0 0 5px;padding:0 5px;border:1px solid var(--line-2);border-radius:4px;
-  letter-spacing:0;font-size:10px}
+.ge-lien.mini{margin:0 0 0 7px;min-height:26px;min-width:26px;padding:0 8px;justify-content:center;
+  letter-spacing:0;font-size:11px;font-weight:800}
+.ge-lien.mini::before{display:none}
 .ge-bloc{margin-top:18px}
 .ge-h{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
   color:var(--accent);margin-bottom:7px}
@@ -606,7 +616,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .flash .fl-t{font-family:var(--f-display);font-size:42px;font-weight:600;letter-spacing:-.03em;margin-top:8px}
 .flash .fl-s{font-size:15px;margin-top:10px;opacity:.9;font-weight:500}
 .arch-link{text-align:center;margin-top:4px}
-.arch-link button{font-size:12px;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px}
+.arch-link button{min-height:40px;padding:10px 14px;font-size:12px;color:var(--ink-2);
+  text-decoration:underline;text-underline-offset:3px}
 .toast{position:fixed;left:50%;bottom:calc(94px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);
   background:var(--ink);color:var(--page);padding:11px 17px;border-radius:11px;font-weight:600;font-size:13.5px;
   opacity:0;pointer-events:none;transition:.3s cubic-bezier(.3,.8,.3,1);z-index:80;box-shadow:var(--shadow-lg);max-width:88vw;text-align:center}
@@ -668,7 +679,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
         Se connecter avec Microsoft
       </button>
       <div class="lock-err" id="authErr"></div>
-      <div class="lock-note">Votre session reste ouverte 30 jours sur cet appareil.</div>
+      <div class="lock-note">Ta session reste ouverte 30 jours sur cet appareil.</div>
     </div>
 
     <div id="authConfig" style="display:none">
@@ -702,6 +713,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       <div class="chips" id="admCycles" style="margin-bottom:8px"></div>
       <div class="tiny muted" id="admObjectif" style="margin-bottom:16px"></div>
 
+      <div class="card pad" id="admAmorce" style="display:none;margin-bottom:14px"></div>
+
       <div class="card">
         <div class="wknav">
           <button class="wkbtn" id="admWkPrev">‹</button>
@@ -723,7 +736,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div id="homeClassic">
       <div class="archive-bar">Programme archivé · 12 semaines
         <button id="quitArchive">Revenir au programme actuel</button></div>
-      <div class="label">Choisissez votre séance</div>
+      <div class="label">Choisis ta séance</div>
       <div class="card">
         <div class="wknav">
           <button class="wkbtn" id="wkPrev">‹</button>
@@ -800,8 +813,8 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div class="card pad" id="biResume"></div>
 
     <div class="card pad">
-      <div class="label" style="margin-bottom:2px">Où vous en êtes</div>
-      <div class="tiny muted">Charge de départ, charge actuelle, et ce que dit votre ressenti</div>
+      <div class="label" style="margin-bottom:2px">Où tu en es</div>
+      <div class="tiny muted">Charge de départ, charge actuelle, et ce que dit ton ressenti</div>
       <div id="liftRows" style="margin-top:12px"></div>
     </div>
 
@@ -1294,7 +1307,7 @@ function openStep(lift,w){
   const L=LIFTS[lift], cyc=CYCLES[cycleOf(w)], c=cycleOf(w);
   $("#stepTitle").textContent=`${L.name} · semaine ${w}`;
   const prev=palierPos(lift,w-1);
-  $("#stepSub").textContent=`Cycle ${cyc.name}, semaine précédente au palier ${prev} sur 3. Que faites-vous cette semaine ?`;
+  $("#stepSub").textContent=`Cycle ${cyc.name}, semaine précédente au palier ${prev} sur 3. Que fais-tu cette semaine ?`;
   const cur=S.steps?.[lift]?.[w] || "continue";
   const box=$("#stepOpts"); box.innerHTML="";
   [
@@ -1494,7 +1507,7 @@ $("#backProg").onclick=()=>switchView("v-home");
 $("#saveSession").onclick=()=>{
   const {w,se}=curSess, lift=S.ui.lift;
   let n=0; for(let st=0;st<4;st++){ const d=S.logs[lk(lift,w,se,0,st)]; if(d&&(d.ok||d.reps!=null)) n++; }
-  if(n===0){ toast("Validez au moins une série"); return; }
+  if(n===0){ toast("Valide au moins une série"); return; }
   const wasNew=!S.sessDone[sk(lift,w,se)];
   S.sessDone[sk(lift,w,se)]=Date.now(); save();
   stopRest();
@@ -1537,7 +1550,7 @@ function planStart(){
 }
 function updatePlanPrev(){
   const start=planStart(), p=sessionPlan(), box=$("#planPrev");
-  if(!start){ box.innerHTML="Choisissez une date et une heure."; $("#planGo").disabled=true; return; }
+  if(!start){ box.innerHTML="Choisis une date et une heure."; $("#planGo").disabled=true; return; }
   $("#planGo").disabled=false;
   const end=new Date(start.getTime()+SESSION_MINUTES*60000);
   const jour=start.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
@@ -1582,7 +1595,7 @@ function planUrls(){
 }
 $("#planGo").onclick=()=>{
   const u=planUrls();
-  if(!u){ toast("Choisissez une date et une heure"); return; }
+  if(!u){ toast("Choisis une date et une heure"); return; }
   $("#planSheet").classList.remove("open");
   /* Si l'app est installée, iOS bascule dessus et la page passe en arrière-plan.
      Sinon rien ne se passe : on retombe sur la version web au bout d'1,4 s. */
@@ -1700,7 +1713,7 @@ function conseil(pts){
   if(!faites.length) return {txt:"Pas encore de ressenti saisi", cls:""};
   const m=faites.reduce((a,p)=>a+p.rpeMain,0)/faites.length;
   if(m>=2.5) return {txt:"Séances dures : pensez à stagner", cls:"hard"};
-  if(m<=1.4) return {txt:"Ça passe bien : vous pouvez rattraper", cls:"easy"};
+  if(m<=1.4) return {txt:"Ça passe bien : tu peux rattraper", cls:"easy"};
   return {txt:"Rythme correct : continuez", cls:"ok"};
 }
 
@@ -1769,7 +1782,7 @@ function drawLoad(per){
     }
   });
   if(LIFT_IDS.every(l=>parSem[l].every(v=>v==null))){
-    $("#chartLoad").innerHTML=emptyState("Saisissez la charge de vos séries pour voir vos courbes.");
+    $("#chartLoad").innerHTML=emptyState("Saisis la charge de tes séries pour voir tes courbes.");
     $("#legLoad").innerHTML=""; return;
   }
   const W=640,H=230,pL=38,pR=58,pT=14,pB=28;
@@ -1804,7 +1817,7 @@ function drawLoad(per){
 /* Ressenti : une pastille par séance, lue de gauche à droite. */
 function drawRessenti(per){
   const tout=[]; LIFT_IDS.forEach(l=>per[l].forEach(p=>{ if(p.rpeAll!=null) tout.push(p.rpeAll); }));
-  if(!tout.length){ $("#ressenti").innerHTML=emptyState("Touchez le bouton RPE pendant vos séries pour suivre votre ressenti."); return; }
+  if(!tout.length){ $("#ressenti").innerHTML=emptyState("Touche le bouton RPE pendant tes séries pour suivre ton ressenti."); return; }
   let h=`<div class="rs">`;
   LIFT_IDS.forEach(l=>{
     h+=`<div class="rs-row"><span class="rs-lab">${LIFTS[l].name}</span><div class="rs-cells">`;
@@ -1843,7 +1856,7 @@ function drawRegular(per){
 /* Records : charge maximale sur l'exercice principal, accessoires exclus. */
 function drawRecords(){
   const list=records().sort((a,b)=>(b.date||0)-(a.date||0)||b.sem-a.sem).slice(0,8);
-  if(!list.length){ $("#prList").innerHTML=emptyState("Un record est enregistré quand vous dépassez votre charge maximale sur l'exercice principal."); return; }
+  if(!list.length){ $("#prList").innerHTML=emptyState("Un record est enregistré quand tu dépasses ta charge maximale sur l'exercice principal."); return; }
   $("#prList").innerHTML=list.map(p=>{
     const d=p.date?new Date(p.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):`S${p.sem}`;
     return `<div class="pr-row"><span class="dot2" style="background:${liftColor(p.lift)}"></span>
@@ -2057,6 +2070,13 @@ const admDerniereSem=cid=>{ const c=cycleById(cid); return c.semaines+c.deload; 
 /* Numérotation officielle du programme, page 3 : 15 semaines au total. */
 const semAbs=(cid,w)=>cycleById(cid).debut+w-1;
 /* Une clé de séance appartient au programme si sa semaine tombe dans le cycle. */
+/* Un cycle se prépare avant d'être commencé : combien d'exercices principaux
+   ont déjà leur progression posée ? */
+function planEtatCycle(cid){
+  const cy=cycleById(cid); let pose=0, total=0;
+  cy.trainings.forEach(tr=>tr.exos.forEach((ex,i)=>{ total++; if(planDe(cid,tr.n,i)) pose++; }));
+  return {pose,total};
+}
 function admSeancesProg(){
   return Object.keys(S.adam.sessDone).filter(k=>{
     const [,cid,w]=k.split("|"); const c=cycleById(cid);
@@ -2069,6 +2089,7 @@ function admSeancesProg(){
    utilisé comme semaine 0 (page 11). */
 const DELOAD_BAISSE=0.5;
 const cycleSuivant=cid=>{ const i=ADAM.findIndex(c=>c.id===cid); return ADAM[i+1]||null; };
+const cyclePrec=cid=>{ const i=ADAM.findIndex(c=>c.id===cid); return i>0?ADAM[i-1]:null; };
 const deloadMode=cid=>S.adam.deload[cid]||null;
 function deloadSrc(cid){
   const m=deloadMode(cid);
@@ -2197,8 +2218,25 @@ function renderAdamHome(){
   $("#admWkSub").textContent=dech
     ? `Repos actif après le cycle ${cy.num}`
     : `Cycle ${cy.num} · ${cy.nom} · semaine ${admWeek} sur ${cy.semaines} · ${cy.trainings.length} séances`;
-  $("#admWkPrev").disabled=admWeek<=1;
-  $("#admWkNext").disabled=admWeek>=admDerniereSem(admCycle);
+  /* Le programme est linéaire de S1 à S15 : la navigation franchit les
+     frontières de cycle au lieu de s'arrêter au bout de chacun. */
+  $("#admWkPrev").disabled = admWeek<=1 && !cyclePrec(admCycle);
+  $("#admWkNext").disabled = admWeek>=admDerniereSem(admCycle) && !cycleSuivant(admCycle);
+
+  /* Mise en route : tant qu'aucune charge n'est posée, on le dit. */
+  const et=planEtatCycle(admCycle), amorce=$("#admAmorce");
+  if(et.pose===0){
+    amorce.style.display="";
+    amorce.innerHTML=`<div class="amorce-t">Prépare ton cycle avant de commencer</div>
+      <div class="amorce-s">Le programme impose les formats, à toi de choisir les charges. Ouvre une séance et appuie sur <b>Planifier les charges</b> : tu poses ton objectif de fin de cycle, l'application en déduit chaque semaine.</div>
+      <button class="src-link" data-p="8">La méthode · p.8</button>`;
+    amorce.querySelector(".src-link").onclick=()=>ouvrirPage(8,"Choisir ses charges de travail");
+  } else if(et.pose<et.total){
+    amorce.style.display="";
+    amorce.innerHTML=`<div class="amorce-s">${et.pose} exercice${et.pose>1?"s":""} sur ${et.total} ${et.pose>1?"ont":"a"} une progression posée pour ce cycle.</div>`;
+  } else amorce.style.display="none";
+
+  memoriserPosition();
 
   /* Séances de la semaine */
   const box=$("#admRows"); box.innerHTML="";
@@ -2278,8 +2316,16 @@ function majSources(){
    +`<button class="src-link" data-p="${P.methodes}">Méthodes et focus · p.${P.methodes}</button>`;
   $$("#admSources .src-link").forEach(b=>b.onclick=()=>ouvrirPage(+b.dataset.p));
 }
-$("#admWkPrev").onclick=()=>{ if(admWeek>1){ admWeek--; renderAdamHome(); vibrate(8); } };
-$("#admWkNext").onclick=()=>{ admWeek++; renderAdamHome(); vibrate(8); };
+$("#admWkPrev").onclick=()=>{
+  if(admWeek>1) admWeek--;
+  else { const pr=cyclePrec(admCycle); if(!pr) return; admCycle=pr.id; admWeek=admDerniereSem(pr.id); }
+  renderAdamHome(); vibrate(8);
+};
+$("#admWkNext").onclick=()=>{
+  if(admWeek<admDerniereSem(admCycle)) admWeek++;
+  else { const su=cycleSuivant(admCycle); if(!su) return; admCycle=su.id; admWeek=1; }
+  renderAdamHome(); vibrate(8);
+};
 
 function openAdamSess(c,w,t,src){ admSess={c,w,t,src:src||c}; switchView("v-asess"); renderAdamSess(); }
 
@@ -2330,8 +2376,8 @@ function renderAdamSess(){
           dech ? (cible?`Deload · ${cible}`:"Charge libre, nettement allégée")
                : ex.charge==="fixe"
                  ? (cible?`Charge du cycle · ${cible}`:"Régler la charge et le format")
-                 : (cible?`Objectif S${w} · ${cible}`:"Planifier les charges")}</button>
-        ${prec?`<span class="plan-prec">S${prec.semaine} : ${prec.charge}</span>`:""}
+                 : (cible?`Objectif S${semAbs(c,w)} · ${cible}`:"Planifier les charges")}</button>
+        ${prec?`<span class="plan-prec">S${semAbs(c,prec.semaine)} : ${prec.charge}</span>`:""}
       </div>
       <div class="exo-saisie">
         <div class="field">
@@ -2348,7 +2394,7 @@ function renderAdamSess(){
           <div class="exo-plan sup">
             <button class="plan-chip${cb?" on":""}${dech?" dl":""}" data-i="${i}" data-rang="${n}"${dech?" disabled":""}>${
               dech ? (cb?`Deload · ${cb}`:"Charge libre, allégée")
-                   : (cb?`Objectif S${w} · ${cb}`:"Planifier les charges")}</button>
+                   : (cb?`Objectif S${semAbs(c,w)} · ${cb}`:"Planifier les charges")}</button>
           </div>
           <div class="exo-saisie">
             <div class="field">
@@ -2402,7 +2448,7 @@ function renderAdamSess(){
 $("#asBack").onclick=()=>switchView("v-home");
 $("#asSave").onclick=()=>{
   const {c,w,t}=admSess;
-  if(!admFaites(c,w,t)){ toast("Validez au moins un exercice"); return; }
+  if(!admFaites(c,w,t)){ toast("Valide au moins un exercice"); return; }
   const neuf=!S.adam.sessDone[admSk(c,w,t)];
   S.adam.sessDone[admSk(c,w,t)]=Date.now(); save();
   stopRest();
@@ -2485,7 +2531,7 @@ function drawAdamCharges(){
     if(pts.length) lignes.push({m, pts:pts.slice(-6).reverse()});
   });
   if(!lignes.length){
-    box.innerHTML=emptyState("Notez vos charges pendant les séances : elles s'accumuleront ici, mouvement par mouvement.");
+    box.innerHTML=emptyState("Note tes charges pendant les séances : elles s'accumuleront ici, mouvement par mouvement.");
     $("#legLoad").innerHTML=""; return;
   }
   box.innerHTML=lignes.map(l=>
@@ -2499,7 +2545,7 @@ function drawAdamCharges(){
 }
 function drawAdamRes(res){
   const t=res.ok+res.moyen+res.echec;
-  if(!t){ $("#ressenti").innerHTML=emptyState("Validez vos exercices en OK, Moyen ou Échec."); return; }
+  if(!t){ $("#ressenti").innerHTML=emptyState("Valide tes exercices en OK, Moyen ou Échec."); return; }
   let h='<div class="balbar">';
   [["ok","var(--good)"],["moyen","var(--warn)"],["echec","var(--crit)"]].forEach(function(p){
     const v=res[p[0]]/t*100; if(v>0) h+='<span style="width:'+v+'%;background:'+p[1]+'"></span>';
@@ -2509,8 +2555,8 @@ function drawAdamRes(res){
    +'<div class="bl"><span class="sw" style="background:var(--warn)"></span><b>'+Math.round(res.moyen/t*100)+' %</b> Moyen</div>'
    +'<div class="bl"><span class="sw" style="background:var(--crit)"></span><b>'+Math.round(res.echec/t*100)+' %</b> Échec</div></div>';
   h+='<div class="tiny muted" style="margin-top:12px">'+(
-    res.echec/t>=.2 ? "Beaucoup d'échecs : vos charges sont sans doute trop ambitieuses pour le format prescrit."
-    : res.ok/t>=.85 ? "Presque tout passe : vous pouvez monter les charges la semaine prochaine."
+    res.echec/t>=.2 ? "Beaucoup d'échecs : tes charges sont sans doute trop ambitieuses pour le format prescrit."
+    : res.ok/t>=.85 ? "Presque tout passe : tu peux monter les charges la semaine prochaine."
     : "Répartition saine entre séries maîtrisées et séries limites.")+'</div>';
   $("#ressenti").innerHTML=h;
 }
@@ -2602,7 +2648,7 @@ function majApercu(){
     const v=parseFloat(String($("#planObj").value).replace(",","."));
     const seq=seqDe(planCtx.cid,planCtx.t,planCtx.i,planCtx.ex);
     $("#planApercu").innerHTML = seq.map((f,k)=>
-      `<div class="pa-row"><span>Semaine ${k+1}<small class="pa-abs"> · S${semAbs(planCtx.cid,k+1)}</small></span>
+      `<div class="pa-row"><span>Semaine ${semAbs(planCtx.cid,k+1)}<small class="pa-abs"> · ${k+1}<sup>e</sup> du cycle</small></span>
         <b class="mono">${f}</b><span class="pa-fix mono">${isNaN(v)?"PDC":(v>0?"+"+fmt(v)+" kg":fmt(v)+" kg")}</span></div>`).join("")
       +`<div class="tiny muted" style="margin-top:10px">La charge ne change pas de la semaine 1 à la semaine ${seq.length} : c'est le format qui porte la progression. Laisse vide si tu travailles au poids du corps.</div>`;
     return;
@@ -2611,7 +2657,7 @@ function majApercu(){
   if(!c){ $("#planApercu").innerHTML=`<div class="tiny muted">Saisis l&rsquo;objectif de la dernière semaine et l&rsquo;agrémentation : les semaines précédentes se déduisent par soustraction.</div>`; return; }
   const incs=planIncs();
   $("#planApercu").innerHTML =
-    c.map((v,k)=>`<div class="pa-row"><span>Semaine ${k+1}<small class="pa-abs"> · S${semAbs(planCtx.cid,k+1)}</small></span>
+    c.map((v,k)=>`<div class="pa-row"><span>Semaine ${semAbs(planCtx.cid,k+1)}<small class="pa-abs"> · ${k+1}<sup>e</sup> du cycle</small></span>
       ${k?`<input class="pa-inc mono" data-k="${k}" inputmode="decimal" value="${incs[k]??""}" placeholder="+">`:'<span class="pa-dep">départ</span>'}
       <b class="mono">${fmt(v)} kg</b></div>`).join("")
     +`<div class="tiny muted" style="margin-top:10px">Étape 5 du programme : relis la colonne. Si la semaine 1 te crame déjà, revois l'objectif à la baisse.</div>`;
@@ -2924,6 +2970,16 @@ const VIEW_SUBS={ "v-home":"", "v-sess":"Séance", "v-asess":"Séance", "v-bi":"
 /* On retient la page ouverte hors des données synchronisées : c'est un état
    propre à cet appareil, il n'a pas à voyager d'un téléphone à l'autre. */
 const VUE_KEY="moonsport.vue";
+/* Rejouer la mémoire de vue avec la position courante : on navigue souvent
+   entre semaines sans jamais changer d'onglet. */
+let vueRestauree=false;
+function memoriserPosition(){
+  /* Tant que la position enregistrée n'a pas été relue, ne pas l'écraser
+     avec l'état par défaut du premier rendu. */
+  if(!vueRestauree) return;
+  const active=document.querySelector(".view.active");
+  if(active) memoriserVue(active.id);
+}
 function memoriserVue(id){
   try{
     localStorage.setItem(VUE_KEY, JSON.stringify({
@@ -2934,13 +2990,14 @@ function memoriserVue(id){
 function restaurerVue(){
   let v=null;
   try{ v=JSON.parse(localStorage.getItem(VUE_KEY)); }catch(e){}
-  if(!v||!v.vue||!document.getElementById(v.vue)){ homeWeek=null; renderHome(); return; }
+  if(!v||!v.vue||!document.getElementById(v.vue)){ homeWeek=null; vueRestauree=true; renderHome(); return; }
   if(v.lift && LIFTS[v.lift]) S.ui.lift=v.lift;
   if(v.admCycle) admCycle=v.admCycle;
   if(v.admWeek) admWeek=v.admWeek;
   if(v.homeWeek) homeWeek=v.homeWeek;
+  vueRestauree=true;
   if(v.vue==="v-asess" && v.admSess && cycleById(v.admSess.c)){
-    openAdamSess(v.admSess.c, v.admSess.w, v.admSess.t); return;
+    openAdamSess(v.admSess.c, v.admSess.w, v.admSess.t, v.admSess.src); return;
   }
   if(v.vue==="v-sess" && v.curSess){ openSession(v.curSess.w, v.curSess.se); return; }
   switchView(v.vue);
@@ -3027,7 +3084,7 @@ $("#exportBtn").onclick=async()=>{
   catch(e){ toast("Copie impossible sur ce navigateur"); }
 };
 $("#resetBtn").onclick=()=>{
-  if(confirm("Effacer TOUTES vos données (saisies, 1RM, jalons) ?")){
+  if(confirm("Effacer TOUTES tes données (saisies, 1RM, jalons) ?")){
     localStorage.removeItem("moonsport"); S=structuredClone(DEF); save();
     applyTheme(); renderSettings(); homeWeek=null; toast("Données réinitialisées");
   }
@@ -3206,7 +3263,7 @@ async function initAuth(){
 
   if(!info){
     showAuthPane("authLogin");
-    $("#authErr").textContent=pendingErr||"Serveur injoignable. Vérifiez votre connexion.";
+    $("#authErr").textContent=pendingErr||"Serveur injoignable. Vérifie ta connexion.";
     return;
   }
   if(!info.configured){ showAuthPane("authConfig"); return; }
