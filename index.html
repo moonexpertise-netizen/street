@@ -26,9 +26,9 @@
   --adam-1:#7a5d00; --adam-2:#9c4300; --adam-3:#c2251c;
   --good:#1f7a45; --warn:#a8701a; --crit:#c0392b;
   --btn-fg:#ffffff;
-  --shadow:0 1px 2px rgba(1,7,27,.04);
-  --shadow-md:0 1px 2px rgba(1,7,27,.04),0 6px 20px rgba(1,7,27,.06);
-  --shadow-lg:0 2px 4px rgba(1,7,27,.05),0 14px 40px rgba(1,7,27,.10);
+  --shadow:0 1px 2px rgba(10,10,12,.05);
+  --shadow-md:0 1px 2px rgba(10,10,12,.05),0 6px 20px rgba(10,10,12,.07);
+  --shadow-lg:0 2px 4px rgba(10,10,12,.06),0 14px 40px rgba(10,10,12,.11);
   --r:14px; --r-sm:10px;
   --f-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --f-body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -71,9 +71,9 @@
   --adam-1:#7a5d00; --adam-2:#9c4300; --adam-3:#c2251c;
   --good:#1f7a45; --warn:#a8701a; --crit:#c0392b;
   --btn-fg:#ffffff;
-  --shadow:0 1px 2px rgba(1,7,27,.04);
-  --shadow-md:0 1px 2px rgba(1,7,27,.04),0 6px 20px rgba(1,7,27,.06);
-  --shadow-lg:0 2px 4px rgba(1,7,27,.05),0 14px 40px rgba(1,7,27,.10);
+  --shadow:0 1px 2px rgba(10,10,12,.05);
+  --shadow-md:0 1px 2px rgba(10,10,12,.05),0 6px 20px rgba(10,10,12,.07);
+  --shadow-lg:0 2px 4px rgba(10,10,12,.06),0 14px 40px rgba(10,10,12,.11);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -377,6 +377,11 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .pa-inc{width:62px;margin-left:auto;padding:5px 7px;font-size:12.5px;text-align:center;
   border:1px solid var(--line-2);border-radius:7px;background:var(--panel);color:var(--ink)}
 .pa-inc:focus{outline:none;border-color:var(--accent)}
+.pa-fix{margin-left:12px;font-size:12.5px;color:var(--ink-2);min-width:64px;text-align:right}
+.pv-seq{display:block;margin-top:7px;font-family:var(--f-mono);font-size:11px;
+  color:var(--ink-2);font-style:normal;letter-spacing:-.02em}
+.mode-fixe #planIncBox{display:none}
+.mode-fixe .plan-help{display:none}
 .pa-row b{min-width:74px;text-align:right}
 /* Les trois cycles, comme les cartouches de couverture du programme */
 .chips{display:flex;gap:7px}
@@ -417,12 +422,17 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .fi-t{font-weight:600;font-size:13.5px;flex:0 0 auto}
 .fi-d{font-size:11.5px;color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fi-p{margin-left:auto;font-size:11px;color:var(--ink-2);flex:0 0 auto;font-weight:600}
-.pageview{align-items:stretch;justify-content:stretch;background:rgba(6,8,14,.94)}
+.overlay.pageview{align-items:stretch;justify-content:stretch;background:#0a0a0c;
+  backdrop-filter:none;-webkit-backdrop-filter:none}
 .pv-inner{display:flex;flex-direction:column;width:100%;height:100%}
-.pv-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
-  color:var(--page);font-size:13px;font-weight:600;flex:0 0 auto}
-.pv-bar button{color:var(--page);font-weight:600;font-size:13px;padding:8px 14px;border-radius:9px;
-  background:rgba(255,255,255,.14)}
+.pv-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;background:#0a0a0c;
+  color:#f2f2f0;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;flex:0 0 auto;
+  border-bottom:1px solid #22222b}
+.pv-bar span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv-bar button{color:#0a0a0c;background:#f5c542;font-weight:800;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;padding:9px 15px;border-radius:8px;flex:0 0 auto}
+.pv-bar button:active{transform:scale(.95)}
 .pv-img{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:0 8px calc(env(safe-area-inset-bottom) + 16px)}
 .pv-img img{width:100%;height:auto;display:block;border-radius:8px}
 
@@ -511,7 +521,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .si-s{font-size:12px;color:var(--ink-2);margin-top:2px}
 .switch{width:44px;height:26px;border-radius:999px;background:var(--panel-3);position:relative;transition:.22s;flex:0 0 auto;border:1px solid var(--line-2)}
 .switch.on{background:var(--gold);border-color:var(--gold)}
-.switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.22s cubic-bezier(.3,.9,.3,1);box-shadow:0 1px 3px rgba(1,7,27,.3)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.22s cubic-bezier(.3,.9,.3,1);box-shadow:0 1px 3px rgba(10,10,12,.3)}
 .switch.on::after{left:20px}
 .mini-step{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;background:var(--panel)}
 .mini-step button{width:34px;height:36px;font-size:17px;color:var(--ink-2);text-align:center;transition:.15s}
@@ -530,7 +540,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .tab:active{transform:scale(.92)}
 
 /* ── panneaux ── */
-.overlay{position:fixed;inset:0;z-index:60;background:rgba(1,7,27,.5);backdrop-filter:blur(4px);
+.overlay{position:fixed;inset:0;z-index:60;background:rgba(6,6,8,.62);backdrop-filter:blur(4px);
   display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex;animation:fadein .2s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -942,11 +952,12 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
     <div class="plan-help">Méthode de la page 8, en six étapes : fixe un objectif réalisable sur le format imposé, pose-le sur la <b>dernière semaine</b>, choisis l'agrémentation appliquée de séance en séance, soustrais jusqu'à la semaine 1, relis pour vérifier que tout est réalisable — puis tout arracher.
       <button class="src-link" id="planSrc" style="margin-top:10px">Voir la méthode · p.8</button></div>
     <div class="plan-row">
-      <div class="frow" style="flex:1"><label for="planObj">Objectif dernière semaine</label>
+      <div class="frow" style="flex:1"><label for="planObj" id="planObjLab">Objectif dernière semaine</label>
         <input id="planObj" inputmode="decimal" placeholder="20"></div>
-      <div class="frow" style="flex:1"><label for="planInc">Agrémentation par semaine</label>
+      <div class="frow" id="planIncBox" style="flex:1"><label for="planInc">Agrémentation par semaine</label>
         <input id="planInc" inputmode="decimal" placeholder="2,5"></div>
     </div>
+    <div id="planVariantes"></div>
     <div id="planApercu" class="plan-apercu"></div>
     <button class="btn" id="planOk" style="margin-top:16px">Enregistrer la progression</button>
     <button class="btn ghost" id="planRaz" style="margin-top:8px;height:44px">Effacer la planification</button>
@@ -1077,7 +1088,7 @@ const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 /* ═════ ÉTAT ═════ */
 const DEF = {
   rm:{tractions:50, dips:70, legs:80}, steps:{},
-  adam:{logs:{}, sessDone:{}, plan:{}, deload:{}},
+  adam:{logs:{}, sessDone:{}, plan:{}, deload:{}, variante:{}},
   logs:{}, sessDone:{}, prs:[], prog:null,
   ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"adam"}
 };
@@ -1088,7 +1099,7 @@ function normalize(r){
   return {...structuredClone(DEF), ...r,
     rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
     logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{},
-    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}, plan:(r.adam&&r.adam.plan)||{}, deload:(r.adam&&r.adam.deload)||{}}};
+    adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}, plan:(r.adam&&r.adam.plan)||{}, deload:(r.adam&&r.adam.deload)||{}, variante:(r.adam&&r.adam.variante)||{}}};
 }
 let S = load();
 function load(){
@@ -1832,7 +1843,15 @@ const ADAM=[
   objectif:"Accumuler du volume et construire les fondations",
   trainings:[
     {n:1, titre:"Street 3 mouvements", sous:"Muscle up, traction, dips", exos:[
-      {nom:"Muscle up", parSemaine:["4 × 4","6 × 4","6 × 6","3 × 8","3 × AMRAP"], repos:FEELING},
+      {nom:"Muscle up", parSemaine:["4 × 4","6 × 4","6 × 6","3 × 8","3 × AMRAP"], repos:FEELING,
+       charge:"fixe",
+       variantes:[
+         {nom:"Formats du programme", d:"Monte jusqu'à 8 répétitions d'affilée",
+          f:["4 × 4","6 × 4","6 × 6","3 × 8","3 × AMRAP"]},
+         {nom:"Adaptation moyenne", d:"Ne dépasse jamais 5 répétitions par série",
+          f:["4 × 4","6 × 4","4 × 5","6 × 5","3 × AMRAP"]},
+         {nom:"Adaptation douce", d:"Démarre à 2 répétitions par série",
+          f:["4 × 2","6 × 2","4 × 3","6 × 3","3 × AMRAP"]}]},
       {nom:"Tractions", format:"3 × 10", repos:FEELING},
       {nom:"Dips", format:"3 × 10", repos:FEELING},
     ]},
@@ -2025,9 +2044,17 @@ const ZONE={c1:"8 à 12 reps · 50 à 70 % du 1RM", c2:"6 à 8 reps · 70 à 80 
 
 /* Toutes les lignes d'une séance, exercice par exercice. */
 function admExos(cid,t){ return cycleById(cid).trainings.find(x=>x.n===t)?.exos||[]; }
-function admFormat(ex,w){
-  if(!ex.parSemaine) return ex.format;
-  return ex.parSemaine[w-1] || ex.parSemaine[0];
+/* Quand un exercice progresse par le format et non par la charge, le
+   programme autorise une séquence adaptée (page 13). */
+function seqDe(cid,t,i,ex){
+  if(!ex.variantes) return ex.parSemaine;
+  const v=ex.variantes[S.adam.variante[planKey(cid,t,i)]||0];
+  return (v&&v.f)||ex.parSemaine;
+}
+function admFormat(ex,w,seq){
+  const f=seq||ex.parSemaine;
+  if(!f) return ex.format;
+  return f[w-1] || f[0];
 }
 function admFaites(cid,w,t,logCid){
   return admExos(cid,t).filter((e,i)=>S.adam.logs[admKey(logCid||cid,w,t,i)]?.res).length;
@@ -2055,12 +2082,17 @@ function planCalcule(objectif,incs,nSem){
    coupe de moitié : le milieu de la fourchette 40-60 % du programme. */
 function planReduit(cid,t,i){
   const pl=planDe(cid,t,i);
+  if(pl&&pl.fixe!=null) return null;
   if(!pl||!pl.cibles) return null;
   const v=pl.cibles[pl.cibles.length-1];
   return v==null?null:fmt(Math.round(v*DELOAD_BAISSE*4)/4)+" kg";
 }
 function planCible(cid,t,i,w){
   const pl=planDe(cid,t,i);
+  if(pl&&pl.fixe!=null){
+    const v=parseFloat(String(pl.fixe).replace(",","."));
+    return isNaN(v)?null:(v>0?"+"+fmt(v)+" kg":fmt(v)+" kg");
+  }
   if(!pl||!pl.cibles) return null;
   const v=pl.cibles[w-1];
   return v==null?null:fmt(v)+" kg";
@@ -2219,7 +2251,8 @@ function renderAdamSess(){
   tr.exos.forEach((ex,i)=>{
     const k=admKey(c,w,t,i), d=S.adam.logs[k]||{};
     const prec=dech?null:admPrecedent(c,w,t,i);
-    const fmt=admFormat(ex,dech?1:w);
+    const seq=seqDe(src,t,i,ex);
+    const fmt=admFormat(ex,dech?1:w,seq);
     const cible=dech
       ? planReduit(src,t,i)
       : planCible(c,t,i,w);
@@ -2235,12 +2268,14 @@ function renderAdamSess(){
       </div>
       ${ex.plus?`<ul class="exo-plus">${ex.plus.map(p=>`<li>${p}</li>`).join("")}</ul>`:""}
       ${ex.note?`<div class="exo-note">${ex.note}</div>`:""}
-      ${ex.parSemaine?`<div class="exo-prog">Progression du cycle : ${ex.parSemaine.map((f,n)=>
+      ${seq?`<div class="exo-prog">Progression du cycle : ${seq.map((f,n)=>
           `<span class="${n===w-1?"on":""}">S${n+1} ${f}</span>`).join(" · ")}</div>`:""}
       <div class="exo-plan">
         <button class="plan-chip${cible?" on":""}${dech?" dl":""}" data-i="${i}"${dech?" disabled":""}>${
           dech ? (cible?`Deload · ${cible}`:"Charge libre, nettement allégée")
-               : (cible?`Objectif S${w} · ${cible}`:"Planifier les charges")}</button>
+               : ex.charge==="fixe"
+                 ? (cible?`Charge du cycle · ${cible}`:"Régler la charge et le format")
+                 : (cible?`Objectif S${w} · ${cible}`:"Planifier les charges")}</button>
         ${prec?`<span class="plan-prec">S${prec.semaine} : ${prec.charge}</span>`:""}
       </div>
       <div class="exo-saisie">
@@ -2419,15 +2454,43 @@ function drawAdamRegular(){
 let planCtx=null;
 function ouvrirPlan(cid,t,i){
   const cy=cycleById(cid), ex=admExos(cid,t)[i];
-  planCtx={cid,t,i,n:cy.semaines,incs:null};
+  const fixe=ex.charge==="fixe";
+  planCtx={cid,t,i,n:cy.semaines,incs:null,fixe,ex};
   $("#planTitre").textContent=ex.nom;
-  $("#planFmt").textContent=`${admFormat(ex,cy.semaines)} · cycle ${cy.num} · ${ZONE[cid]}`;
   const pl=planDe(cid,t,i);
-  $("#planObj").value=pl?.objectif??"";
-  $("#planInc").value=pl?.inc??"";
-  planCtx.incs = pl?.incs ? pl.incs.slice() : null;
+  $("#planSheet2").classList.toggle("mode-fixe",fixe);
+  if(fixe){
+    /* Le volume progresse déjà par le format : la charge, elle, ne bouge pas
+       de tout le cycle (page 13). */
+    $("#planFmt").textContent=`Cycle ${cy.num} · le format monte chaque semaine, la charge reste la même`;
+    $("#planObjLab").textContent="Charge maintenue tout le cycle";
+    $("#planObj").placeholder="vide = poids du corps";
+    $("#planObj").value=pl?.fixe??"";
+    majVariantes();
+  }else{
+    $("#planFmt").textContent=`${admFormat(ex,cy.semaines,seqDe(cid,t,i,ex))} · cycle ${cy.num} · ${ZONE[cid]}`;
+    $("#planObjLab").textContent="Objectif dernière semaine";
+    $("#planObj").placeholder="20";
+    $("#planObj").value=pl?.objectif??"";
+    $("#planInc").value=pl?.inc??"";
+    planCtx.incs = pl?.incs ? pl.incs.slice() : null;
+  }
   majApercu();
   $("#planSheet2").classList.add("open");
+}
+/* Choix de la séquence de formats, quand le programme en propose. */
+function majVariantes(){
+  const box=$("#planVariantes"); const ex=planCtx.ex;
+  if(!ex.variantes){ box.innerHTML=""; return; }
+  const cur=S.adam.variante[planKey(planCtx.cid,planCtx.t,planCtx.i)]||0;
+  box.innerHTML=`<div class="label" style="margin-top:20px">Séquence de formats</div>`
+    +ex.variantes.map((v,n)=>`<button class="dl-c${n===cur?" on":""}" data-n="${n}">
+        <b>${v.nom}</b><span>${v.d}</span>
+        <em class="pv-seq">${v.f.join("  →  ")}</em></button>`).join("");
+  $$("#planVariantes .dl-c").forEach(b=>b.onclick=()=>{
+    S.adam.variante[planKey(planCtx.cid,planCtx.t,planCtx.i)]=+b.dataset.n;
+    save(); majVariantes(); majApercu();
+  });
 }
 /* Agrémentations en vigueur : une par passage de semaine, ajustable ligne à ligne
    comme le montre l'exemple 3 de la page 8 (2,5 / 2,5 / 5). */
@@ -2439,6 +2502,15 @@ function planIncs(){
 }
 function majApercu(){
   if(!planCtx) return;
+  if(planCtx.fixe){
+    const v=parseFloat(String($("#planObj").value).replace(",","."));
+    const seq=seqDe(planCtx.cid,planCtx.t,planCtx.i,planCtx.ex);
+    $("#planApercu").innerHTML = seq.map((f,k)=>
+      `<div class="pa-row"><span>Semaine ${k+1}<small class="pa-abs"> · S${semAbs(planCtx.cid,k+1)}</small></span>
+        <b class="mono">${f}</b><span class="pa-fix mono">${isNaN(v)?"PDC":(v>0?"+"+fmt(v)+" kg":fmt(v)+" kg")}</span></div>`).join("")
+      +`<div class="tiny muted" style="margin-top:10px">La charge ne change pas de la semaine 1 à la semaine ${seq.length} : c'est le format qui porte la progression. Laisse vide si tu travailles au poids du corps.</div>`;
+    return;
+  }
   const n=planCtx.n, c=planCalcule($("#planObj").value, planIncs(), n);
   if(!c){ $("#planApercu").innerHTML=`<div class="tiny muted">Saisis l&rsquo;objectif de la dernière semaine et l&rsquo;agrémentation : les semaines précédentes se déduisent par soustraction.</div>`; return; }
   const incs=planIncs();
@@ -2459,6 +2531,15 @@ $("#planObj").oninput=majApercu;
 $("#planInc").oninput=majApercu;
 $("#planOk").onclick=()=>{
   if(!planCtx) return;
+  if(planCtx.fixe){
+    const raw=$("#planObj").value.trim();
+    const key=planKey(planCtx.cid,planCtx.t,planCtx.i);
+    if(raw) S.adam.plan[key]={fixe:raw};
+    else delete S.adam.plan[key];
+    save(); $("#planSheet2").classList.remove("open"); renderAdamSess();
+    toast(raw?"Charge du cycle enregistrée":"Poids du corps");
+    return;
+  }
   const o=$("#planObj").value, inc=$("#planInc").value, incs=planIncs();
   const c=planCalcule(o,incs,planCtx.n);
   if(!c){ toast("Saisis un objectif chiffré"); return; }
@@ -2471,7 +2552,8 @@ $("#planRaz").onclick=()=>{
   delete S.adam.plan[planKey(planCtx.cid,planCtx.t,planCtx.i)];
   save(); $("#planSheet2").classList.remove("open"); renderAdamSess(); toast("Planification effacée");
 };
-$("#planSrc").onclick=()=>ouvrirPage(8,"Choisir ses charges de travail");
+$("#planSrc").onclick=()=>ouvrirPage(planCtx&&planCtx.fixe?13:8,
+  planCtx&&planCtx.fixe?"Méthodes du cycle 1":"Choisir ses charges de travail");
 $("#planFerme").onclick=()=>$("#planSheet2").classList.remove("open");
 $("#planSheet2").onclick=e=>{ if(e.target.id==="planSheet2") $("#planSheet2").classList.remove("open"); };
 
@@ -2704,7 +2786,8 @@ function mergeState(a,b){          // b l'emporte en cas de conflit sur une mêm
     logs:{...A.logs, ...B.logs},
     sessDone:{...A.sessDone, ...B.sessDone},
     adam:{logs:{...A.adam.logs, ...B.adam.logs}, sessDone:{...A.adam.sessDone, ...B.adam.sessDone},
-          plan:{...A.adam.plan, ...B.adam.plan}, deload:{...A.adam.deload, ...B.adam.deload}},
+          plan:{...A.adam.plan, ...B.adam.plan}, deload:{...A.adam.deload, ...B.adam.deload},
+          variante:{...A.adam.variante, ...B.adam.variante}},
     updatedAt:Math.max(A.updatedAt||0, B.updatedAt||0)};
 }
 async function pullCloud(){
