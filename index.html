@@ -1932,7 +1932,7 @@ function renderAutoSess(){
         : `<div class="field"><input class="mono" inputmode="numeric" data-k="${k}" placeholder="${x.libre?(x.rmax||"reps"):x.cible}" value="${d.reps??""}"></div>`}
       <div class="a-res${x.libre?" une":""}">${x.libre
         ? `<button class="resb${d.res?" on":""}" data-k="${k}" data-r="fait"
-             style="${d.res?"background:var(--ink);border-color:var(--ink);color:var(--page)":""}">${d.res?"Série faite":"Valider la série"}</button>`
+             style="${d.res?"background:var(--good);border-color:var(--good);color:var(--panel)":""}">${d.res?"Série faite":"Valider la série"}</button>`
         : AUTO_RES.map(r=>
         `<button class="resb${d.res===r.k?" on":""}" data-k="${k}" data-r="${r.k}"
            style="${d.res===r.k?`background:${r.col};border-color:${r.col};color:var(--panel)`:""}">${r.lab}</button>`).join("")}</div>`;
