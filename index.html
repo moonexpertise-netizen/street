@@ -530,10 +530,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .resb{height:38px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);
   font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:center;transition:.15s}
 .resb:active{transform:scale(.94)}
-.archive-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:11px 13px;
-  border-radius:10px;background:var(--panel-2);border:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
-.archive-bar button{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink);
-  text-decoration:underline;text-underline-offset:2px}
 .a-detail{grid-column:3;font-size:11.5px;color:var(--ink-2);line-height:1.35;align-self:center}
 .a-libre{font-family:var(--f-body);font-size:11.5px;font-weight:600;color:var(--ink-2);line-height:1.2;display:inline-block}
 .reg-cells i.dech{outline:1px dashed var(--line-2);outline-offset:-1px}
@@ -631,9 +627,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 .flash .fl-k{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
 .flash .fl-t{font-family:var(--f-display);font-size:42px;font-weight:600;letter-spacing:-.03em;margin-top:8px}
 .flash .fl-s{font-size:15px;margin-top:10px;opacity:.9;font-weight:500}
-.arch-link{text-align:center;margin-top:4px}
-.arch-link button{min-height:40px;padding:10px 14px;font-size:12px;color:var(--ink-2);
-  text-decoration:underline;text-underline-offset:3px}
 .toast{position:fixed;left:50%;bottom:calc(94px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);
   background:var(--ink);color:var(--page);padding:11px 17px;border-radius:11px;font-weight:600;font-size:13.5px;
   opacity:0;pointer-events:none;transition:.3s cubic-bezier(.3,.8,.3,1);z-index:80;box-shadow:var(--shadow-lg);max-width:88vw;text-align:center}
@@ -721,7 +714,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- ═══ ACCUEIL ═══ -->
 <section class="view active" id="v-home">
   <div class="wrap stack">
-    <div id="homeAuto" style="display:none">
+    <div id="homeAuto">
       <div class="wordmark">Adamantium</div>
       <div class="card pad" id="admCompteur" style="margin-bottom:18px"></div>
 
@@ -749,61 +742,10 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       </button>
     </div>
 
-    <div id="homeClassic">
-      <div class="archive-bar">Programme archivé · 12 semaines
-        <button id="quitArchive">Revenir au programme actuel</button></div>
-      <div class="label">Choisis ta séance</div>
-      <div class="card">
-        <div class="wknav">
-          <button class="wkbtn" id="wkPrev">‹</button>
-          <div style="text-align:center">
-            <div class="wknav-t" id="wkTitle">Semaine 1</div>
-            <div class="wknav-s" id="wkCycle">Volume</div>
-          </div>
-          <button class="wkbtn" id="wkNext">›</button>
-        </div>
-        <div id="sessRows"></div>
-      </div>
-
-      <div class="card pad" style="margin-top:18px">
-        <div class="prg-top">
-          <span class="label" style="margin:0">Progression du programme</span>
-          <span class="prg-pct mono" id="prgPct">0 %</span>
-        </div>
-        <div class="prg-bar"><i id="prgBar" style="width:0%"></i></div>
-        <div class="prg-sub" id="prgSub"></div>
-      </div>
-
-      <div style="margin-top:18px">
-        <div class="label">1RM lesté</div>
-        <div class="rm-row" id="rmRow"></div>
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- ═══ SÉANCE ═══ -->
-<section class="view" id="v-sess">
-  <div class="wrap stack">
-    <button class="btn ghost sm" id="backProg">‹ Choisir une autre séance</button>
-    <div class="card sess-top">
-      <div class="st-eyebrow" id="sessCycle">…</div>
-      <h2 id="sessTitle">…</h2>
-      <div class="charge"><span class="cv" id="sessCharge">0</span><span class="cu">kg</span></div>
-      <div class="charge-sub" id="sessMeta"></div>
-      <div class="sess-prog"><i id="sessProgBar" style="width:0%"></i></div>
-      <div class="sess-count" id="sessCount">0 série sur 10</div>
-    </div>
-    <button class="btn ghost wide" id="planBtn" style="height:42px;font-size:13.5px;font-weight:500">
-      <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" aria-hidden="true">
-        <rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
-      </svg>
-      Planifier dans Outlook
-    </button>
-    <div class="card pad" id="exList"></div>
-    <div class="savebar"><button class="btn" id="saveSession">Terminer la séance</button></div>
-  </div>
-</section>
 
 
 <!-- ═══ SÉANCE ADAMANTIUM ═══ -->
@@ -903,11 +845,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
       </div>
     </div>
 
-    <div style="display:none">
-      <div id="rmSettings"></div>
-      <button id="progEditBtn">Modifier</button>
-    </div>
-    <div class="arch-link"><button id="openArchive">Consulter l'ancien programme 12 semaines</button></div>
     <div>
       <div class="label">Données</div>
       <div class="card">
@@ -957,44 +894,10 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 </div></nav>
 
 <!-- 1RM sheet -->
-<div class="overlay" id="rmSheet">
-  <div class="sheet">
-    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
-    <h3>1RM · <span id="rmSheetName">Tractions</span></h3>
-    <div class="muted tiny">Charge max en ceinture pour 1 répétition. Recalcule les 12 semaines.</div>
-    <div class="stepper" style="margin:15px 0 0">
-      <button id="rmMinus">−</button>
-      <input id="rmInput" type="number" inputmode="decimal" step="1.25">
-      <button id="rmPlus">+</button>
-    </div>
-    <button class="btn" id="rmSave" style="margin-top:15px">Valider</button>
-    <button class="btn ghost" id="rmCancel" style="margin-top:8px;height:42px">Annuler</button>
-  </div>
-</div>
 
 <!-- program editor sheet -->
-<div class="overlay" id="progSheet">
-  <div class="sheet">
-    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
-    <h3>Pourcentages du 1RM</h3>
-    <div class="muted tiny">Communs aux tractions et aux dips. Modifiez librement.</div>
-    <div style="overflow-x:auto;margin-top:11px"><table class="ptable" id="progTable"></table></div>
-    <button class="btn" id="progSave" style="margin-top:15px">Enregistrer</button>
-    <button class="btn ghost" id="progDefault" style="margin-top:8px;height:42px">Rétablir les valeurs d'origine</button>
-  </div>
-</div>
 
 <!-- choix de progression -->
-<div class="overlay" id="stepSheet">
-  <div class="sheet">
-    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
-    <h3 id="stepTitle">Progression</h3>
-    <div class="muted tiny" id="stepSub"></div>
-    <div id="stepOpts"></div>
-    <div class="tiny muted" style="margin-top:14px">Le choix s'applique aussi aux semaines suivantes, et reste modifiable.</div>
-    <button class="btn ghost" id="stepCancel" style="margin-top:14px;height:44px">Fermer</button>
-  </div>
-</div>
 
 <!-- planification des charges -->
 <div class="overlay" id="planSheet2">
@@ -1056,20 +959,6 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 </div>
 
 <!-- planification Outlook -->
-<div class="overlay" id="planSheet">
-  <div class="sheet">
-    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
-    <h3>Planifier dans Outlook</h3>
-    <div class="muted tiny">Un créneau d'1 h 15 contenant le détail complet de la séance.</div>
-    <div class="plan-row">
-      <div class="frow" style="flex:1.4"><label for="planDate">Date</label><input type="date" id="planDate"></div>
-      <div class="frow" style="flex:1"><label for="planTime">Début</label><input type="time" id="planTime" step="300"></div>
-    </div>
-    <div class="plan-prev" id="planPrev"></div>
-    <button class="btn" id="planGo" style="margin-top:16px">Ouvrir dans Outlook</button>
-    <button class="btn ghost" id="planCancel" style="margin-top:8px;height:44px;border:none;box-shadow:none;color:var(--ink-2)">Annuler</button>
-  </div>
-</div>
 
 <div class="flash" id="restFlash">
   <div>
@@ -1083,87 +972,17 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 
 <script>
 "use strict";
-/* ═════ PROGRAMME (extrait de Programme SL.xlsx) ═════ */
-const DEF_WEEKS = [
-  {w:1, cycle:0, rep:[8,10], s1:.350, s2:.300},
-  {w:2, cycle:0, rep:[8,10], s1:.375, s2:.325},
-  {w:3, cycle:0, rep:[8,10], s1:.400, s2:.350},
-  {w:4, cycle:0, rep:[6,8],  s1:.425, s2:.375},
-  {w:5, cycle:1, rep:[4,6],  s1:.600, s2:.550},
-  {w:6, cycle:1, rep:[4,6],  s1:.625, s2:.575},
-  {w:7, cycle:1, rep:[4,6],  s1:.650, s2:.600},
-  {w:8, cycle:1, rep:[3,4],  s1:.675, s2:.625},
-  {w:9, cycle:2, rep:[1,3],  s1:.800, s2:.750},
-  {w:10,cycle:2, rep:[1,3],  s1:.825, s2:.775},
-  {w:11,cycle:2, rep:[1,3],  s1:.850, s2:.800},
-  {w:12,cycle:2, rep:[1,2],  s1:.875, s2:.825},
-];
-const CYCLES = [
-  {name:"Volume",    range:"S1 à S4",  desc:"Construire du muscle : charge modérée, 4 séries de 8 à 10 reps."},
-  {name:"Puissance", range:"S5 à S8",  desc:"Devenir explosif : charge lourde, 4 séries de 4 à 6 reps."},
-  {name:"Force max",  range:"S9 à S12", desc:"Repousser le max : charge quasi maximale, 4 séries de 1 à 3 reps."},
-];
-/* Les identifiants internes (tractions, dips, legs) ne changent jamais :
-   ils servent de clé aux saisies déjà enregistrées. Seul le nom affiché varie. */
-const LIFTS = {
-  tractions:{ name:"Pull", color:"var(--lift-1)", defaultRM:50, main:"Tractions lestées",
-    acc:[{name:"Tirage horizontal", sets:3, rmin:10, rmax:12},
-         {name:"Curl biceps",       sets:3, rmin:10, rmax:12}] },
-  dips:{ name:"Push", color:"var(--lift-2)", defaultRM:70, main:"Dips lestés",
-    acc:[{name:"Développé militaire", sets:3, rmin:10, rmax:12},
-         {name:"Corde triceps",       sets:3, rmin:10, rmax:12}] },
-  legs:{ name:"Legs", color:"var(--lift-3)", defaultRM:80, main:"Squat lesté",
-    acc:[{name:"Fentes alternées",     sets:3, rmin:12, rmax:12},
-         {name:"Soulevé de terre KB",  sets:3, rmin:12, rmax:12}] },
-};
-const LIFT_IDS = Object.keys(LIFTS);
-const SESSIONS_PER_LIFT = 24;                       // 12 semaines × 2 séances
-const TOTAL_SESSIONS = LIFT_IDS.length * SESSIONS_PER_LIFT;
-
-/* Composition d'une séance : exercice principal piloté par le %, puis accessoires. */
-function sessionExercises(lift,w,se){
-  const L=LIFTS[lift], wk=rowFor(lift,w);
-  return [
-    {name:L.main, sets:4, rmin:wk.rep[0], rmax:wk.rep[1], tW:chargeFor(lift,w,se), main:true},
-    ...L.acc.map(a=>({name:a.name, sets:a.sets, rmin:a.rmin, rmax:a.rmax, tW:null, main:false})),
-  ];
-}
-const schemeText = e => e.rmin===e.rmax ? `${e.sets} × ${e.rmin}` : `${e.sets} × ${e.rmin} à ${e.rmax}`;
-const setsPerSession = lift => sessionExercises(lift,1,1).reduce((n,e)=>n+e.sets,0);
-const BADGES = [
-  {id:"first",  lab:"Première séance",  test:s=>s.done>=1},
-  {id:"five",   lab:"5 séances",        test:s=>s.done>=5},
-  {id:"ten",    lab:"10 séances",       test:s=>s.done>=10},
-  {id:"twenty", lab:"20 séances",       test:s=>s.done>=20},
-  {id:"pr1",    lab:"Premier record",   test:s=>s.prs>=1},
-  {id:"pr5",    lab:"5 records",        test:s=>s.prs>=5},
-  {id:"vol",    lab:"1 tonne soulevée", test:s=>s.vol>=1000},
-  {id:"vol10",  lab:"10 tonnes",        test:s=>s.vol>=10000},
-  {id:"cyc1",   lab:"Cycle volume",     test:s=>s.cycleDone[0]},
-  {id:"cyc2",   lab:"Cycle puissance",  test:s=>s.cycleDone[1]},
-  {id:"cyc3",   lab:"Cycle force max",  test:s=>s.cycleDone[2]},
-  {id:"full",   lab:"Programme bouclé",  test:s=>s.done>=TOTAL_SESSIONS},
-];
-const RPE_LABELS=["","Facile","Moyen","Dur"];
-const round125 = v => Math.round(v/1.25)*1.25;
-const fmt = v => (Math.round(v*100)/100).toString().replace(".",",");
-const e1rm = (w,r) => w*(1+r/30);
-const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
-
 /* ═════ ÉTAT ═════ */
 const DEF = {
-  rm:{tractions:50, dips:70, legs:80}, steps:{},
   adam:{logs:{}, sessDone:{}, plan:{}, deload:{}, variante:{}},
-  logs:{}, sessDone:{}, prs:[], prog:null,
-  ui:{lift:"tractions", cycle:0, biLift:"tractions", theme:"system", inc:1.25, rest:true, restMain:90, restAcc:60, haptic:true, mode:"adam"}
+  ui:{theme:"system", rest:true, haptic:true}
 };
 /* Complète un état venu du disque ou du serveur avec les valeurs par défaut,
    pour qu'une version plus ancienne des données reste exploitable. */
 function normalize(r){
   if(!r || typeof r!=="object") return structuredClone(DEF);
   return {...structuredClone(DEF), ...r,
-    rm:{...DEF.rm, ...(r.rm||{})}, ui:{...DEF.ui, ...(r.ui||{})},
-    logs:r.logs||{}, sessDone:r.sessDone||{}, prs:r.prs||[], steps:r.steps||{},
+    ui:{...DEF.ui, ...(r.ui||{})},
     adam:{logs:(r.adam&&r.adam.logs)||{}, sessDone:(r.adam&&r.adam.sessDone)||{}, plan:(r.adam&&r.adam.plan)||{}, deload:(r.adam&&r.adam.deload)||{}, variante:(r.adam&&r.adam.variante)||{}}};
 }
 let S = load();
@@ -1172,37 +991,11 @@ function load(){
   return structuredClone(DEF);
 }
 function save(){ S.updatedAt=Date.now(); localStorage.setItem("moonsport", JSON.stringify(S)); schedulePush(); }
-const lk = (l,w,se,ex,st)=>`${l}|${w}|${se}|${ex}|${st}`;
-const sk = (l,w,se)=>`${l}|${w}|${se}`;
-function weeks(){
-  if(!S.prog) return DEF_WEEKS;
-  return DEF_WEEKS.map((w,i)=>({...w, s1:S.prog[i]?.s1??w.s1, s2:S.prog[i]?.s2??w.s2}));
-}
-/* Chaque groupe avance sur son propre palier dans la grille de pourcentages.
-   S.steps[lift][semaine] vaut "stagnate" (+0), "skip" (+2), ou est absent (+1).
-   Le palier de la semaine N découle donc de tous les choix qui la précèdent. */
-const STEP_DELTA={stagnate:0, skip:2};
-const cycleOf   = w => Math.floor((w-1)/4);        // 0 Volume, 1 Puissance, 2 Force max
-const cycleStart= w => cycleOf(w)*4+1;             // 1, 5 ou 9
-/* Les trois cycles sont indépendants : le palier court sur les 4 semaines
-   du cycle et repart à 1 dès qu'on entre dans le suivant. */
-const isDeload = w => w%4===0;                     // 4, 8 et 12 : décharge imposée
-function palierPos(lift,w){
-  if(isDeload(w)) return 4;                        // la décharge ne se négocie pas
-  let pos=1;
-  for(let k=cycleStart(w)+1;k<=w;k++){
-    const d=S.steps?.[lift]?.[k];
-    pos += (d in STEP_DELTA) ? STEP_DELTA[d] : 1;
-    pos = Math.min(3, Math.max(1, pos));           // paliers de charge : 1 à 3
-  }
-  return pos;
-}
-function palier(lift,w){ return cycleOf(w)*4 + palierPos(lift,w); }   // ligne 1 à 12
-function rowFor(lift,w){ return weeks()[palier(lift,w)-1]; }
-function chargeFor(lift,w,se){ const wk=rowFor(lift,w); return round125(S.rm[lift]*(se===1?wk.s1:wk.s2)); }
-
 /* ═════ HELPERS ═════ */
 const $ = s=>document.querySelector(s), $$ = s=>[...document.querySelectorAll(s)];
+const fmt = v => (Math.round(v*100)/100).toString().replace(".",",");
+const fmtSec = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+function emptyState(m){ return `<div class="emptybox"><div class="big">Rien à afficher</div><div class="tiny">${m}</div></div>`; }
 let toastT;
 function toast(m,duree){
   const t=$("#toast");
@@ -1215,427 +1008,9 @@ function beep(){ try{ const c=new (window.AudioContext||window.webkitAudioContex
   o.connect(g); g.connect(c.destination); o.frequency.value=880; g.gain.setValueAtTime(.18,c.currentTime);
   g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.5); o.start(); o.stop(c.currentTime+.5); }catch(e){} }
 
-/* ═════ STATS GLOBALES ═════ */
-function globalStats(){
-  const done=Object.keys(S.sessDone).length;
-  let vol=0;
-  for(const k in S.logs){ const d=S.logs[k]; if(d.weight!=null&&d.reps!=null) vol+=d.weight*d.reps; }
-  const cycleDone=[0,1,2].map(c=>{
-    const ws=DEF_WEEKS.filter(w=>w.cycle===c).map(w=>w.w);
-    return ws.every(w=>LIFT_IDS.every(l=>[1,2].every(se=>S.sessDone[sk(l,w,se)])));
-  });
-  let streak=0;
-  for(let w=1;w<=12;w++){
-    if(LIFT_IDS.some(l=>[1,2].some(se=>S.sessDone[sk(l,w,se)]))) streak++; else break;
-  }
-  return {done, vol, prs:records().length, cycleDone, streak};
-}
-function nextSession(){
-  for(let w=1;w<=12;w++) for(const se of [1,2]) for(const l of LIFT_IDS)
-    if(!S.sessDone[sk(l,w,se)]) return {lift:l,w,se};
-  return null;
-}
-function currentWeek(){ const n=nextSession(); return n?n.w:12; }
-
 /* ═════ ACCUEIL ═════ */
-let homeWeek=null; // semaine affichée dans le sélecteur
-function renderHome(){
-  const auto=S.ui.mode!=="classic";
-  $("#homeAuto").style.display=auto?"":"none";
-  $("#homeClassic").style.display=auto?"none":"";
-  if(auto){ renderAdamHome(); return; }
-  const g=globalStats();
-  const pct=Math.round(g.done/TOTAL_SESSIONS*100);
-  $("#prgPct").textContent=pct+" %";
-  $("#prgBar").style.width=pct+"%";
-  const bits=[`<span><b class="mono">${g.done}</b> séance${g.done>1?"s":""} sur ${TOTAL_SESSIONS}</span>`];
-  if(g.streak>0) bits.push(`<span class="sep">·</span><span><b class="mono">${g.streak}</b> sem. d'affilée</span>`);
-  if(g.prs>0) bits.push(`<span class="sep">·</span><span><b class="mono">${g.prs}</b> record${g.prs>1?"s":""}</span>`);
-  $("#prgSub").innerHTML=bits.join("");
+function renderHome(){ renderAdamHome(); }
 
-  if(homeWeek==null) homeWeek=currentWeek();
-  renderWeekPicker();
-
-  const rr=$("#rmRow"); rr.innerHTML="";
-  for(const l of LIFT_IDS){
-    const L=LIFTS[l];
-    const t=document.createElement("button");
-    t.className="rm-tile";
-    t.innerHTML=`<div><div class="r-lab">${L.name}</div><div class="r-val mono">${fmt(S.rm[l])}<small> kg</small></div></div><span class="chev">›</span>`;
-    t.onclick=()=>openRM(l);
-    rr.appendChild(t);
-  }
-}
-function renderWeekPicker(){
-  const w=homeWeek, nx=nextSession();
-  $("#wkTitle").textContent=`Semaine ${w}`;
-  const pos=LIFT_IDS.map(l=>palierPos(l,w));
-  const cyc=CYCLES[cycleOf(w)];
-  $("#wkCycle").textContent = isDeload(w) ? `${cyc.name} · semaine de décharge`
-    : pos.every(p=>p===pos[0]) ? `${cyc.name} · palier ${pos[0]} sur 3`
-    : `${cyc.name} · ${LIFT_IDS.map((l,i)=>LIFTS[l].name+" "+pos[i]+"/3").join(" · ")}`;
-  $("#wkPrev").disabled=w<=1;
-  $("#wkNext").disabled=w>=12;
-
-  const box=$("#sessRows"); box.innerHTML="";
-  for(const l of LIFT_IDS){
-    const L=LIFTS[l], row=rowFor(l,w), pp=palierPos(l,w);
-    const debutCycle = w===cycleStart(w);
-
-    const head=document.createElement("div");
-    head.className="lifthead";
-    head.innerHTML=`<span class="dot2" style="background:${L.color}"></span>
-      <span class="lh-name">${L.name}</span>`;
-    if(isDeload(w)){
-      head.insertAdjacentHTML("beforeend",
-        `<span class="palier-chip deload" style="pointer-events:none">Décharge</span>`);
-    } else if(debutCycle){
-      head.insertAdjacentHTML("beforeend",
-        `<span class="palier-chip" style="pointer-events:none">Palier 1/3 · début de cycle</span>`);
-    } else {
-      const chip=document.createElement("button");
-      chip.className="palier-chip"+(pp!==((w-1)%4)+1?" shift":"");
-      chip.innerHTML=`Palier ${pp}/3 <span class="pc-arrow">›</span>`;
-      chip.onclick=()=>openStep(l,w);
-      head.appendChild(chip);
-    }
-    box.appendChild(head);
-
-    for(const se of [1,2]){
-      const done=!!S.sessDone[sk(l,w,se)];
-      const isNext=nx && nx.lift===l && nx.w===w && nx.se===se;
-      const b=document.createElement("button");
-      b.className="srow"+(done?" done":"");
-      b.innerHTML=`<div style="min-width:0">
-          <div class="s-name">Séance ${se}${isNext?'<span class="s-tag">à suivre</span>':""}</div>
-          <div class="s-meta">4 × ${row.rep[0]} à ${row.rep[1]} reps</div>
-        </div>
-        <div class="s-right">
-          ${done?'<span class="s-check">Fait</span>':""}
-          <span class="s-load mono">${fmt(chargeFor(l,w,se))}<small> kg</small></span>
-          <span class="chev">›</span>
-        </div>`;
-      b.onclick=()=>{ S.ui.lift=l; save(); openSession(w,se); };
-      box.appendChild(b);
-    }
-  }
-}
-
-/* ═════ CHOIX DE PROGRESSION ═════ */
-let stepCtx={lift:null,w:null};
-function openStep(lift,w){
-  stepCtx={lift,w};
-  const L=LIFTS[lift], cyc=CYCLES[cycleOf(w)], c=cycleOf(w);
-  $("#stepTitle").textContent=`${L.name} · semaine ${w}`;
-  const prev=palierPos(lift,w-1);
-  $("#stepSub").textContent=`Cycle ${cyc.name}, semaine précédente au palier ${prev} sur 3. Que fais-tu cette semaine ?`;
-  const cur=S.steps?.[lift]?.[w] || "continue";
-  const box=$("#stepOpts"); box.innerHTML="";
-  [
-    {k:"continue", t:"Continuer", s:"Passer aux charges suivantes", d:1},
-    {k:"stagnate", t:"Stagner",   s:"Refaire les mêmes charges",    d:0},
-    {k:"skip",     t:"Rattraper", s:"Sauter un palier",             d:2},
-  ].forEach(o=>{
-    const np=Math.min(3,Math.max(1,prev+o.d));
-    const r=weeks()[c*4+np-1];
-    const kg=round125(S.rm[lift]*r.s1);
-    const plafond=(prev+o.d)>3;
-    const b=document.createElement("button");
-    b.className="stepopt"+(o.k===cur?" on":"");
-    b.innerHTML=`<div style="min-width:0"><div class="so-t">${o.t}</div>
-        <div class="so-s">${plafond?"Déjà au dernier palier du cycle":o.s}</div></div>
-      <div class="so-w"><div class="so-kg mono">${fmt(kg)} kg</div>
-        <div class="so-p">palier ${np}/4 · ${r.rep[0]} à ${r.rep[1]} reps</div></div>`;
-    b.onclick=()=>{
-      S.steps[lift]=S.steps[lift]||{};
-      if(o.k==="continue") delete S.steps[lift][w]; else S.steps[lift][w]=o.k;
-      save(); vibrate(12);
-      $("#stepSheet").classList.remove("open");
-      renderHome();
-      toast(`${L.name} : palier ${palierPos(lift,w)} sur 3`);
-    };
-    box.appendChild(b);
-  });
-  $("#stepSheet").classList.add("open");
-}
-$("#stepSheet").onclick=e=>{ if(e.target.id==="stepSheet") $("#stepSheet").classList.remove("open"); };
-$("#stepCancel").onclick=()=>$("#stepSheet").classList.remove("open");
-$("#quitArchive").onclick=()=>{ S.ui.mode="adam"; save(); admCycle=null; renderHome(); vibrate(8); };
-$("#wkPrev").onclick=()=>{ if(homeWeek>1){ homeWeek--; renderWeekPicker(); vibrate(8); } };
-$("#wkNext").onclick=()=>{ if(homeWeek<12){ homeWeek++; renderWeekPicker(); vibrate(8); } };
-
-/* ═════ PROGRAMME ═════ */
-function renderLiftSeg(el, sel, onPick){
-  el.innerHTML="";
-  for(const key in LIFTS){
-    const b=document.createElement("button");
-    b.className=key===sel?"on":"";
-    b.textContent=LIFTS[key].name;
-    b.onclick=()=>onPick(key);
-    el.appendChild(b);
-  }
-}
-/* ═════ SÉANCE ═════ */
-let curSess={w:1,se:1};
-function openSession(w,se){ curSess={w,se}; switchView("v-sess"); renderSession(); }
-function renderSession(){
-  const {w,se}=curSess, lift=S.ui.lift, L=LIFTS[lift], wk=rowFor(lift,w), cyc=CYCLES[wk.cycle];
-  document.documentElement.style.setProperty("--accent",L.color);
-  $("#sessCycle").textContent=`${cyc.name} · Semaine ${w} sur 12`;
-  $("#sessTitle").textContent=`${L.name} · Séance ${se}`;
-  const charge=chargeFor(lift,w,se);
-  $("#sessCharge").textContent=fmt(charge);
-  $("#sessMeta").innerHTML=`<b>4 séries</b> de <b>${wk.rep[0]} à ${wk.rep[1]} reps</b> · 1RM ${fmt(S.rm[lift])} kg`;
-
-  const exs=sessionExercises(lift,w,se).map(e=>({...e, scheme:schemeText(e), tR:e.rmax}));
-  const el=$("#exList"); el.innerHTML="";
-  exs.forEach((ex,ei)=>{
-    const wrap=document.createElement("div"); wrap.className="ex";
-    wrap.innerHTML=`<div class="ex-head"><div class="ex-name">${ex.name}</div><div class="ex-scheme">${ex.scheme}</div></div>
-      <div class="target">${ex.main?`Cible <b class="mono">${fmt(ex.tW)} kg</b> · la coche remplit automatiquement`:`Charge libre · la dernière charge est reprise automatiquement`}</div>`;
-    for(let st=0;st<ex.sets;st++){
-      const key=lk(lift,w,se,ei,st);
-      const d=S.logs[key]||{};
-      const row=document.createElement("div");
-      row.className="setrow"+(d.ok?" isdone":"");
-      row.innerHTML=`<div class="sn">${st+1}</div>
-        <div class="field"><label>Reps</label><input class="mono" inputmode="numeric" data-k="${key}" data-f="reps" placeholder="${ex.tR}" value="${d.reps??""}"></div>
-        <div class="field"><label>kg</label><input class="mono" inputmode="decimal" data-k="${key}" data-f="weight" placeholder="${ex.main?fmt(ex.tW):lastAccWeight(lift,ei)??"libre"}" value="${d.weight??""}"></div>
-        <button class="rpe ${d.rpe?"r"+d.rpe:""}" data-k="${key}" aria-label="Ressenti">${d.rpe?RPE_LABELS[d.rpe]:"RPE"}</button>
-        <button class="okbtn ${d.ok?"done":""}" data-k="${key}" data-ex="${ei}" data-tw="${ex.main?ex.tW:""}" data-tr="${ex.tR}" aria-label="Valider la série ${st+1}">
-          <svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg>
-        </button>
-        <button class="clrbtn" data-k="${key}" aria-label="Effacer la série ${st+1}">
-          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>`;
-      wrap.appendChild(row);
-    }
-    el.appendChild(wrap);
-  });
-
-  el.querySelectorAll("input").forEach(inp=>{
-    inp.addEventListener("input",()=>{
-      const k=inp.dataset.k,f=inp.dataset.f;
-      S.logs[k]=S.logs[k]||{};
-      S.logs[k][f]=inp.value===""?undefined:parseFloat(inp.value.replace(",","."));
-      save(); updateSessProg();
-    });
-  });
-  el.querySelectorAll(".rpe").forEach(b=>{
-    b.onclick=()=>{
-      const k=b.dataset.k; S.logs[k]=S.logs[k]||{};
-      const nx=((S.logs[k].rpe||0)+1)%4;
-      S.logs[k].rpe=nx||undefined; save();
-      b.className="rpe "+(nx?"r"+nx:"");
-      b.textContent=nx?RPE_LABELS[nx]:"RPE";
-      vibrate(10);
-    };
-  });
-  el.querySelectorAll(".clrbtn").forEach(b=>{
-    b.onclick=()=>{
-      const k=b.dataset.k, row=b.closest(".setrow");
-      delete S.logs[k]; save();
-      row.querySelectorAll("input").forEach(i=>{ i.value=""; });
-      const rp=row.querySelector(".rpe"); rp.className="rpe"; rp.textContent="RPE";
-      row.querySelector(".okbtn").classList.remove("done");
-      row.classList.remove("isdone");
-      updateSessProg(); vibrate(12);
-    };
-  });
-  el.querySelectorAll(".okbtn").forEach(b=>{
-    b.onclick=()=>{
-      const k=b.dataset.k, ei=+b.dataset.ex;
-      S.logs[k]=S.logs[k]||{};
-      const d=S.logs[k];
-      const row=b.closest(".setrow");
-      if(d.ok){
-        d.ok=false; save();
-        b.classList.remove("done"); row.classList.remove("isdone");
-        updateSessProg(); return;
-      }
-      const ri=row.querySelector('input[data-f="reps"]'), wi=row.querySelector('input[data-f="weight"]');
-      if(!ri.value){ ri.value=b.dataset.tr; d.reps=+b.dataset.tr; }
-      if(!wi.value){
-        const def = b.dataset.tw!=="" ? parseFloat(b.dataset.tw) : lastAccWeightNum(S.ui.lift,ei);
-        if(def!=null){ wi.value=fmt(def); d.weight=def; }
-      }
-      d.ok=true; save();
-      b.classList.add("done","pop"); row.classList.add("isdone");
-      setTimeout(()=>b.classList.remove("pop"),330);
-      vibrate(18);
-      checkPR(S.ui.lift, d, ei, k);
-      updateSessProg();
-      if(S.ui.rest) startRest(ei===0?S.ui.restMain:S.ui.restAcc);
-    };
-  });
-  updateSessProg();
-}
-function lastAccWeightNum(lift,ei){
-  for(let w=12;w>=1;w--) for(const se of [2,1]) for(let st=3;st>=0;st--){
-    const d=S.logs[lk(lift,w,se,ei,st)];
-    if(d&&d.weight!=null) return d.weight;
-  }
-  return null;
-}
-function lastAccWeight(lift,ei){ const v=lastAccWeightNum(lift,ei); return v==null?null:fmt(v); }
-function updateSessProg(){
-  const {w,se}=curSess, lift=S.ui.lift;
-  let done=0;
-  const exs=sessionExercises(lift,w,se), total=exs.reduce((n,e)=>n+e.sets,0);
-  exs.forEach((e,ei)=>{ for(let st=0;st<e.sets;st++){ const d=S.logs[lk(lift,w,se,ei,st)]; if(d&&d.ok) done++; } });
-  $("#sessProgBar").style.width=(done/total*100)+"%";
-  $("#sessCount").textContent = done===total ? `Séance complète · ${total} séries sur ${total}`
-    : `${done} série${done>1?"s":""} sur ${total}`;
-}
-/* Un record ne concerne QUE l'exercice principal : un tirage horizontal
-   lourd n'est pas un record de traction lestée. */
-/* Les records sont RECALCULÉS depuis les saisies, jamais stockés : une
-   liste stockée pouvait contenir de faux records issus des accessoires. */
-function records(){
-  const out=[];
-  LIFT_IDS.forEach(l=>{
-    let best=0;
-    for(let w=1;w<=12;w++) for(const se of [1,2]){
-      const t=S.sessDone[sk(l,w,se)]||null;
-      for(let st=0;st<4;st++){
-        const d=S.logs[lk(l,w,se,0,st)];          // index 0 = exercice principal
-        if(!d||d.weight==null||d.reps==null) continue;
-        if(d.weight>best){ best=d.weight; out.push({lift:l,w:d.weight,r:d.reps,date:t,sem:w}); }
-      }
-    }
-  });
-  return out;
-}
-function meilleureCharge(lift,sauf){
-  let best=0;
-  for(let w=1;w<=12;w++) for(const se of [1,2]) for(let st=0;st<4;st++){
-    const k=lk(lift,w,se,0,st);
-    if(k===sauf) continue;
-    const d=S.logs[k];
-    if(d&&d.weight!=null&&d.reps!=null&&d.weight>best) best=d.weight;
-  }
-  return best;
-}
-function checkPR(lift,d,ei,key){
-  if(ei!==0 || d.weight==null || d.reps==null) return;
-  const best=meilleureCharge(lift,key);
-  if(d.weight>best){
-    showPR(`${LIFTS[lift].main} · ${fmt(d.weight)} kg`,
-      best ? `${d.reps} reps, ancien record ${fmt(best)} kg` : `${d.reps} reps, premier record enregistré`);
-  }
-}
-$("#backProg").onclick=()=>switchView("v-home");
-$("#saveSession").onclick=()=>{
-  const {w,se}=curSess, lift=S.ui.lift;
-  let n=0; for(let st=0;st<4;st++){ const d=S.logs[lk(lift,w,se,0,st)]; if(d&&(d.ok||d.reps!=null)) n++; }
-  if(n===0){ toast("Valide au moins une série"); return; }
-  const wasNew=!S.sessDone[sk(lift,w,se)];
-  S.sessDone[sk(lift,w,se)]=Date.now(); save();
-  stopRest();
-  if(wasNew){ confettiBurst(); vibrate([30,50,30]); }
-  toast("Séance enregistrée");
-  homeWeek=w;
-  switchView("v-home");
-};
-
-/* ═════ PLANIFICATION OUTLOOK ═════ */
-const SESSION_MINUTES=75; // créneau d'1 h 15
-const pad2=n=>String(n).padStart(2,"0");
-const localIso=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:00`;
-
-function sessionPlan(){
-  const {w,se}=curSess, lift=S.ui.lift, L=LIFTS[lift], wk=rowFor(lift,w), cyc=CYCLES[wk.cycle];
-  const charge=chargeFor(lift,w,se);
-  return {
-    titre:`MoonSport · ${L.name} séance ${se} · ${fmt(charge)} kg`,
-    corps:[
-      `${cyc.name} — semaine ${w} sur 12`,
-      "",
-      ...sessionExercises(lift,w,se).map((e,i)=>{
-        const reps = e.rmin===e.rmax ? `${e.rmin} reps` : `${e.rmin} à ${e.rmax} reps`;
-        return `${i+1}. ${e.name} : ${e.sets} séries de ${reps}${e.main?` à ${fmt(charge)} kg`:""}`;
-      }),
-      "",
-      `Repos : ${fmtSec(S.ui.restMain)} sur l'exercice principal, ${fmtSec(S.ui.restAcc)} sur les accessoires.`,
-      `1RM de référence : ${fmt(S.rm[lift])} kg`,
-      "",
-      "Saisie des séries : https://street.moonexpertise.fr",
-    ].join("\n"),
-  };
-}
-function planStart(){
-  const d=$("#planDate").value, t=$("#planTime").value;
-  if(!d||!t) return null;
-  const dt=new Date(`${d}T${t}:00`);
-  return isNaN(dt) ? null : dt;
-}
-function updatePlanPrev(){
-  const start=planStart(), p=sessionPlan(), box=$("#planPrev");
-  if(!start){ box.innerHTML="Choisis une date et une heure."; $("#planGo").disabled=true; return; }
-  $("#planGo").disabled=false;
-  const end=new Date(start.getTime()+SESSION_MINUTES*60000);
-  const jour=start.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
-  box.innerHTML=`<b>${p.titre}</b><br>${jour.charAt(0).toUpperCase()+jour.slice(1)}, de <b>${pad2(start.getHours())}:${pad2(start.getMinutes())}</b> à <b>${pad2(end.getHours())}:${pad2(end.getMinutes())}</b><br>Durée 1 h 15`;
-}
-function openPlan(){
-  const now=new Date();
-  const d=new Date(now.getTime()+60*60000);
-  d.setMinutes(0,0,0);
-  $("#planDate").value=`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-  $("#planTime").value=`${pad2(d.getHours())}:00`;
-  updatePlanPrev();
-  $("#planSheet").classList.add("open");
-}
-$("#planBtn").onclick=openPlan;
-$("#planDate").oninput=updatePlanPrev;
-$("#planTime").oninput=updatePlanPrev;
-$("#planCancel").onclick=()=>$("#planSheet").classList.remove("open");
-$("#planSheet").onclick=e=>{ if(e.target.id==="planSheet") $("#planSheet").classList.remove("open"); };
-function planUrls(){
-  const start=planStart();
-  if(!start) return null;
-  const end=new Date(start.getTime()+SESSION_MINUTES*60000);
-  const p=sessionPlan();
-  const web=new URLSearchParams({
-    path:"/calendar/action/compose", rru:"addevent",
-    subject:p.titre, body:p.corps,
-    startdt:localIso(start), enddt:localIso(end),
-  });
-  /* L'app mobile accepte selon les versions title/subject et start/startdt :
-     on fournit les deux orthographes pour couvrir les deux cas. */
-  const app=new URLSearchParams({
-    title:p.titre, subject:p.titre,
-    start:localIso(start), startdt:localIso(start),
-    end:localIso(end), enddt:localIso(end),
-    description:p.corps, body:p.corps,
-  });
-  return {
-    web:"https://outlook.office.com/calendar/0/deeplink/compose?"+web.toString(),
-    app:"ms-outlook://events/new?"+app.toString(),
-  };
-}
-$("#planGo").onclick=()=>{
-  const u=planUrls();
-  if(!u){ toast("Choisis une date et une heure"); return; }
-  $("#planSheet").classList.remove("open");
-  /* Si l'app est installée, iOS bascule dessus et la page passe en arrière-plan.
-     Sinon rien ne se passe : on retombe sur la version web au bout d'1,4 s. */
-  let parti=false;
-  const marque=()=>{ parti=true; };
-  document.addEventListener("visibilitychange",marque,{once:true});
-  window.addEventListener("pagehide",marque,{once:true});
-  window.addEventListener("blur",marque,{once:true});
-  location.href=u.app;
-  setTimeout(()=>{
-    document.removeEventListener("visibilitychange",marque);
-    window.removeEventListener("pagehide",marque);
-    window.removeEventListener("blur",marque);
-    if(!parti && !document.hidden){
-      toast("App Outlook introuvable, ouverture du site");
-      location.href=u.web;
-    }
-  },1400);
-};
 
 /* ═════ MINUTEUR ═════ */
 /* On mémorise l'heure de FIN, jamais un compteur qu'on décrémente :
@@ -1683,212 +1058,6 @@ document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&rtInt) t
 $("#rtSkip").onclick=stopRest;
 $("#rtPlus").onclick=()=>{ if(!rtInt) return; rtEnd+=30000; rtSonne=false;
   $("#restTimer").classList.remove("fini"); rtTotal=Math.max(rtTotal,restLeft()); tickRest(); };
-
-/* ═════ STATS ═════ */
-/* ═════ STATISTIQUES ═════
-   Trois principes : parler en kilos et en séances (jamais en indices),
-   exploiter le ressenti saisi, et n'afficher que ce qui aide à décider. */
-
-/* Une ligne par séance. maxW = la charge la plus lourde réellement
-   soulevée sur l'exercice principal, c'est le seul chiffre qui compte. */
-function statsPerLift(){
-  const out={};
-  LIFT_IDS.forEach(l=>{
-    const pts=[];
-    for(let w=1;w<=12;w++) for(const se of [1,2]){
-      const exs=sessionExercises(l,w,se);
-      let maxW=0,vol=0,sets=0,any=false,rMain=[],rAll=[];
-      exs.forEach((e,ei)=>{
-        for(let st=0;st<e.sets;st++){
-          const d=S.logs[lk(l,w,se,ei,st)];
-          if(!d) continue;
-          if(d.ok||d.reps!=null||d.weight!=null) any=true;
-          if(d.ok) sets++;
-          if(d.weight!=null&&d.reps!=null){
-            vol+=d.weight*d.reps;
-            if(ei===0&&d.weight>maxW) maxW=d.weight;
-          }
-          if(d.rpe){ rAll.push(d.rpe); if(ei===0) rMain.push(d.rpe); }
-        }
-      });
-      const moy=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
-      pts.push({w,se,maxW,vol,sets,any,rpeMain:moy(rMain),rpeAll:moy(rAll),
-        target:chargeFor(l,w,se), done:!!S.sessDone[sk(l,w,se)],
-        planned:exs.reduce((n,e)=>n+e.sets,0)});
-    }
-    out[l]=pts;
-  });
-  return out;
-}
-const liftColor = l => getComputedStyle(document.documentElement)
-  .getPropertyValue(LIFTS[l].color.slice(4,-1)).trim() || "#888";
-const RPE_TXT=["","Facile","Moyen","Dur"];
-function rpeColor(v){
-  if(v==null) return "var(--panel-3)";
-  return v<=1.5 ? "var(--good)" : v<=2.4 ? "var(--warn)" : "var(--crit)";
-}
-
-/* Conseil de palier déduit du ressenti des dernières séances faites. */
-function conseil(pts){
-  const faites=pts.filter(p=>p.done&&p.rpeMain!=null).slice(-2);
-  if(!faites.length) return {txt:"Pas encore de ressenti saisi", cls:""};
-  const m=faites.reduce((a,p)=>a+p.rpeMain,0)/faites.length;
-  if(m>=2.5) return {txt:"Séances dures : pensez à stagner", cls:"hard"};
-  if(m<=1.4) return {txt:"Ça passe bien : tu peux rattraper", cls:"easy"};
-  return {txt:"Rythme correct : continuez", cls:"ok"};
-}
-
-function renderBI(){
-  if(S.ui.mode!=="classic") return renderAdamBI();
-  const per=statsPerLift(), g=globalStats();
-  const faites=Object.keys(S.sessDone).length;
-  const kilos=LIFT_IDS.reduce((a,l)=>a+per[l].reduce((s,p)=>s+p.vol,0),0);
-
-  /* 1. Résumé */
-  $("#biResume").innerHTML=`
-    <div class="res3">
-      <div><div class="res-v mono">${faites}</div><div class="res-l">séances faites</div></div>
-      <div><div class="res-v mono">${kilos>=1000?fmt(Math.round(kilos/100)/10)+" t":Math.round(kilos)+" kg"}</div><div class="res-l">soulevés au total</div></div>
-      <div><div class="res-v mono">${records().length}</div><div class="res-l">records</div></div>
-    </div>`;
-
-  /* 2. Par mouvement : départ, actuel, écart, ressenti, conseil */
-  const lr=$("#liftRows"); lr.innerHTML="";
-  LIFT_IDS.forEach(l=>{
-    const pts=per[l], av=pts.filter(p=>p.maxW>0);
-    const dep=av.length?av[0].maxW:0, act=av.length?av[av.length-1].maxW:0;
-    const d=act-dep;
-    const c=conseil(pts);
-    const der=pts.filter(p=>p.done&&p.rpeMain!=null).slice(-1)[0];
-    lr.insertAdjacentHTML("beforeend",`
-      <div class="liftrow">
-        <div class="lr-head">
-          <span class="dot2" style="background:${liftColor(l)}"></span>
-          <span class="lr-name">${LIFTS[l].name}</span>
-          ${der?`<span class="rpe-tag" style="color:${rpeColor(der.rpeMain)};border-color:${rpeColor(der.rpeMain)}">${RPE_TXT[Math.round(der.rpeMain)]}</span>`:""}
-        </div>
-        <div class="lr-nums">
-          ${av.length
-            ? `<span class="lr-from mono">${fmt(dep)} kg</span>
-               <span class="lr-arrow">→</span>
-               <span class="lr-to mono">${fmt(act)} kg</span>
-               ${d!==0?`<span class="lr-delta ${d>0?"up":"down"}">${d>0?"+":"−"}${fmt(Math.abs(d))} kg</span>`:""}`
-            : `<span class="lr-none">aucune charge saisie</span>`}
-        </div>
-        <div class="lr-tip ${c.cls}">${c.txt}</div>
-      </div>`);
-  });
-
-  drawLoad(per);
-  drawRessenti(per);
-  drawRegular(per);
-  drawRecords();
-
-  const bg=$("#badgeGrid"); bg.innerHTML="";
-  BADGES.forEach(b=>bg.insertAdjacentHTML("beforeend",
-    `<div class="troph-row ${b.test(g)?"won":""}"><span class="t-dot"></span><span class="t-lab">${b.lab}</span></div>`));
-}
-
-const svgOpen=(w,h)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block" font-family="inherit">`;
-function emptyState(m){ return `<div class="emptybox"><div class="big">Rien à afficher</div><div class="tiny">${m}</div></div>`; }
-
-/* Charge de l'exercice principal, une valeur par semaine, en kilos. */
-function drawLoad(per){
-  const parSem={};
-  LIFT_IDS.forEach(l=>{
-    parSem[l]=[];
-    for(let w=1;w<=12;w++){
-      const v=per[l].filter(p=>p.w===w&&p.maxW>0).map(p=>p.maxW);
-      parSem[l].push(v.length?Math.max(...v):null);
-    }
-  });
-  if(LIFT_IDS.every(l=>parSem[l].every(v=>v==null))){
-    $("#chartLoad").innerHTML=emptyState("Saisis la charge de tes séries pour voir tes courbes.");
-    $("#legLoad").innerHTML=""; return;
-  }
-  const W=640,H=230,pL=38,pR=58,pT=14,pB=28;
-  const xs=i=>pL+(W-pL-pR)*(i/11);
-  let mx=0; LIFT_IDS.forEach(l=>parSem[l].forEach(v=>{ if(v>mx) mx=v; }));
-  mx=Math.ceil(mx*1.15/5)*5||10;
-  const ys=v=>H-pB-(H-pT-pB)*(v/mx);
-  let g="";
-  for(let i=0;i<=4;i++){ const v=mx*i/4,y=ys(v);
-    g+=`<line class="grid" x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" opacity="${i===0?.9:.32}"/>`+
-       `<text class="axtx" x="${pL-6}" y="${y+3}" text-anchor="end">${Math.round(v)}</text>`; }
-  for(let i=0;i<12;i++) if(i%2===0)
-    g+=`<text class="axtx" x="${xs(i)}" y="${H-8}" text-anchor="middle">S${i+1}</text>`;
-  LIFT_IDS.forEach(l=>{
-    const col=liftColor(l);
-    const on=parSem[l].map((v,i)=>({x:xs(i),y:v==null?null:ys(v)}));
-    let seg=[],segs=[];
-    on.forEach(o=>{ if(o.y!=null) seg.push(o); else { if(seg.length)segs.push(seg); seg=[]; } });
-    if(seg.length)segs.push(seg);
-    segs.forEach(s=>{ if(s.length>1)
-      g+=`<polyline points="${s.map(o=>o.x+","+o.y).join(" ")}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`; });
-    on.forEach(o=>{ if(o.y!=null) g+=`<circle cx="${o.x}" cy="${o.y}" r="3.4" fill="${col}" stroke="var(--panel)" stroke-width="1.4"/>`; });
-    const pts=on.filter(o=>o.y!=null);
-    if(pts.length){ const e=pts[pts.length-1];
-      g+=`<text x="${e.x+9}" y="${e.y+4}" font-size="11" font-weight="600" fill="${col}">${LIFTS[l].name}</text>`; }
-  });
-  $("#chartLoad").innerHTML=svgOpen(W,H)+g+"</svg>";
-  $("#legLoad").innerHTML=LIFT_IDS.map(l=>
-    `<div class="l"><span class="sw" style="background:${liftColor(l)}"></span>${LIFTS[l].name}</div>`).join("");
-}
-
-/* Ressenti : une pastille par séance, lue de gauche à droite. */
-function drawRessenti(per){
-  const tout=[]; LIFT_IDS.forEach(l=>per[l].forEach(p=>{ if(p.rpeAll!=null) tout.push(p.rpeAll); }));
-  if(!tout.length){ $("#ressenti").innerHTML=emptyState("Touche le bouton RPE pendant tes séries pour suivre ton ressenti."); return; }
-  let h=`<div class="rs">`;
-  LIFT_IDS.forEach(l=>{
-    h+=`<div class="rs-row"><span class="rs-lab">${LIFTS[l].name}</span><div class="rs-cells">`;
-    for(let w=1;w<=12;w++) for(const se of [1,2]){
-      const p=per[l].find(x=>x.w===w&&x.se===se);
-      const v=p.rpeAll;
-      h+=`<i style="background:${rpeColor(v)}" title="Semaine ${w} séance ${se}${v!=null?" · "+RPE_TXT[Math.round(v)]:""}"></i>`;
-    }
-    h+=`</div></div>`;
-  });
-  h+=`</div>`;
-  const n=tout.length, f=tout.filter(v=>v<=1.5).length, m=tout.filter(v=>v>1.5&&v<=2.4).length, d=n-f-m;
-  h+=`<div class="rs-key">
-    <span><i style="background:var(--good)"></i>Facile ${Math.round(f/n*100)} %</span>
-    <span><i style="background:var(--warn)"></i>Moyen ${Math.round(m/n*100)} %</span>
-    <span><i style="background:var(--crit)"></i>Dur ${Math.round(d/n*100)} %</span>
-    <span><i style="background:var(--panel-3)"></i>non saisi</span></div>`;
-  $("#ressenti").innerHTML=h;
-}
-
-/* Régularité : une case par séance prévue. */
-function drawRegular(per){
-  let h=`<div class="reg">`;
-  LIFT_IDS.forEach(l=>{
-    h+=`<div class="reg-row"><span class="reg-lab">${LIFTS[l].name}</span><div class="reg-cells">`;
-    for(let w=1;w<=12;w++) for(const se of [1,2]){
-      const p=per[l].find(x=>x.w===w&&x.se===se);
-      h+=`<i class="${p.done?"full":p.any?"part":""}" title="Semaine ${w} séance ${se}"></i>`;
-    }
-    h+=`</div></div>`;
-  });
-  h+=`</div><div class="reg-key"><span><i class="full"></i>terminée</span><span><i class="part"></i>entamée</span><span><i></i>à faire</span></div>`;
-  $("#regGrid").innerHTML=h;
-}
-
-/* Records : charge maximale sur l'exercice principal, accessoires exclus. */
-function drawRecords(){
-  const list=records().sort((a,b)=>(b.date||0)-(a.date||0)||b.sem-a.sem).slice(0,8);
-  if(!list.length){ $("#prList").innerHTML=emptyState("Un record est enregistré quand tu dépasses ta charge maximale sur l'exercice principal."); return; }
-  $("#prList").innerHTML=list.map(p=>{
-    const d=p.date?new Date(p.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):`S${p.sem}`;
-    return `<div class="pr-row"><span class="dot2" style="background:${liftColor(p.lift)}"></span>
-      <div style="min-width:0">
-        <div class="pr-ex">${LIFTS[p.lift].main}</div>
-        <div class="pr-det">${LIFTS[p.lift].name} · ${p.r} reps</div>
-      </div>
-      <span class="pr-e mono">${fmt(p.w)} kg</span>
-      <span class="pr-d">${d}</span></div>`;
-  }).join("");
-}
 
 /* ═════ PROGRAMME ADAMANTIUM ═════
    Streetlifting : traction, dips, muscle up, squat.
@@ -3004,23 +2173,20 @@ function memoriserPosition(){
 function memoriserVue(id){
   try{
     localStorage.setItem(VUE_KEY, JSON.stringify({
-      vue:id, admSess, curSess, lift:S.ui.lift, admCycle, admWeek, homeWeek, mode:S.ui.mode,
+      vue:id, admSess, admCycle, admWeek,
     }));
   }catch(e){}
 }
 function restaurerVue(){
   let v=null;
   try{ v=JSON.parse(localStorage.getItem(VUE_KEY)); }catch(e){}
-  if(!v||!v.vue||!document.getElementById(v.vue)){ homeWeek=null; vueRestauree=true; renderHome(); return; }
-  if(v.lift && LIFTS[v.lift]) S.ui.lift=v.lift;
+  if(!v||!v.vue||!document.getElementById(v.vue)){ vueRestauree=true; renderHome(); return; }
   if(v.admCycle) admCycle=v.admCycle;
   if(v.admWeek) admWeek=v.admWeek;
-  if(v.homeWeek) homeWeek=v.homeWeek;
   vueRestauree=true;
   if(v.vue==="v-asess" && v.admSess && cycleById(v.admSess.c)){
     openAdamSess(v.admSess.c, v.admSess.w, v.admSess.t, v.admSess.src); return;
   }
-  if(v.vue==="v-sess" && v.curSess){ openSession(v.curSess.w, v.curSess.se); return; }
   switchView(v.vue);
 }
 function switchView(id){
@@ -3030,7 +2196,7 @@ function switchView(id){
   $$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.view===onglet));
   $("#topSub").textContent=VIEW_SUBS[id]||"";
   if(id==="v-home") renderHome();
-  if(id==="v-bi"){ $("#topSub").textContent = S.ui.mode==="classic" ? "Stats · archive" : "Statistiques"; renderBI(); }
+  if(id==="v-bi"){ $("#topSub").textContent="Statistiques"; renderAdamBI(); }
   if(id==="v-asess") renderAdamSess();
   if(id==="v-set") renderSettings();
   memoriserVue(id);
@@ -3039,34 +2205,10 @@ function switchView(id){
 $$(".tab").forEach(t=>t.onclick=()=>{
   vibrate(8);
   if(t.dataset.view==="v-sess"){
-    if(S.ui.mode!=="classic") openAdamSess(admSess.c,admSess.w,admSess.t,admSess.src);
-    else openSession(curSess.w,curSess.se);
+    openAdamSess(admSess.c,admSess.w,admSess.t,admSess.src);
   }
   else switchView(t.dataset.view);
 });
-
-/* ═════ 1RM SHEET ═════ */
-let rmLift="tractions";
-function openRM(lift){
-  rmLift=lift;
-  $("#rmSheetName").textContent=LIFTS[lift].name;
-  $("#rmInput").value=S.rm[lift];
-  $("#rmSheet").classList.add("open");
-}
-$("#rmMinus").onclick=()=>{ $("#rmInput").value=Math.max(0,(parseFloat($("#rmInput").value)||0)-S.ui.inc); };
-$("#rmPlus").onclick=()=>{ $("#rmInput").value=(parseFloat($("#rmInput").value)||0)+S.ui.inc; };
-$("#rmSave").onclick=()=>{
-  const v=parseFloat(String($("#rmInput").value).replace(",","."));
-  if(v>0){
-    S.rm[rmLift]=v;
-    save(); toast("RM mis à jour, charges recalculées");
-  }
-  $("#rmSheet").classList.remove("open");
-  const active=$$(".view").find(x=>x.classList.contains("active"));
-  if(active) switchView(active.id);
-};
-$("#rmCancel").onclick=()=>$("#rmSheet").classList.remove("open");
-$("#rmSheet").onclick=e=>{ if(e.target.id==="rmSheet") $("#rmSheet").classList.remove("open"); };
 
 /* ═════ RÉGLAGES ═════ */
 function curTheme(){ return S.ui.theme==="system" ? (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light") : S.ui.theme; }
@@ -3080,15 +2222,6 @@ function renderSettings(){
   $("#themeSwitch").classList.toggle("on",curTheme()==="dark");
   $("#restSwitch").classList.toggle("on",S.ui.rest);
   $("#hapticSwitch").classList.toggle("on",S.ui.haptic);
-  const rs=$("#rmSettings"); rs.innerHTML="";
-  LIFT_IDS.forEach(id=>{
-    const L=LIFTS[id], row=document.createElement("div");
-    row.className="settings-item";
-    row.innerHTML=`<div><div class="si-t">1RM ${L.name}</div><div class="si-s">${L.main}</div></div>
-      <button class="btn ghost sm mono">${fmt(S.rm[id])} kg</button>`;
-    row.querySelector("button").onclick=()=>openRM(id);
-    rs.appendChild(row);
-  });
 }
 $("#themeSwitch").onclick=()=>{ S.ui.theme=curTheme()==="dark"?"light":"dark"; save(); applyTheme(); renderSettings(); };
 $("#restSwitch").onclick=()=>{ S.ui.rest=!S.ui.rest; save(); renderSettings(); if(!S.ui.rest) stopRest(); };
@@ -3107,39 +2240,9 @@ $("#exportBtn").onclick=async()=>{
 $("#resetBtn").onclick=()=>{
   if(confirm("Effacer TOUTES tes données (saisies, 1RM, jalons) ?")){
     localStorage.removeItem("moonsport"); S=structuredClone(DEF); save();
-    applyTheme(); renderSettings(); homeWeek=null; toast("Données réinitialisées");
+    applyTheme(); renderSettings(); renderHome(); toast("Données réinitialisées");
   }
 };
-
-/* ═════ ÉDITEUR DE PROGRAMME ═════ */
-$("#openArchive").onclick=()=>{ S.ui.mode="classic"; save(); homeWeek=null; switchView("v-home"); toast("Programme archivé ouvert"); };
-$("#progEditBtn").onclick=()=>{ renderProgTable(); $("#progSheet").classList.add("open"); };
-$("#progSheet").onclick=e=>{ if(e.target.id==="progSheet") $("#progSheet").classList.remove("open"); };
-function renderProgTable(){
-  const t=$("#progTable"); const wks=weeks();
-  let h=`<tr><th>Sem</th><th>Reps</th><th>% S1</th><th>% S2</th></tr>`;
-  let lastCyc=-1;
-  wks.forEach((wk,i)=>{
-    if(wk.cycle!==lastCyc){ lastCyc=wk.cycle;
-      h+=`<tr class="cycrow"><td colspan="4">${CYCLES[wk.cycle].name}</td></tr>`; }
-    h+=`<tr><td>S${wk.w}</td><td class="tiny muted">${wk.rep[0]} à ${wk.rep[1]}</td>
-      <td><input inputmode="decimal" data-i="${i}" data-f="s1" value="${Math.round(wk.s1*1000)/10}"></td>
-      <td><input inputmode="decimal" data-i="${i}" data-f="s2" value="${Math.round(wk.s2*1000)/10}"></td></tr>`;
-  });
-  t.innerHTML=h;
-}
-$("#progSave").onclick=()=>{
-  const p=DEF_WEEKS.map(w=>({s1:w.s1,s2:w.s2}));
-  $("#progTable").querySelectorAll("input").forEach(inp=>{
-    const v=parseFloat(String(inp.value).replace(",","."));
-    if(!isNaN(v)&&v>0&&v<=150) p[+inp.dataset.i][inp.dataset.f]=v/100;
-  });
-  S.prog=p; save();
-  $("#progSheet").classList.remove("open");
-  toast("Programme mis à jour");
-  renderSettings();
-};
-$("#progDefault").onclick=()=>{ S.prog=null; save(); renderProgTable(); toast("Valeurs d'origine rétablies"); };
 
 /* ═════ CONFETTIS & RECORD ═════ */
 const cvs=$("#confetti"), ctx=cvs.getContext("2d");
