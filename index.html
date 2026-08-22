@@ -586,11 +586,20 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   animation:slideup .3s cubic-bezier(.2,.9,.3,1)}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
 .sheet h3{font-family:var(--f-display);font-size:18px;font-weight:600;margin-bottom:3px}
-.sheet{touch-action:pan-y}
-.grip{position:relative;width:38px;height:4px;border-radius:2px;background:var(--line-2);
-  margin:0 auto 15px;cursor:grab;transition:background .15s}
-.grip::after{content:"";position:absolute;left:-40px;right:-40px;top:-14px;bottom:-14px}
-.sheet:active .grip{background:var(--ink-3)}
+/* Barre de prise : la poignée reste au centre, la croix ferme sans geste.
+   touch-action:none sur cette bande seulement, pour que le glisser ne soit
+   pas concurrencé par le défilement de la feuille ou de la page. */
+.poignee{position:relative;display:flex;align-items:center;justify-content:center;
+  height:34px;margin:-4px -4px 10px;touch-action:none;cursor:grab}
+.poignee:active{cursor:grabbing}
+.grip{width:42px;height:5px;border-radius:3px;background:var(--line-2);transition:background .15s}
+.poignee:active .grip{background:var(--ink-3)}
+.fermeX{position:absolute;right:0;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;display:grid;place-items:center;border-radius:50%;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--ink-2);
+  font-size:22px;line-height:1;padding-bottom:2px;transition:.15s}
+.fermeX:active{transform:translateY(-50%) scale(.9);background:var(--panel-3);color:var(--ink)}
+.sheet{overscroll-behavior:contain}
 .stepper{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--panel)}
 .stepper button{width:52px;height:54px;font-size:23px;color:var(--ink-2);text-align:center;transition:.15s}
 .stepper button:active{background:var(--panel-2)}
@@ -950,7 +959,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- 1RM sheet -->
 <div class="overlay" id="rmSheet">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3>1RM · <span id="rmSheetName">Tractions</span></h3>
     <div class="muted tiny">Charge max en ceinture pour 1 répétition. Recalcule les 12 semaines.</div>
     <div class="stepper" style="margin:15px 0 0">
@@ -966,7 +975,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- program editor sheet -->
 <div class="overlay" id="progSheet">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3>Pourcentages du 1RM</h3>
     <div class="muted tiny">Communs aux tractions et aux dips. Modifiez librement.</div>
     <div style="overflow-x:auto;margin-top:11px"><table class="ptable" id="progTable"></table></div>
@@ -978,7 +987,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- choix de progression -->
 <div class="overlay" id="stepSheet">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3 id="stepTitle">Progression</h3>
     <div class="muted tiny" id="stepSub"></div>
     <div id="stepOpts"></div>
@@ -990,7 +999,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- planification des charges -->
 <div class="overlay" id="planSheet2">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3 id="planTitre">Planifier</h3>
     <div class="muted tiny" id="planFmt"></div>
     <div class="plan-help" id="planHelp"></div>
@@ -1011,7 +1020,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- comment faire le mouvement -->
 <div class="overlay" id="geSheet">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3 id="geTitre">Mouvement</h3>
     <div class="muted tiny" id="geCible"></div>
     <div id="geCorps"></div>
@@ -1035,7 +1044,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- lexique -->
 <div class="overlay" id="lexSheet">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3>Le programme</h3>
     <div class="muted tiny">Les pages de référence et les termes techniques.</div>
     <div class="label" style="margin-top:16px">Fiches du programme</div>
@@ -1049,7 +1058,7 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
 <!-- planification Outlook -->
 <div class="overlay" id="planSheet">
   <div class="sheet">
-    <div class="grip"></div>
+    <div class="poignee"><span class="grip"></span><button class="fermeX" aria-label="Fermer">&times;</button></div>
     <h3>Planifier dans Outlook</h3>
     <div class="muted tiny">Un créneau d'1 h 15 contenant le détail complet de la séance.</div>
     <div class="plan-row">
@@ -3301,64 +3310,99 @@ $("#signOutBtn").onclick=()=>{ try{ localStorage.removeItem(VUE_KEY); }catch(e){
    du téléphone, qui sinon quitterait l'application au lieu de fermer le
    panneau ouvert. */
 const feuillesOuvertes=()=>$$(".overlay.open");
-function fermerFeuilleDessus(){
-  const l=feuillesOuvertes();
-  if(!l.length) return false;
-  const f=l[l.length-1];
+/* L'ordre du HTML ne dit rien de l'ordre d'ouverture : on tient la pile
+   réelle, sinon « fermer le panneau du dessus » se tromperait de panneau
+   dès que deux sont empilés. */
+let pileFeuilles=[];
+function majPile(){
+  const ouvertes=feuillesOuvertes();
+  pileFeuilles=pileFeuilles.filter(f=>ouvertes.includes(f));
+  ouvertes.forEach(f=>{ if(!pileFeuilles.includes(f)) pileFeuilles.push(f); });
+  return pileFeuilles;
+}
+/* On retire « open » tout de suite et on laisse l'animation se jouer à part :
+   si la fermeture était différée, toute synchronisation reverrait le panneau
+   encore ouvert et tournerait en rond. */
+function rabattre(f){
   const c=f.querySelector(".sheet");
-  if(c){ c.style.transition="transform .22s cubic-bezier(.3,.8,.3,1)"; c.style.transform="translateY(100%)";
-    setTimeout(()=>{ f.classList.remove("open"); c.style.transition=""; c.style.transform=""; },200); }
-  else f.classList.remove("open");
+  f.classList.remove("open");
+  pileFeuilles=pileFeuilles.filter(x=>x!==f);
+  if(c){ c.style.transition=""; c.style.transform=""; }
+}
+function fermerFeuilleDessus(){
+  const l=majPile();
+  if(!l.length) return false;
+  rabattre(l[l.length-1]);
   return true;
 }
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape" && feuillesOuvertes().length){ e.preventDefault(); fermerFeuilleDessus(); }
+  if(e.key==="Escape" && majPile().length){ e.preventDefault(); fermerFeuilleDessus(); }
+});
+$$(".fermeX").forEach(b=>b.onclick=e=>{
+  e.preventDefault(); e.stopPropagation();
+  const f=b.closest(".overlay"); if(f) rabattre(f);
 });
 
-/* Le retour matériel referme le panneau plutôt que de sortir de l'app.
-   Chaque ouverture empile une entrée d'historique ; toute fermeture doit la
-   rendre, sinon le retour suivant paraîtrait sans effet et il faudrait
-   appuyer deux fois pour quitter. */
-let profondeurPanneaux=0, popsAIgnorer=0, fermetureParRetour=false;
+/* La page ne doit plus défiler derrière un panneau ouvert : sans cela le
+   glissement fait bouger le fond au lieu de rabattre le panneau. */
+let fondY=0, fondBloque=false;
+function bloquerFond(){
+  if(fondBloque) return;
+  fondY=window.scrollY; fondBloque=true;
+  document.body.style.position="fixed";
+  document.body.style.top=`-${fondY}px`;
+  document.body.style.left="0"; document.body.style.right="0";
+  document.body.style.width="100%";
+}
+function libererFond(){
+  if(!fondBloque) return;
+  fondBloque=false;
+  document.body.style.position=""; document.body.style.top="";
+  document.body.style.left=""; document.body.style.right=""; document.body.style.width="";
+  window.scrollTo(0,fondY);
+}
+
+/* Le retour du téléphone referme le panneau plutôt que de quitter l'app.
+   L'historique porte lui-même le nombre de panneaux ouverts : plutôt que de
+   compter les allers-retours, on se recale sur ce que l'état déclare, ce qui
+   ne peut pas se désynchroniser. */
+const marqueHistorique=()=>(history.state && history.state.panneau)||0;
 new MutationObserver(()=>{
-  const n=feuillesOuvertes().length;
-  if(n>profondeurPanneaux){
-    for(let i=profondeurPanneaux;i<n;i++) history.pushState({panneau:true},"");
-  } else if(n<profondeurPanneaux && !fermetureParRetour){
-    const rendus=profondeurPanneaux-n;
-    popsAIgnorer+=rendus;
-    for(let i=0;i<rendus;i++) history.back();
-  }
-  profondeurPanneaux=n;
+  const n=majPile().length;
+  if(n>0) bloquerFond(); else libererFond();
+  const m=marqueHistorique();
+  if(n>m) history.pushState({panneau:n},"");
+  else if(n<m && history.length>1) history.back();
 }).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});
 window.addEventListener("popstate",()=>{
-  if(popsAIgnorer>0){ popsAIgnorer--; return; }
-  if(feuillesOuvertes().length){
-    fermetureParRetour=true;
-    profondeurPanneaux=Math.max(0,profondeurPanneaux-1);
-    fermerFeuilleDessus();
-    setTimeout(()=>{ fermetureParRetour=false; },400);
-  }
+  const attendu=marqueHistorique();
+  let l=majPile();
+  while(l.length>attendu){ rabattre(l[l.length-1]); l=majPile(); }
 });
 
 /* Glisser vers le bas pour rabattre. On ne démarre que si le contenu est déjà
    en haut, sinon le geste servirait à faire défiler. */
 $$(".overlay .sheet").forEach(sh=>{
   let y0=null, x0=0, dy=0, actif=false, verrouille=false;
+  const prise=sh.querySelector(".poignee");
   const inerte=t=>t.closest("input,textarea,select,button,.pa-inc");
-  sh.addEventListener("pointerdown",e=>{
+  /* Le geste part de la barre de prise : là, aucun défilement ne le concurrence. */
+  (prise||sh).addEventListener("pointerdown",e=>{
     if(e.pointerType==="mouse" && e.button!==0) return;
-    if(inerte(e.target) || sh.scrollTop>0) return;
+    if(inerte(e.target)) return;
+    if(!prise && sh.scrollTop>0) return;
     y0=e.clientY; x0=e.clientX; dy=0; actif=true; verrouille=false; sh.style.transition="none";
+    if(prise && prise.setPointerCapture){ try{ prise.setPointerCapture(e.pointerId); }catch(_){} }
   });
-  sh.addEventListener("pointermove",e=>{
+  (prise||sh).addEventListener("pointermove",e=>{
     if(!actif) return;
+    e.preventDefault();
     dy=e.clientY-y0;
     const dx=Math.abs(e.clientX-x0);
     /* Un geste franchement oblique n'est pas une intention de rabattre. */
     if(!verrouille){
       if(dx>12 && dx>Math.abs(dy)){ actif=false; sh.style.transition=""; sh.style.transform=""; return; }
-      if(dy>6){ verrouille=true; if(sh.setPointerCapture){ try{ sh.setPointerCapture(e.pointerId); }catch(_){} } }
+      if(dy>6) verrouille=true;
     }
     if(dy<0){ dy=0; sh.style.transform=""; return; }
     if(!verrouille) return;
@@ -3369,13 +3413,12 @@ $$(".overlay .sheet").forEach(sh=>{
     actif=false;
     sh.style.transition="transform .22s cubic-bezier(.3,.8,.3,1)";
     if(dy>96){ sh.style.transform="translateY(100%)";
-      setTimeout(()=>{ sh.closest(".overlay").classList.remove("open");
-        sh.style.transition=""; sh.style.transform=""; },200);
+      setTimeout(()=>rabattre(sh.closest(".overlay")),190);
     } else sh.style.transform="";
     y0=null; dy=0;
   };
-  sh.addEventListener("pointerup",relacher);
-  sh.addEventListener("pointercancel",relacher);
+  (prise||sh).addEventListener("pointerup",relacher);
+  (prise||sh).addEventListener("pointercancel",relacher);
 });
 
 /* ═════ INSTALLATION ET HORS-LIGNE ═════
