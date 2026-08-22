@@ -586,7 +586,11 @@ svg .axtx{fill:var(--ink-3);font-size:10px;font-weight:400}
   animation:slideup .3s cubic-bezier(.2,.9,.3,1)}
 @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
 .sheet h3{font-family:var(--f-display);font-size:18px;font-weight:600;margin-bottom:3px}
-.grip{width:34px;height:4px;border-radius:2px;background:var(--line-2);margin:0 auto 15px}
+.sheet{touch-action:pan-y}
+.grip{position:relative;width:38px;height:4px;border-radius:2px;background:var(--line-2);
+  margin:0 auto 15px;cursor:grab;transition:background .15s}
+.grip::after{content:"";position:absolute;left:-40px;right:-40px;top:-14px;bottom:-14px}
+.sheet:active .grip{background:var(--ink-3)}
 .stepper{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--panel)}
 .stepper button{width:52px;height:54px;font-size:23px;color:var(--ink-2);text-align:center;transition:.15s}
 .stepper button:active{background:var(--panel-2)}
@@ -3290,6 +3294,89 @@ $("#msBtn").onclick=()=>{
   location.href="/api/sso";
 };
 $("#signOutBtn").onclick=()=>{ try{ localStorage.removeItem(VUE_KEY); }catch(e){} location.href="/api/logout"; };
+
+/* ═════ GESTES DES PANNEAUX ═════
+   La poignée en haut de chaque panneau promet qu'on peut le rabattre : il
+   faut donc que ce soit vrai. On ajoute aussi la touche Échap et le retour
+   du téléphone, qui sinon quitterait l'application au lieu de fermer le
+   panneau ouvert. */
+const feuillesOuvertes=()=>$$(".overlay.open");
+function fermerFeuilleDessus(){
+  const l=feuillesOuvertes();
+  if(!l.length) return false;
+  const f=l[l.length-1];
+  const c=f.querySelector(".sheet");
+  if(c){ c.style.transition="transform .22s cubic-bezier(.3,.8,.3,1)"; c.style.transform="translateY(100%)";
+    setTimeout(()=>{ f.classList.remove("open"); c.style.transition=""; c.style.transform=""; },200); }
+  else f.classList.remove("open");
+  return true;
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && feuillesOuvertes().length){ e.preventDefault(); fermerFeuilleDessus(); }
+});
+
+/* Le retour matériel referme le panneau plutôt que de sortir de l'app.
+   Chaque ouverture empile une entrée d'historique ; toute fermeture doit la
+   rendre, sinon le retour suivant paraîtrait sans effet et il faudrait
+   appuyer deux fois pour quitter. */
+let profondeurPanneaux=0, popsAIgnorer=0, fermetureParRetour=false;
+new MutationObserver(()=>{
+  const n=feuillesOuvertes().length;
+  if(n>profondeurPanneaux){
+    for(let i=profondeurPanneaux;i<n;i++) history.pushState({panneau:true},"");
+  } else if(n<profondeurPanneaux && !fermetureParRetour){
+    const rendus=profondeurPanneaux-n;
+    popsAIgnorer+=rendus;
+    for(let i=0;i<rendus;i++) history.back();
+  }
+  profondeurPanneaux=n;
+}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});
+window.addEventListener("popstate",()=>{
+  if(popsAIgnorer>0){ popsAIgnorer--; return; }
+  if(feuillesOuvertes().length){
+    fermetureParRetour=true;
+    profondeurPanneaux=Math.max(0,profondeurPanneaux-1);
+    fermerFeuilleDessus();
+    setTimeout(()=>{ fermetureParRetour=false; },400);
+  }
+});
+
+/* Glisser vers le bas pour rabattre. On ne démarre que si le contenu est déjà
+   en haut, sinon le geste servirait à faire défiler. */
+$$(".overlay .sheet").forEach(sh=>{
+  let y0=null, x0=0, dy=0, actif=false, verrouille=false;
+  const inerte=t=>t.closest("input,textarea,select,button,.pa-inc");
+  sh.addEventListener("pointerdown",e=>{
+    if(e.pointerType==="mouse" && e.button!==0) return;
+    if(inerte(e.target) || sh.scrollTop>0) return;
+    y0=e.clientY; x0=e.clientX; dy=0; actif=true; verrouille=false; sh.style.transition="none";
+  });
+  sh.addEventListener("pointermove",e=>{
+    if(!actif) return;
+    dy=e.clientY-y0;
+    const dx=Math.abs(e.clientX-x0);
+    /* Un geste franchement oblique n'est pas une intention de rabattre. */
+    if(!verrouille){
+      if(dx>12 && dx>Math.abs(dy)){ actif=false; sh.style.transition=""; sh.style.transform=""; return; }
+      if(dy>6){ verrouille=true; if(sh.setPointerCapture){ try{ sh.setPointerCapture(e.pointerId); }catch(_){} } }
+    }
+    if(dy<0){ dy=0; sh.style.transform=""; return; }
+    if(!verrouille) return;
+    sh.style.transform=`translateY(${dy}px)`;
+  });
+  const relacher=()=>{
+    if(!actif) return;
+    actif=false;
+    sh.style.transition="transform .22s cubic-bezier(.3,.8,.3,1)";
+    if(dy>96){ sh.style.transform="translateY(100%)";
+      setTimeout(()=>{ sh.closest(".overlay").classList.remove("open");
+        sh.style.transition=""; sh.style.transform=""; },200);
+    } else sh.style.transform="";
+    y0=null; dy=0;
+  };
+  sh.addEventListener("pointerup",relacher);
+  sh.addEventListener("pointercancel",relacher);
+});
 
 /* ═════ INSTALLATION ET HORS-LIGNE ═════
    Le service worker garde l'application utilisable sans réseau : à la salle,
