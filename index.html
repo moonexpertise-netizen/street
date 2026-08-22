@@ -1,7 +1,7 @@
 <title>MoonSport · Programme Adamantium</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MoonSport">
 <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
@@ -9,6 +9,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="MoonSport">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1188,7 +1191,12 @@ function chargeFor(lift,w,se){ const wk=rowFor(lift,w); return round125(S.rm[lif
 /* ═════ HELPERS ═════ */
 const $ = s=>document.querySelector(s), $$ = s=>[...document.querySelectorAll(s)];
 let toastT;
-function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1900); }
+function toast(m,duree){
+  const t=$("#toast");
+  t.textContent=m; t.classList.add("show");
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>{ t.classList.remove("show"); t.onclick=null; t.style.pointerEvents=""; },duree||1900);
+}
 function vibrate(p){ try{ S.ui.haptic && navigator.vibrate && navigator.vibrate(p); }catch(e){} }
 function beep(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)(); const o=c.createOscillator(), g=c.createGain();
   o.connect(g); g.connect(c.destination); o.frequency.value=880; g.gain.setValueAtTime(.18,c.currentTime);
@@ -3282,6 +3290,38 @@ $("#msBtn").onclick=()=>{
   location.href="/api/sso";
 };
 $("#signOutBtn").onclick=()=>{ try{ localStorage.removeItem(VUE_KEY); }catch(e){} location.href="/api/logout"; };
+
+/* ═════ INSTALLATION ET HORS-LIGNE ═════
+   Le service worker garde l'application utilisable sans réseau : à la salle,
+   au sous-sol, en zone blanche. Les données restent en local et repartent
+   vers le compte dès que la connexion revient. */
+let majEnAttente=null;
+if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("/sw.js").then(reg=>{
+      reg.addEventListener("updatefound",()=>{
+        const neuf=reg.installing;
+        if(!neuf) return;
+        neuf.addEventListener("statechange",()=>{
+          /* Une version déjà active signifie une mise à jour, pas une première pose. */
+          if(neuf.state==="installed" && navigator.serviceWorker.controller){
+            majEnAttente=neuf;
+            toast("Nouvelle version prête · touche pour l'installer", 9000);
+            const t=$("#toast");
+            if(t){ t.style.pointerEvents="auto";
+              t.onclick=()=>{ majEnAttente.postMessage("maj"); }; }
+          }
+        });
+      });
+    }).catch(()=>{});
+    let recharge=false;
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+      if(recharge) return; recharge=true; location.reload();
+    });
+  });
+}
+window.addEventListener("offline",()=>toast("Hors ligne · tes saisies sont gardées sur l'appareil"));
+window.addEventListener("online", ()=>{ if(syncOn) pushCloud(); });
 
 /* ═════ INIT ═════ */
 applyTheme();
